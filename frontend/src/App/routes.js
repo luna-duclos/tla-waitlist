@@ -4,12 +4,11 @@ import { Route, Switch } from "react-router-dom";
 import { AuthContext } from "../contexts";
 
 import { AuthStart, AuthCallback, AuthLogout } from "../Pages/Auth";
-import { BadgeIndex, Guide, GuideIndex } from "../Pages/Guide";
+//import { BadgeIndex, Guide, GuideIndex } from "../Pages/Guide";
 import { Fits } from "../Pages/Fits";
 import { FCMenu, GuideFC } from "../Pages/FC/Index";
 import { Fleet, FleetRegister } from "../Pages/FC/Fleet";
 import { FleetCompHistory } from "../Pages/FC/FleetCompHistory";
-import { Home } from "../Pages/Home";
 import { ISKh, ISKhCalc } from "../Pages/ISKh";
 import { Legal } from "../Pages/Legal";
 import { NoteAdd } from "../Pages/FC/NoteAdd";
@@ -51,9 +50,8 @@ export function Routes() {
   return (
     <Switch>
       <Route exact path="/">
-        <Home />
+        {<AuthenticatedRoute component={<Waitlist />} loginRequired />}
       </Route>
-
       <Route exact path="/fits">
         <Fits />
       </Route>
@@ -72,8 +70,8 @@ export function Routes() {
       <Route exact path="/skills/plans">
         <Plans />
       </Route>
-
       {/* Guides: Badges, Index, Guide Page */}
+      {/*
       <Route exact path="/badges">
         <BadgeIndex />
       </Route>
@@ -82,11 +80,11 @@ export function Routes() {
       </Route>
       <Route exact path="/guide/:guideName">
         <Guide />
-      </Route>
+		  
+      </Route>*/}
       <Route exact path="/legal">
         <Legal />
       </Route>
-
       {/* Waitlist Pages: Waitlist, XUP */}
       <Route exact path="/waitlist">
         {<AuthenticatedRoute component={<Waitlist />} loginRequired />}
@@ -94,7 +92,6 @@ export function Routes() {
       <Route exact path="/xup">
         {<AuthenticatedRoute component={<Xup />} loginRequired />}
       </Route>
-
       {/* Fleet Commander Routes */}
       <Route exact path="/fc">
         {/* 'fleet-view' allows any FC to use this route */}
@@ -136,7 +133,6 @@ export function Routes() {
       <Route exact path="/fc/trainee">
         <AuthenticatedRoute component={<GuideFC />} access="waitlist-tag:TRAINEE" />
       </Route>
-
       {/* Auth Routes: Login, Callback, Logout */}
       <Route exact path="/auth/start">
         <AuthStart />
@@ -153,7 +149,6 @@ export function Routes() {
       <Route exact path="/auth/logout">
         <AuthLogout />
       </Route>
-
       <Route path="*">
         <E404 />
       </Route>

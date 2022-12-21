@@ -212,7 +212,8 @@ export function BadgeData() {
               Badge can be viewed on pilot page.
             </InfoNote>
             <InfoNote variant="warning">
-              New web requirements from the 13th of November. Existing web specialists can continue to use their old webs beyond this date.
+              New web requirements from the 13th of November. Existing web specialists can continue
+              to use their old webs beyond this date.
             </InfoNote>
           </BadgeButton>
         </BadgeDisplay>
@@ -240,8 +241,8 @@ export function BadgeData() {
             Permitted to use TDF comms to run fleets and to take a fleet into Headquarters, Assault
             and Vanguard sites with SRP cover. <br />
             <br />
-            Can promote Trainee FC&apos;s to full FC tags and conduct van/bus fleets for
-            trainee FC&apos;s.
+            Can promote Trainee FC&apos;s to full FC tags and conduct van/bus fleets for trainee
+            FC&apos;s.
           </BadgeButton>
           <BadgeButton name="Council" img={"./c.png"}>
             Member of the TDF council, which makes decisions that impact the community. <br />

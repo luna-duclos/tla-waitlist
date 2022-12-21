@@ -4,7 +4,7 @@ import { ToastContext, AuthContext } from "../../contexts";
 import { apiCall, useApi, errorToaster } from "../../api";
 import { NavLink } from "react-router-dom";
 import { TimeDisplay } from "./TimeDisplay.js";
-import BadgeIcon, { Badge, icons } from "../../Components/Badge";
+import BadgeIcon, { Badge, icons, badgeOrder } from "../../Components/Badge";
 import { Modal } from "../../Components/Modal";
 import { FitDisplay } from "../../Components/FitDisplay";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,20 +24,6 @@ import { SkillDisplay } from "../../Components/SkillDisplay";
 import { Box } from "../../Components/Box";
 import { Title } from "../../Components/Page";
 import { Button, Buttons } from "../../Components/Form";
-
-const badgeOrder = [
-  "HQ-FC",
-  "TRAINEE",
-  "WEB",
-  "BASTION",
-  "LOGI",
-  "RETIRED-LOGI",
-  "AMULET",
-  "WARPSPEED",
-  "HYBRID",
-  "ELITE",
-  "ELITE-GOLD",
-];
 
 async function approveFit(id) {
   return await apiCall("/api/waitlist/approve", {
@@ -503,7 +489,7 @@ export function XCard({ entry, fit, onAction }) {
         </XCardDOM.Footer>
         {!is_alt && _.isFinite(fit.hours_in_fleet) && fit.hours_in_fleet < 1 && (
           <XCardDOM.Footer>
-            <span>NEWBRO</span>
+            <span>NEW</span>
           </XCardDOM.Footer>
         )}
       </XCardDOM.FooterGroup>

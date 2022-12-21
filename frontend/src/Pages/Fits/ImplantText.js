@@ -1,4 +1,4 @@
-import { InfoNote } from "../../Components/NoteBox";
+//import { InfoNote } from "../../Components/NoteBox";
 import { Highlight } from "../../Components/Form";
 import { Copyable } from "../../Components/Copy";
 import { ToastContext } from "../../contexts";
@@ -35,11 +35,11 @@ export function ImplantTable({ type }) {
   }
   return (
     <>
-      <InfoNote>
+      {/*<InfoNote>
         {type === "Hybrid"
           ? "Hybrid tagged fits require at least Amulet 1 - 5 to be flown."
-          : "Required for Elite badge on non implant specific ships."}
-      </InfoNote>
+: "Required for Elite badge on non implant specific ships."}
+      </InfoNote>*/}
 
       <Table style={{ width: "100%" }}>
         <TableHead>
@@ -92,7 +92,6 @@ function ImplantAllRow({ toast, slot, implant }) {
       <Cell>
         <CopyImplantText toast={toast} item={implant} />
       </Cell>
-
       <Cell></Cell>
     </Row>
   );

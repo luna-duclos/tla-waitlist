@@ -73,18 +73,33 @@ BadgeModal.Title = styled.div`
   border-color: ${(props) => props.theme.colors.accent3};
 `;
 
+export const badgeOrder = [
+  "HQ-FC",
+  "TRAINEE",
+  "DPS",
+  "LOGI",
+  "ALT",
+  "AMULET",
+  "WARPSPEED",
+  "HYBRID",
+  "ELITE",
+  "ELITE-GOLD",
+];
+
 export const icons = {
   // Implant badges
   WARPSPEED: { type: "shield", color: "red", letter: "W", name: "Warp Speed Implants" },
   HYBRID: { type: "shield", color: "red", letter: "H", name: "Hybrid Implants" },
   AMULET: { type: "shield", color: "red", letter: "A", name: "Amulet Implants" },
   // FC Roles
-  "HQ-FC": { type: "shield", color: "blue", letter: "H", name: "HQ FC" },
+  "HQ-FC": { type: "shield", color: "purple", letter: "H", name: "HQ FC" },
   TRAINEE: { type: "shield", color: "neutral", letter: "T", name: "Training FC" },
   TRAINER: { type: "shield", color: "purple", letter: "T", name: "FC Trainer" },
   COUNCIL: { type: "image", href: require("../Pages/Guide/badges/c.png"), name: "Council" },
-  // Specalist Badges
-  LOGI: { type: "shield", color: "green", letter: "L", name: "Logi Specialist" },
+  // Pilot Badges
+  DPS: { type: "shield", color: "yellow", letter: "T", name: "DPS" },
+  LOGI: { type: "shield", color: "red", letter: "L", name: "Logi Specialist" },
+  ALT: { type: "shield", color: "green", letter: "A", name: "Alt approved" },
   "MUPPET-LOGI": {
     type: "image",
     href: require("../Pages/Guide/badges/ml.png"),

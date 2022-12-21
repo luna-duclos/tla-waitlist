@@ -7,7 +7,7 @@ const Group = styled.div`
   margin-bottom: 2em;
 `;
 
-function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHistory, notes  }) {
+function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHistory, notes }) {
   var everything = [];
 
   // Add ban history
@@ -18,10 +18,10 @@ function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHi
       key: `ban-${i}`,
       entry,
       time: entry.issued_at,
-      type: "ban"           
+      type: "ban",
     });
   }
-  
+
   // Add xups
   i = 0;
   for (const entry of xupHistory || []) {
@@ -70,7 +70,7 @@ function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHi
       key: `note-${i}`,
     });
   }
-  
+
   if (filter !== null) {
     everything = everything.filter((entry) => filter(entry.type));
   }
@@ -82,7 +82,7 @@ function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHi
   var groups = [];
   var thisGroup = null;
   var maxTime = null;
-  
+
   for (const { time, entry, type, endTime, key } of everything) {
     if (thisGroup === null || maxTime < time) {
       thisGroup = [];
@@ -126,7 +126,14 @@ function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHi
   return <div>{result}</div>;
 }
 
-export function PilotHistory({ filter, banHistory, fleetHistory, skillHistory, xupHistory, notes }) {
+export function PilotHistory({
+  filter,
+  banHistory,
+  fleetHistory,
+  skillHistory,
+  xupHistory,
+  notes,
+}) {
   return (
     <CombinedDisplay
       filter={filter}
@@ -134,7 +141,7 @@ export function PilotHistory({ filter, banHistory, fleetHistory, skillHistory, x
       fleetHistory={fleetHistory}
       skillHistory={skillHistory}
       xupHistory={xupHistory}
-      notes={notes}      
+      notes={notes}
     />
   );
 }

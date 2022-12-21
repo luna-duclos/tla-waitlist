@@ -4,12 +4,12 @@ export function usePageTitle(suffix) {
   useEffect(() => {
     let title = document.title;
     replaceTitle(suffix);
-    return () => document.title = title;
+    return () => (document.title = title);
   });
 }
 
 export function replaceTitle(suffix) {
-  document.title = `TDF: ${suffix}`;
+  document.title = `TLA: ${suffix}`;
 }
 
 export function parseMarkdownTitle(data) {
@@ -18,9 +18,8 @@ export function parseMarkdownTitle(data) {
 }
 
 export function titleCase(title) {
-  return (
-    title.split(" ")
-      .map((word) => word[0].toUpperCase() + word.substr(1).toLowerCase())
-      .join(" ")
-  );
+  return title
+    .split(" ")
+    .map((word) => word[0].toUpperCase() + word.substr(1).toLowerCase())
+    .join(" ");
 }

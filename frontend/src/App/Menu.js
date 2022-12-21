@@ -98,7 +98,7 @@ const Teamspeak = () => {
   return (
     <AButton
       title="Join our Teamspeak Server"
-      href={`ts3server://t-d-f.one${
+      href={`ts3server://ts.candeez.org${
         authContext?.current ? `?nickname=${authContext.current.name}` : ""
       }`}
     >
@@ -150,7 +150,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
               )}
               <InputGroup fixed>
                 <Teamspeak />
-                <AButton title="Discord" href="https://discord.gg/YTysdbb">
+                <AButton title="Discord" href="https://discord.gg/MR3nA9BD9K">
                   <FontAwesomeIcon icon={faDiscord} />
                 </AButton>
                 <EventNotifier />
