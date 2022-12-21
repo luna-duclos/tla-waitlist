@@ -8,7 +8,7 @@ import { usePageTitle } from "../../Util/title";
 export function Fits() {
   const queryParams = new URLSearchParams(useLocation().search);
   const history = useHistory();
-  var tier = queryParams.get("Tier") || "Starter";
+  var tier = queryParams.get("Tier") || "Armor";
   const setTier = (newTier) => {
     queryParams.set("Tier", newTier);
     history.push({
@@ -28,40 +28,25 @@ function FitsDisplay({ tier, setTier = null }) {
 
   return (
     <>
-      <PageTitle>HQ FITS</PageTitle>
+      <PageTitle>FITS</PageTitle>
       {setTier != null && (
         <Buttons style={{ marginBottom: "0.5em" }}>
           <InputGroup>
-            <Button active={tier === "Starter"} onClick={(evt) => setTier("Starter")}>
-              Starter
+            <Button active={tier === "Armor"} onClick={(evt) => setTier("Armor")}>
+              Armor
             </Button>
-            <Button active={tier === "Basic"} onClick={(evt) => setTier("Basic")}>
-              Basic
-            </Button>
-            <Button active={tier === "Advanced"} onClick={(evt) => setTier("Advanced")}>
-              Advanced
-            </Button>
-            <Button active={tier === "Elite"} onClick={(evt) => setTier("Elite")}>
-              Elite
-            </Button>
-          </InputGroup>
-          <InputGroup>
-            <Button active={tier === "Other"} onClick={(evt) => setTier("Other")}>
-              Support
-            </Button>
-          </InputGroup>
-          <InputGroup>
-            <Button active={tier === "Antigank"} onClick={(evt) => setTier("Antigank")}>
-              Antigank
+
+            <Button active={tier === "Shield"} onClick={(evt) => setTier("Shield")}>
+              Shield
             </Button>
           </InputGroup>
         </Buttons>
       )}
       <ImplantOut />
-      {tier === "Starter" ? (
-        <Fitout data={fitData} tier="Starter" />
-      ) : tier === "Basic" ? (
-        <Fitout data={fitData} tier="Basic" />
+      {tier === "Armor" ? (
+        <Fitout data={fitData} tier="Armor" />
+      ) : tier === "Shield" ? (
+        <Fitout data={fitData} tier="Shield" />
       ) : tier === "Advanced" ? (
         <Fitout data={fitData} tier="Advanced" />
       ) : tier === "Elite" ? (

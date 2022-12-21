@@ -7,7 +7,8 @@ import { Modal } from "../../../Components/Modal";
 import { Title } from "../../../Components/Page";
 import { ToastContext } from "../../../contexts";
 import styled from "styled-components";
-import BadgeIcon from "../../../Components/Badge";
+import BadgeIcon, { icons, badgeOrder } from "../../../Components/Badge";
+import _ from "lodash";
 
 const Wrapper = styled.div`
   margin-left: 40px;
@@ -133,6 +134,28 @@ const BadgeModal = ({ character, isOpen, setOpen, refreshData }) => {
     setBadges([...b]);
   };
 
+  if (badges) {
+    var tags = [];
+    badges.map((badge, key) => {
+      if (badge.default) {
+        tags.push(badge.name);
+      }
+    });
+    const tagsord = _.sortBy(tags, function (item) {
+      return badgeOrder.indexOf(item);
+    });
+    var tagImages = [];
+    _.forEach(tagsord, (tag) => {
+      if (tag in icons) {
+        tagImages.push(
+          <span style={{ marginRight: "5px", display: "inline-block" }} key={tag}>
+            <BadgeIcon type={tag} />
+          </span>
+        );
+      }
+    });
+  }
+
   return (
     <Modal open={isOpen} setOpen={setOpen}>
       <Box>
@@ -146,13 +169,7 @@ const BadgeModal = ({ character, isOpen, setOpen, refreshData }) => {
           ) : (
             <>
               <p>Current Badges:</p>
-              {badges.map((badge, key) => {
-                return badge.default ? (
-                  <span style={{ marginRight: "5px", display: "inline-block" }} key={key}>
-                    <BadgeIcon type={badge.name} key={key} />
-                  </span>
-                ) : null;
-              })}
+              <span>{tagImages}</span>
             </>
           )}
         </Wrapper>

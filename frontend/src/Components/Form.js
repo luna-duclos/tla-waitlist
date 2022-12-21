@@ -7,20 +7,28 @@ const inputStyle = css`
   font-size: 1em;
   border: solid ${(props) => (props.variant ? "0px" : "1px")};
   border-color: ${(props) => props.theme.colors.accent2};
-  border-radius: 4px;
+  border-radius: 20px;
 
-  background-color: ${(props) => props.theme.colors[props.variant || "input"].color};
+  background: linear-gradient(
+    to bottom,
+    ${(props) => props.theme.colors[props.variant || "input"].color} 0%,
+    ${(props) => props.theme.colors[props.variant || "input"].accent} 100%
+  );
   color: ${(props) => props.theme.colors[props.variant || "input"].text} !important;
   display: inline-block;
   font: inherit;
+  font-family: "Montserrat", sans-serif;
+  transition: all 0.2s ease-in-out;
 
   &.active {
     border-color: ${(props) => props.theme.colors.active};
   }
-  &:hover:not(:disabled):not(.static) {
+  &:hover:not(:disabled):not(.static),
+  &:focus:not(:disabled):not(.static) {
     color: ${(props) => props.theme.colors[props.variant || "input"].text};
     border-color: ${(props) => props.theme.colors.accent3};
     background-color: ${(props) => props.theme.colors[props.variant || "input"].accent};
+    box-shadow: 0 0 0 2px ${(props) => props.theme.colors.outline}, 0 2px 4px rgba(0, 0, 0, 0.1);
 
     &.active {
       border-color: ${(props) => props.theme.colors.active};
@@ -51,7 +59,6 @@ export const Button = styled.button.attrs((props) => ({
   ${inputStyle}
   height: 2.5em;
   cursor: pointer;
-
   &:disabled {
     opacity: 0.6;
   }

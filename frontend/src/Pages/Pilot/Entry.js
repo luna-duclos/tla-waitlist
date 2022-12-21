@@ -4,7 +4,13 @@ import { Box } from "../../Components/Box";
 import { FitDisplay } from "../../Components/FitDisplay";
 import { Modal } from "../../Components/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBan, faClipboard, faGraduationCap, faPen, faPlane } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBan,
+  faClipboard,
+  faGraduationCap,
+  faPen,
+  faPlane,
+} from "@fortawesome/free-solid-svg-icons";
 import { Badge } from "../../Components/Badge";
 import { formatDate, formatDatetime, formatDuration, timeTillNow } from "../../Util/time";
 import ReactMarkdown from "react-markdown";
@@ -57,30 +63,34 @@ function Entry({ time, icon, children }) {
 export function BanEntry({ issued_at, issued_by, reason, public_reason, revoked_at, revoked_by }) {
   const isPerma = !revoked_at;
   return (
-    <Entry time={issued_at} icon={faBan}>       
+    <Entry time={issued_at} icon={faBan}>
       <Content>
-        <p>{ isPerma ? "Permanent" : "Temporary" } ban, issued by: <CharacterName {...issued_by} avatar={false} />.</p>
+        <p>
+          {isPerma ? "Permanent" : "Temporary"} ban, issued by:{" "}
+          <CharacterName {...issued_by} avatar={false} />.
+        </p>
 
-        { !isPerma && !revoked_by && (
-          <p>Expires: {timeTillNow(new Date(revoked_at * 1000))}.</p>
+        {!isPerma && !revoked_by && <p>Expires: {timeTillNow(new Date(revoked_at * 1000))}.</p>}
+
+        {!isPerma && revoked_by && (
+          <p>
+            Revoked by: <CharacterName {...revoked_by} avatar={false} /> on the{" "}
+            {formatDate(new Date(revoked_at * 1000))}.
+          </p>
         )}
 
-        { !isPerma && revoked_by && (
-          <p>Revoked by: <CharacterName {...revoked_by} avatar={false} /> on the {formatDate(new Date(revoked_at * 1000))}.</p>
-        )}
-
-        <p style={{ marginBottom: "2px", fontWeight: "600"}}>Reason:</p>
+        <p style={{ marginBottom: "2px", fontWeight: "600" }}>Reason:</p>
         <p>{reason}</p>
 
-        { public_reason && (
+        {public_reason && (
           <>
-            <p style={{ marginBottom: "2px", fontWeight: "600"}}>Public Reason</p>
+            <p style={{ marginBottom: "2px", fontWeight: "600" }}>Public Reason</p>
             <p>{public_reason}</p>
           </>
         )}
       </Content>
     </Entry>
-  )
+  );
 }
 
 export function FitEntry({ logged_at, hull, dna, implants }) {

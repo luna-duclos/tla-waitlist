@@ -80,13 +80,13 @@ export function Xup() {
   const [eft, setEft] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [reviewOpen, setReviewOpen] = React.useState(false);
-  const [alt, setAlt] = React.useState(false);
+  const [alt] = React.useState(false);
   const [implants] = useApi(`/api/implants?character_id=${authContext.current.id}`);
-
+  /*
   const handleChange = () => {
     setAlt(!alt);
   };
-
+	*/
   const waitlist_id = queryParams.get("wl");
   if (!waitlist_id) {
     return <em>Missing waitlist information</em>;
@@ -113,10 +113,10 @@ export function Xup() {
             style={{ width: "100%", marginBottom: "1em" }}
           />
           <div>
-            <label>
+            {/*<label>
               <input type="checkbox" checked={alt} onChange={handleChange} />
               This is an ALT (I already have a character in fleet)
-            </label>
+		  </label>*/}
           </div>
 
           <InputGroup>

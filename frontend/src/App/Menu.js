@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../contexts";
-import logoImage from "./logo.png";
+//import logoImage from "./logo.png";
 import styled from "styled-components";
 import { InputGroup, Select, NavButton, AButton } from "../Components/Form";
 import { EventNotifier } from "../Components/Event";
@@ -11,21 +11,25 @@ import { faDiscord, faTeamspeak } from "@fortawesome/free-brands-svg-icons";
 import { NavLinks, MobileNavButton, MobileNav } from "./Navigation";
 
 const NavBar = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 1em;
-  margin-bottom: 1em;
-  @media (max-width: 480px) {
-    padding: 0.2em;
-    justify-content: space-between;
+  /* existing styles */
+
+  background: linear-gradient(
+    to right,
+    ${(props) => props.theme.colors.primary},
+    ${(props) => props.theme.colors.secondary}
+  );
+  border-radius: 5px;
+  transition: background-color 0.2s ease-in-out;
+  &:hover {
+    background-color: ${(props) => props.theme.colors.primaryDark};
   }
 `;
+
 NavBar.Header = styled.div`
   display: flex;
   @media (max-width: 480px) {
     width: 100%;
-    border-bottom: 3px solid;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     margin-bottom: 1em;
     padding-bottom: 0.2em;
   }
@@ -42,16 +46,19 @@ NavBar.LogoLink = styled(NavLink).attrs((props) => ({
     margin-left: auto;
   }
 `;
+
 NavBar.Logo = styled.img`
   width: 150px;
   filter: ${(props) => props.theme.logo.filter};
 `;
+
 NavBar.Menu = styled.div`
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   flex-grow: 1;
 `;
+
 NavBar.Link = styled(NavLink).attrs((props) => ({
   activeClassName: "active",
 }))`
@@ -60,12 +67,13 @@ NavBar.Link = styled(NavLink).attrs((props) => ({
   text-decoration: none;
   &:hover {
     color: ${(props) => props.theme.colors.text};
-    background-color: ${(props) => props.theme.colors.accent1};
   }
   &.active {
     color: ${(props) => props.theme.colors.active};
+    font-weight: bold;
   }
 `;
+
 NavBar.End = styled.div`
   margin-left: auto;
   display: flex;
@@ -77,6 +85,7 @@ NavBar.End = styled.div`
     }
   }
 `;
+
 NavBar.Main = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -84,6 +93,7 @@ NavBar.Main = styled.div`
     display: none;
   }
 `;
+
 NavBar.Name = styled.div`
   margin-right: 2em;
   @media (max-width: 480px) {
@@ -98,7 +108,7 @@ const Teamspeak = () => {
   return (
     <AButton
       title="Join our Teamspeak Server"
-      href={`ts3server://t-d-f.one${
+      href={`ts3server://ts.candeez.org${
         authContext?.current ? `?nickname=${authContext.current.name}` : ""
       }`}
     >
@@ -115,9 +125,6 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
         <NavBar>
           <NavBar.Header>
             <MobileNavButton isOpen={isOpenMobileView} setIsOpen={setOpenMobileView} />
-            <NavBar.LogoLink to="/">
-              <NavBar.Logo src={logoImage} alt="The Ditanian Fleet" />
-            </NavBar.LogoLink>
           </NavBar.Header>
           <NavBar.Menu>
             <NavBar.Main>
@@ -150,7 +157,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
               )}
               <InputGroup fixed>
                 <Teamspeak />
-                <AButton title="Discord" href="https://discord.gg/YTysdbb">
+                <AButton title="Discord" href="https://discord.gg/MR3nA9BD9K">
                   <FontAwesomeIcon icon={faDiscord} />
                 </AButton>
                 <EventNotifier />

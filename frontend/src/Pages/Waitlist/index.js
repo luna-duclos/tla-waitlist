@@ -9,10 +9,10 @@ import {
   MatrixWaitlist,
   RowWaitlist,
   NotepadWaitlist,
-  CategoryHeading,
+  //CategoryHeading,
 } from "./displaymodes";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faColumns } from "@fortawesome/free-solid-svg-icons";
+//import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+//import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 import { useQuery } from "../../Util/query";
 import { usePageTitle } from "../../Util/title";
@@ -120,7 +120,7 @@ export function Waitlist() {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
   const [query, setQuery] = useQuery();
-  const [altCol, setAltCol] = React.useState(
+  const [altCol /*setAltCol*/] = React.useState(
     window.localStorage && window.localStorage.getItem("AltColumn")
       ? window.localStorage.getItem("AltColumn") === "true"
       : false
@@ -157,12 +157,12 @@ export function Waitlist() {
       </>
     );
   }
-  const handleChange = () => {
+  /*const handleChange = () => {
     setAltCol(!altCol);
     if (window.localStorage) {
       window.localStorage.setItem("AltColumn", !altCol);
     }
-  };
+  };*/
 
   var myEntry = _.find(
     waitlistData.waitlist,
@@ -208,7 +208,7 @@ export function Waitlist() {
             </Button>
           </InputGroup>
         )}
-        {displayMode === "columns" && (
+        {/*{displayMode === "columns" && (
           <InputGroup>
             <Button onClick={handleChange}>
               <FontAwesomeIcon icon={faColumns} />
@@ -217,7 +217,7 @@ export function Waitlist() {
         )}
         {!altCol && (
           <CategoryHeading name="Alts" fleetComposition={fleetComposition} altCol={altCol} />
-        )}
+        )}*/}
       </Buttons>
 
       {displayMode === "columns" ? (

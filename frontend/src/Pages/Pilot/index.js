@@ -7,7 +7,7 @@ import { PilotHistory } from "./PilotHistory";
 import { apiCall, errorToaster, useApi } from "../../api";
 import { ActivitySummary } from "./ActivitySummary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import BadgeIcon, { icons } from "../../Components/Badge";
+import BadgeIcon, { icons, badgeOrder } from "../../Components/Badge";
 import {
   faBan,
   faClipboard,
@@ -43,8 +43,11 @@ async function OpenWindow(target_id, character_id) {
 }
 
 function PilotTags({ tags }) {
+  const tagsord = _.sortBy(tags, function (item) {
+    return badgeOrder.indexOf(item);
+  });
   var tagImages = [];
-  _.forEach(tags, (tag) => {
+  _.forEach(tagsord, (tag) => {
     if (tag in icons) {
       tagImages.push(
         <div key={tag} style={{ marginRight: "0.2em" }}>
