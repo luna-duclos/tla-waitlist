@@ -1,4 +1,4 @@
-use eve_data_core::TypeID;
+/*use eve_data_core::TypeID;
 
 pub fn detect_base_set(implants: &[TypeID]) -> Option<&'static str> {
     let set_implants = [
@@ -153,3 +153,4 @@ pub fn detect_set(hull: TypeID, implants: &[TypeID]) -> Option<&'static str> {
     detect_slot9(hull, implants)?;
     Some(base_set)
 }
+*/

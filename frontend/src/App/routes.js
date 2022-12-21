@@ -15,7 +15,7 @@ import { NoteAdd } from "../Pages/FC/NoteAdd";
 import { Pilot } from "../Pages/Pilot";
 import { Plans } from "../Pages/Skills/Plans";
 import { Search } from "../Pages/FC/Search";
-import { Skills } from "../Pages/Skills/Skills";
+//import { Skills } from "../Pages/Skills/Skills";
 import { Statistics } from "../Pages/FC/Statistics";
 import { Waitlist } from "../Pages/Waitlist";
 import { Xup } from "../Pages/Xup";
@@ -64,9 +64,9 @@ export function Routes() {
       <Route exact path="/pilot">
         <Pilot />
       </Route>
-      <Route exact path="/skills">
+      {/*<Route exact path="/skills">
         <Skills />
-      </Route>
+</Route>*/}
       <Route exact path="/skills/plans">
         <Plans />
       </Route>

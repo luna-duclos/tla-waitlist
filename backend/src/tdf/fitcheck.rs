@@ -2,7 +2,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
 };
 
-use super::{fitmatch, implantmatch, skills::SkillTier};
+use super::{fitmatch};
 use crate::data::{categories, fits::DoctrineFit, skills::Skills};
 use eve_data_core::{FitError, Fitting, TypeDB, TypeID};
 use serde::Serialize;
@@ -66,7 +66,7 @@ impl<'a> FitChecker<'a> {
 
         checker.check_module_skills()?;
         checker.check_fit();
-        checker.check_fit_implants_reqs();
+        //checker.check_fit_implants_reqs();
         checker.set_category();
         checker.add_snowflake_tags();
         //checker.add_implant_tag();
@@ -113,7 +113,7 @@ impl<'a> FitChecker<'a> {
 
 
     fn check_fit(&mut self) {
-        if let Some((doctrine_fit, mut diff)) = fitmatch::find_fit(self.fit) {
+        if let Some((doctrine_fit, diff)) = fitmatch::find_fit(self.fit) {
             self.doctrine_fit = Some(doctrine_fit);
             let fit_ok = diff.module_downgraded.is_empty() && diff.module_missing.is_empty();
             if !(diff.cargo_missing.is_empty() && fit_ok) {
@@ -142,7 +142,7 @@ impl<'a> FitChecker<'a> {
             }
         } 
     }
-
+/*
     fn check_fit_implants_reqs(&mut self) {
         if let Some(doctrine_fit) = self.doctrine_fit {
             let set_tag = implantmatch::detect_base_set(self.pilot.implants).unwrap_or("");
@@ -175,7 +175,7 @@ impl<'a> FitChecker<'a> {
             }
         }
     }
-/*
+
     fn add_implant_tag(&mut self) {
         if let Some(doctrine_fit) = self.doctrine_fit {
             // Implant badge will show if you have 1-9
@@ -207,7 +207,7 @@ impl<'a> FitChecker<'a> {
     }
 */
     fn set_category(&mut self) {
-        let mut category =
+        let category =
             categories::categorize(self.fit).unwrap_or_else(|| "offgrid".to_string());
         self.category = Some(category);
     }
