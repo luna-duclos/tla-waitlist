@@ -171,23 +171,6 @@ theme["Midnight Blue"] = _.merge({}, theme.Dark, {
   },
 });
 
-theme.Ninjaholic = _.merge({}, theme.Dark, {
-  colors: {
-    background: "#290052",
-    accent1: "#380070",
-    accent2: "#4f009e",
-    accent3: "#8c1aff",
-    accent4: "#bf80ff",
-
-    secondary: {
-      color: "#55008a",
-      text: "white",
-      accent: "#6e00b3",
-      disabled: "#31084a",
-    },
-  },
-});
-
 theme["Specialist"] = _.merge({}, theme.Light, {
   colors: {
     text: "#666666",

@@ -256,7 +256,6 @@ function ImplantButton({ name, img }) {
                 <Title>{name} &nbsp;</Title>
               </BadgeModal.Title>
             </BadgeModal>
-            <b>Only visible on waitlist X-UP. </b>
             <br />
             <br />
             <ImplantTable type={name} />
