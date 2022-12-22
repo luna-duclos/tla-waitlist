@@ -7,12 +7,25 @@ notes:
   - name: Shield
     description: >
       
-  - name: Armor
+  - name: Armor 
     description: >
+     
       
 
   # Ship specific notes
 
+  - name: TLA_SHIELD_KRONOS
+    description: >
+      DPS **MAIN:** 4100 **ALT:** 3813
+  - name: TLA_SHIELD_PALADIN
+    description: >
+      DPS **MAIN: 3350 **ALT:** 3115
   - name: TLA_SHIELD_VARGUR
     description: >
-      
+      DPS **MAIN:** 3350 **ALT:** 3115
+  - name: TLA_ARMOR_KRONOS
+    description: >
+      DPS **MAIN:** 4100 **ALT:** 3813
+  - name: TLA_ARMOR_PALADIN
+    description: >
+      DPS **MAIN:** 3350 **ALT:** 3115

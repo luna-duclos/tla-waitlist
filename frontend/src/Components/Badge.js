@@ -88,34 +88,17 @@ export const badgeOrder = [
 
 export const icons = {
   // Implant badges
-  WARPSPEED: { type: "shield", color: "red", letter: "W", name: "Warp Speed Implants" },
-  HYBRID: { type: "shield", color: "red", letter: "H", name: "Hybrid Implants" },
-  AMULET: { type: "shield", color: "red", letter: "A", name: "Amulet Implants" },
   // FC Roles
   "HQ-FC": { type: "shield", color: "purple", letter: "H", name: "HQ FC" },
   TRAINEE: { type: "shield", color: "neutral", letter: "T", name: "Training FC" },
   TRAINER: { type: "shield", color: "purple", letter: "T", name: "FC Trainer" },
-  COUNCIL: { type: "image", href: require("../Pages/Guide/badges/c.png"), name: "Council" },
+  LEADERSHIP: { type: "shield", color: "purple", letter: "DN", name: "leadership" },
   // Pilot Badges
   DPS: { type: "shield", color: "yellow", letter: "T", name: "DPS" },
   LOGI: { type: "shield", color: "red", letter: "L", name: "Logi Specialist" },
   ALT: { type: "shield", color: "green", letter: "A", name: "Alt approved" },
-  "MUPPET-LOGI": {
-    type: "image",
-    href: require("../Pages/Guide/badges/ml.png"),
-    name: "Banned from flying logi",
-  },
-  "RETIRED-LOGI": { type: "shield", color: "red", letter: "L", name: "Retired Logi Specialist" },
-  BASTION: { type: "shield", color: "cyan", letter: "B", name: "Bastion Specialist" },
-  WEB: { type: "shield", color: "cyan", letter: "W", name: "Web Specialist" },
   // Other
-  ELITE: { type: "shield", color: "yellow", letter: "E", name: "Elite" },
-  "ELITE-GOLD": {
-    type: "image",
-    href: require("../Pages/Guide/badges/egold.png"),
-    name: "Elite GOLD",
-  },
-  STARTER: { type: "shield", color: "neutral", letter: "S", name: "Starter pilot" },
+
   UNKNOWN: { type: "shield", color: "neutral", letter: "?", name: null },
 };
 
