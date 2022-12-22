@@ -99,6 +99,12 @@ from_meta:
   - base: Imperial Navy Drone Damage Amplifier
   - base: Remote Tracking Computer II
   - base: Dark Blood Capacitor Power Relay
+  - base: Multispectrum Shield Hardener II
+  - base: Large Shield Booster II
+  - base: Gyrostabilizer II
+    abyssal: Abyssal Gyrostabilizer
+  - base: 800mm Repeating Cannon II
+  - base: Tracking Enhancer II
   - base: Imperial Navy Cap Recharger
   - base: Large Inductive Compact Remote Capacitor Transmitter
   - base: True Sansha Power Diagnostic System
