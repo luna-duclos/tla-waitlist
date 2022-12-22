@@ -109,13 +109,8 @@ CREATE TABLE `badge_assignment` (
 );
 
 -- Seed the database with some starting badges
-INSERT INTO badge (name) VALUES ('BASTION'), ('LOGI'), ('RETIRED-LOGI'), ('WEB');
+INSERT INTO badge (name) VALUES ('DPS'), ('ALT'), ('LOGI');;
 
---- A pilot cannot have Logi and RETIRED-LOGI at once, update our seed
-SELECT @logi_id := id FROM badge WHERE name='LOGI';
-SELECT @retired_logi_id := id FROM badge WHERE name='RETIRED-LOGI';
-UPDATE badge SET exclude_badge_id=@retired_logi_id WHERE id=@logi_id;
-UPDATE badge SET exclude_badge_id=@logi_id WHERE id=@retired_logi_id;
 
 
 CREATE TABLE `fitting` (
