@@ -1,15 +1,9 @@
 # Tags shown to all pilot (without roles)
 
 public_tags:
-  - STARTER
-  - ELITE
-  - ELITE-GOLD
-  - AMULET
-  - HYBRID
-  - WARPSPEED
   - HQ-FC
   - TRAINEE
   - LOGI
-  - RETIRED-LOGI
-  - BASTION
-  - WEB
+  - ALT
+  - DPS
+
