@@ -271,7 +271,7 @@ export function FleetRegister() {
 
   return (
     <>
-	<span>Will be automatically filled if the squad names in your fleet match.</span>
+      <span>Will be automatically filled if the squad names in your fleet match.</span>
       <CategoryMatcher
         categories={categories}
         wings={fleetInfo.wings}

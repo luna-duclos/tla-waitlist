@@ -19,7 +19,7 @@ notes:
       DPS **MAIN:** 4100 **ALT:** 3813
   - name: TLA_SHIELD_PALADIN
     description: >
-      DPS **MAIN: 3350 **ALT:** 3115
+      DPS **MAIN:** 3350 **ALT:** 3115
   - name: TLA_SHIELD_VARGUR
     description: >
       DPS **MAIN:** 3350 **ALT:** 3115
@@ -29,3 +29,9 @@ notes:
   - name: TLA_ARMOR_PALADIN
     description: >
       DPS **MAIN:** 3350 **ALT:** 3115
+  - name: TLA_SHIELD_VINDI
+    description: >
+      Few allowed in fleet
+  - name: TLA_ARMOR_VINDI
+    description: >
+      Few allowed in fleet

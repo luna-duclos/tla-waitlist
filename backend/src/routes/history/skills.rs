@@ -3,7 +3,7 @@ use rocket::serde::json::Json;
 use serde::Serialize;
 use std::collections::HashMap;
 
-use crate::tdf::skills as tdf_skills;
+use crate::tla::skills as tla_skills;
 use crate::{
     core::auth::{authorize_character, AuthenticatedAccount},
     util::madness::Madness,
@@ -37,7 +37,7 @@ async fn skill_history(
         Some("skill-history-view"),
     )
     .await?;
-    let relevance = &tdf_skills::skill_data().relevant_skills;
+    let relevance = &tla_skills::skill_data().relevant_skills;
 
     let history = sqlx::query!(
         "SELECT * FROM skill_history WHERE character_id = ? ORDER BY id DESC",
@@ -52,7 +52,7 @@ async fn skill_history(
         old_level: row.old_level as SkillLevel,
         new_level: row.new_level as SkillLevel,
         logged_at: row.logged_at,
-        name: tdf_skills::skill_data()
+        name: tla_skills::skill_data()
             .id_lookup
             .get(&row.skill_id)
             .unwrap()
@@ -62,7 +62,7 @@ async fn skill_history(
 
     Ok(Json(SkillHistoryResponse {
         history,
-        ids: &tdf_skills::skill_data().name_lookup,
+        ids: &tla_skills::skill_data().name_lookup,
     }))
 }
 

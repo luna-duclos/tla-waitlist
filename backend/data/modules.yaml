@@ -100,7 +100,8 @@ from_meta:
   - base: Remote Tracking Computer II
   - base: Dark Blood Capacitor Power Relay
   - base: Multispectrum Shield Hardener II
-  - base: Large Shield Booster II
+  - base: X-Large Shield Booster II
+    abyssal: X-Large Abyssal Shield Booster
   - base: Gyrostabilizer II
     abyssal: Abyssal Gyrostabilizer
   - base: 800mm Repeating Cannon II
@@ -165,7 +166,7 @@ accept_t1: # Meta information missing, but luckily we can just match it naively
   - Light Armor Maintenance Bot II
   - Light Hull Maintenance Bot II
   - Small Tractor Beam II
-
+  
 identification: # Modules/groups we use to look at to figure out what we're flying
   - Damage Control II
   - 1600mm Steel Plates II

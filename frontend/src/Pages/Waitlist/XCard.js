@@ -12,7 +12,7 @@ import {
   faTrashAlt,
   faCheck,
   faExternalLinkAlt,
-  faStream,
+  //faStream,
   faPlus,
   faExclamationTriangle,
   faTimes,
@@ -236,7 +236,7 @@ function ShipDisplay({ fit, onAction }) {
     );
   }
 }
-
+/*
 function SkillButton({ characterId, ship }) {
   const [onScreen, setOnScreen] = React.useState(false);
   const [chosenShip, setChosenShip] = React.useState(ship);
@@ -256,6 +256,7 @@ function SkillButton({ characterId, ship }) {
     </>
   );
 }
+*/
 
 function NoteButton({ number }) {
   const theme = React.useContext(ThemeContext);
@@ -447,9 +448,9 @@ export function XCard({ entry, fit, onAction }) {
               <FontAwesomeIcon icon={faExternalLinkAlt} />
             </a>
           )}
-          {authContext.access["skill-view"] && (
+          {/*authContext.access["skill-view"] && (
             <SkillButton characterId={fit.character.id} ship={fit.hull.name} />
-          )}
+          )*/}
           {authContext.access["pilot-view"] && (
             <PilotInformation
               characterId={fit.character.id}

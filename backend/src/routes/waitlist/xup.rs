@@ -7,7 +7,7 @@ use crate::{
     app::Application,
     core::auth::{authorize_character, AuthenticatedAccount},
     data::{implants, skills},
-    tdf,
+    tla,
     util::madness::Madness,
 };
 use eve_data_core::{Fitting, TypeID};
@@ -152,7 +152,7 @@ async fn xup_multi(
     for (character_id, (time_in_fleet, implants, skills)) in character_info.iter() {
         pilot_data.insert(
             character_id,
-            tdf::fitcheck::PilotData {
+            tla::fitcheck::PilotData {
                 implants,
                 time_in_fleet: *time_in_fleet,
                 skills,
@@ -227,7 +227,7 @@ async fn xup_multi(
         })
         .collect();
 
-        let fit_checked = tdf::fitcheck::FitChecker::check(this_pilot_data, &fit, &badges)?;
+        let fit_checked = tla::fitcheck::FitChecker::check(this_pilot_data, &fit, &badges)?;
         if let Some(error) = fit_checked.errors.into_iter().next() {
             return Err(Madness::BadRequest(error));
         }

@@ -47,7 +47,7 @@ impl Fitting {
     pub fn from_dna(dna: &str) -> Result<Fitting, FitError> {
         let mut pieces = dna.split(':');
         let hull: TypeID = pieces.next().unwrap().parse()?; // 1st elmt
-
+		
         let mut cargo = BTreeMap::new();
         let mut modules = BTreeMap::new();
 
@@ -89,7 +89,6 @@ impl Fitting {
 
             *desto.entry(type_id).or_insert(0) += count;
         }
-
         Ok(Fitting {
             hull,
             modules,

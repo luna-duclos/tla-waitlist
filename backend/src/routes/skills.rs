@@ -6,7 +6,7 @@ use serde::Serialize;
 
 use crate::{
     core::auth::{authorize_character, AuthenticatedAccount},
-    tdf::skills as tdf_skills,
+    tla::skills as tla_skills,
     util::madness::Madness,
 };
 
@@ -14,8 +14,8 @@ use crate::{
 struct SkillsResponse {
     current: HashMap<TypeID, SkillLevel>,
     ids: &'static HashMap<String, TypeID>,
-    categories: &'static tdf_skills::SkillCategories,
-    requirements: &'static tdf_skills::SkillRequirements,
+    categories: &'static tla_skills::SkillCategories,
+    requirements: &'static tla_skills::SkillRequirements,
 }
 
 #[get("/api/skills?<character_id>")]
@@ -29,15 +29,15 @@ async fn list_skills(
     let skills =
         crate::data::skills::load_skills(&app.esi_client, app.get_db(), character_id).await?;
     let mut relevant_skills = HashMap::new();
-    for &skill_id in tdf_skills::skill_data().relevant_skills.iter() {
+    for &skill_id in tla_skills::skill_data().relevant_skills.iter() {
         relevant_skills.insert(skill_id, skills.get(skill_id));
     }
 
     Ok(Json(SkillsResponse {
         current: relevant_skills,
-        ids: &tdf_skills::skill_data().name_lookup,
-        categories: &tdf_skills::skill_data().categories,
-        requirements: &tdf_skills::skill_data().requirements,
+        ids: &tla_skills::skill_data().name_lookup,
+        categories: &tla_skills::skill_data().categories,
+        requirements: &tla_skills::skill_data().requirements,
     }))
 }
 
