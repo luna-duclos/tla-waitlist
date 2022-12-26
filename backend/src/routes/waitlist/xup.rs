@@ -7,7 +7,7 @@ use crate::{
     app::Application,
     core::auth::{authorize_character, AuthenticatedAccount},
     data::{implants, skills},
-    tdf,
+    tla,
     util::madness::Madness,
 };
 use eve_data_core::{Fitting, TypeID};
@@ -25,6 +25,7 @@ struct XupRequest {
     character_id: i64,
     eft: String,
     is_alt: bool,
+	messagexup: String,
 
     #[serde(default)]
     dna: Vec<DnaXup>,
@@ -89,6 +90,7 @@ async fn xup_multi(
     waitlist_id: i64,
     xups: Vec<(i64, Fitting)>,
     is_alt: bool,
+	messagexup: &String
 ) -> Result<(), Madness> {
     // Track the "now" from the start of the operation, to keep things fair
     let now = chrono::Utc::now().timestamp();
@@ -152,7 +154,7 @@ async fn xup_multi(
     for (character_id, (time_in_fleet, implants, skills)) in character_info.iter() {
         pilot_data.insert(
             character_id,
-            tdf::fitcheck::PilotData {
+            tla::fitcheck::PilotData {
                 implants,
                 time_in_fleet: *time_in_fleet,
                 skills,
@@ -227,7 +229,7 @@ async fn xup_multi(
         })
         .collect();
 
-        let fit_checked = tdf::fitcheck::FitChecker::check(this_pilot_data, &fit, &badges)?;
+        let fit_checked = tla::fitcheck::FitChecker::check(this_pilot_data, &fit, &badges)?;
         if let Some(error) = fit_checked.errors.into_iter().next() {
             return Err(Madness::BadRequest(error));
         }
@@ -239,9 +241,9 @@ async fn xup_multi(
 
         // Add the fit to the waitlist
         sqlx::query!("
-            INSERT INTO waitlist_entry_fit (character_id, entry_id, fit_id, category, approved, tags, implant_set_id, fit_analysis, cached_time_in_fleet, is_alt)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ", character_id, entry_id, fit_id, fit_checked.category, fit_checked.approved, tags, implant_set_id, fit_analysis, this_pilot_data.time_in_fleet, is_alt)
+            INSERT INTO waitlist_entry_fit (character_id, entry_id, fit_id, category, approved, tags, implant_set_id, fit_analysis, cached_time_in_fleet, is_alt, messagexup)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+        ", character_id, entry_id, fit_id, fit_checked.category, fit_checked.approved, tags, implant_set_id, fit_analysis, this_pilot_data.time_in_fleet, is_alt, messagexup)
         .execute(&mut tx).await?;
 
         // Log the x'up
@@ -281,7 +283,7 @@ async fn xup(
         xups.push((dna_xup.character_id, fit));
     }
 
-    xup_multi(app, account, input.waitlist_id, xups, input.is_alt).await?;
+    xup_multi(app, account, input.waitlist_id, xups, input.is_alt, &input.messagexup).await?;
 
     Ok("OK")
 }

@@ -1,4 +1,4 @@
-use crate::{app::Application, data, tdf, util::madness::Madness};
+use crate::{app::Application, data, tla, util::madness::Madness};
 
 #[get("/healthz")]
 async fn health_check(app: &rocket::State<Application>) -> Result<&'static str, Madness> {
@@ -8,7 +8,7 @@ async fn health_check(app: &rocket::State<Application>) -> Result<&'static str, 
         .await?;
 
     // Statically initialized data - would panic if there's trouble
-    let _skills = tdf::skills::skill_data();
+    let _skills = tla::skills::skill_data();
     let _fits = data::fits::get_fits();
 
     // Don't check ESI.

@@ -250,6 +250,7 @@ CREATE TABLE `waitlist_entry_fit` (
   `review_comment` text,
   `cached_time_in_fleet` bigint NOT NULL,
   `is_alt` tinyint NOT NULL,
+  `messagexup` text,
   PRIMARY KEY (`id`),
   KEY `character_id` (`character_id`),
   KEY `entry_id` (`entry_id`),

@@ -18,16 +18,22 @@ fn module_info_impl(ids: &[TypeID]) -> Result<ModuleResponse, Madness> {
     let mut result = BTreeMap::new();
     for (id, typeinfo) in TypeDB::load_types(ids)? {
         if let Some(typeinfo) = typeinfo {
+			let slot = if typeinfo.category.category_name() == "_other" {
+                Some("other")
+            } else {
+                typeinfo.slot()
+            };
             result.insert(
                 id,
                 Module {
                     name: typeinfo.name.clone(),
                     category: typeinfo.category.category_name(),
-                    slot: typeinfo.slot(),
+                    slot,
                 },
             );
         }
     }
+
 
     Ok(result)
 }

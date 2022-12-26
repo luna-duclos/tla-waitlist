@@ -1,6 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap};
 
-use crate::{data::yamlhelper, tdf::skills::SkillTier};
+use crate::{data::yamlhelper, tla::skills::SkillTier};
 use eve_data_core::{Attribute, SkillLevel, TypeDB, TypeError, TypeID};
 use serde::{Deserialize, Serialize};
 
@@ -202,7 +202,7 @@ fn create_sorted_plan(
     for_hull: &str,
     requirements: &BTreeSet<LevelPair>,
 ) -> Result<Vec<LevelPair>, SkillPlanError> {
-    let hull_skills = crate::tdf::skills::skill_data()
+    let hull_skills = crate::tla::skills::skill_data()
         .requirements
         .get(for_hull)
         .expect("Surely we checked this by now?");
@@ -254,7 +254,7 @@ fn get_skill_plan(hull_name: &str, level_name: &str) -> Result<Vec<LevelPair>, S
 
     create_sorted_plan(
         hull_name,
-        &crate::tdf::skills::skill_data()
+        &crate::tla::skills::skill_data()
             .requirements
             .get(hull_name)
             .expect("Expected known ship")
