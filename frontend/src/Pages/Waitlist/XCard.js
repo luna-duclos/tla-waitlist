@@ -136,6 +136,11 @@ XCardDOM.ReviewComment = styled.div`
   border-radius: 5px;
   color: ${(props) => props.theme.colors.secondary.text};
 `;
+XCardDOM.ReviewComment.Header = styled.div`
+  border-bottom: 1px solid;
+  margin-bottom: 1em;
+  font-weight: bold;
+`;
 
 function ShipDisplay({ fit, onAction }) {
   const authContext = React.useContext(AuthContext);
@@ -343,6 +348,15 @@ function InviteButton({ fitId, fcId, onAction }) {
   );
 }
 
+function MessageStyle({ from, message }) {
+  return (
+    <>
+      <XCardDOM.ReviewComment.Header>{from}</XCardDOM.ReviewComment.Header>
+      <div>{message}</div>
+    </>
+  );
+}
+
 function PilotInformation({ characterId, authContext, id }) {
   const [notes] = useApi(
     authContext.access["notes-view"] ? `/api/notes?character_id=${characterId}` : null
@@ -425,7 +439,16 @@ export function XCard({ entry, fit, onAction }) {
       </XCardDOM.Content>
       {fit.review_comment ? (
         <XCardDOM.Content>
-          <XCardDOM.ReviewComment>{fit.review_comment}</XCardDOM.ReviewComment>
+          <XCardDOM.ReviewComment>
+            {<MessageStyle from={"FC"} message={fit.review_comment} />}
+          </XCardDOM.ReviewComment>
+        </XCardDOM.Content>
+      ) : null}
+      {fit.messagexup ? (
+        <XCardDOM.Content>
+          <XCardDOM.ReviewComment>
+            {<MessageStyle from={"Pilot"} message={fit.messagexup} />}
+          </XCardDOM.ReviewComment>
         </XCardDOM.Content>
       ) : null}
       <XCardDOM.FooterGroup>

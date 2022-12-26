@@ -56,9 +56,19 @@ Agency 'Pyrolancea' DB3 Dose I x10
 Agency 'Pyrolancea' DB5 Dose II x10
 `.trim();
 
-async function xUp({ character, eft, toastContext, waitlist_id, alt }) {
+const exampleMessage = String.raw`
+bringing 1 alt
+`.trim();
+
+async function xUp({ character, eft, toastContext, waitlist_id, alt, messagexup }) {
   await apiCall("/api/waitlist/xup", {
-    json: { eft: eft, character_id: character, waitlist_id: parseInt(waitlist_id), is_alt: alt },
+    json: {
+      eft: eft,
+      character_id: character,
+      waitlist_id: parseInt(waitlist_id),
+      is_alt: alt,
+      messagexup: messagexup,
+    },
   });
 
   addToast(toastContext, {
@@ -78,6 +88,7 @@ export function Xup() {
   const authContext = React.useContext(AuthContext);
   const queryParams = new URLSearchParams(useLocation().search);
   const [eft, setEft] = React.useState("");
+  const [messagexup, setMessagexup] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [reviewOpen, setReviewOpen] = React.useState(false);
   const [alt] = React.useState(false);
@@ -117,6 +128,15 @@ export function Xup() {
               <input type="checkbox" checked={alt} onChange={handleChange} />
               This is an ALT (I already have a character in fleet)
 		  </label>*/}
+
+            <h2>X-up mesage (optional)</h2>
+            <Textarea
+              placeholder={exampleMessage}
+              rows={1}
+              onChange={(evt) => setMessagexup(evt.target.value)}
+              value={messagexup}
+              style={{ width: "100%", marginBottom: "1em" }}
+            />
           </div>
 
           <InputGroup>
@@ -133,6 +153,7 @@ export function Xup() {
                     toastContext,
                     waitlist_id,
                     alt,
+                    messagexup,
                   }).then((evt) => setReviewOpen(true))
                 ).finally((evt) => setIsSubmitting(false));
               }}
