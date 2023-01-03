@@ -8,6 +8,7 @@ import { Cell, CellHead, Row, Table, TableBody, TableHead } from "../../Componen
 import { BorderedBox } from "../../Components/NoteBox";
 import _ from "lodash";
 import { usePageTitle } from "../../Util/title";
+import fleetcomp from "./fleetcomp.png";
 
 const marauders = ["Paladin", "Kronos"];
 const booster = ["Eos", "Damnation", "Claymore", "Vulture"];
@@ -213,15 +214,13 @@ function detectSquads({ matches, categories, wings }) {
   for (const category of categories) {
     if (!(category.id in matches)) {
       for (const wing of wings) {
-        if (wing.name.match(/on\s+grid/i)) {
-          for (const squad of wing.squads) {
-            if (
-              squad.name.toLowerCase().includes(category.name.toLowerCase()) ||
-              squad.name.toLowerCase().includes(category.id.toLowerCase())
-            ) {
-              newMatches[category.id] = [wing.id, squad.id];
-              hadChanges = true;
-            }
+        for (const squad of wing.squads) {
+          if (
+            squad.name.toLowerCase().includes(category.name.toLowerCase()) ||
+            squad.name.toLowerCase().includes(category.id.toLowerCase())
+          ) {
+            newMatches[category.id] = [wing.id, squad.id];
+            hadChanges = true;
           }
         }
       }
@@ -274,13 +273,23 @@ export function FleetRegister() {
 
   return (
     <>
-      <span>Will be automatically filled if the squad names in your fleet match.</span>
-      <CategoryMatcher
-        categories={categories}
-        wings={fleetInfo.wings}
-        value={categoryMatches}
-        onChange={setCategoryMatches}
-      />
+      <div style={{ marginBottom: "1em" }}>
+        Will be automatically filled if the squad names in your fleet match.{" "}
+      </div>
+      <div style={{ display: "flex" }}>
+        <CategoryMatcher
+          categories={categories}
+          wings={fleetInfo.wings}
+          value={categoryMatches}
+          onChange={setCategoryMatches}
+        />
+        <img
+          style={{ marginLeft: "3em" }}
+          src={fleetcomp}
+          alt="For auto filling, make sure the squad names match!"
+        />
+      </div>
+
       <Button
         variant="primary"
         onClick={(evt) =>

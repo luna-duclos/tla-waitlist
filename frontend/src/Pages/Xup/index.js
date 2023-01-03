@@ -128,8 +128,11 @@ export function Xup() {
               <input type="checkbox" checked={alt} onChange={handleChange} />
               This is an ALT (I already have a character in fleet)
 		  </label>*/}
-
-            <h2>X-up mesage (optional)</h2>
+            {messagexup.length > 100 ? (
+              <h2>X-up mesage (optional) - TOO LONG!</h2>
+            ) : (
+              <h2>X-up mesage (optional)</h2>
+            )}
             <Textarea
               placeholder={exampleMessage}
               rows={1}
@@ -157,7 +160,12 @@ export function Xup() {
                   }).then((evt) => setReviewOpen(true))
                 ).finally((evt) => setIsSubmitting(false));
               }}
-              disabled={eft.trim().length < 50 || !eft.startsWith("[") || isSubmitting}
+              disabled={
+                eft.trim().length < 50 ||
+                !eft.startsWith("[") ||
+                isSubmitting ||
+                messagexup.length > 100
+              }
             >
               X-up
             </Button>

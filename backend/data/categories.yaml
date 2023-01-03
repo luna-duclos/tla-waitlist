@@ -11,8 +11,6 @@ categories:
     name: Other  
   - id: offgrid
     name: Off Grid
-  - id: alt
-    name: Alts
 
 rules:
   # Logi

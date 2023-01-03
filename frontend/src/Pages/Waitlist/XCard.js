@@ -135,6 +135,7 @@ XCardDOM.ReviewComment = styled.div`
   background-color: ${(props) => props.theme.colors.secondary.color};
   border-radius: 5px;
   color: ${(props) => props.theme.colors.secondary.text};
+  word-break: break-word;
 `;
 XCardDOM.ReviewComment.Header = styled.div`
   border-bottom: 1px solid;

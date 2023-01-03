@@ -101,6 +101,11 @@ async fn xup_multi(
     } else if xups.len() > MAX_X_PER_ACCOUNT {
         return Err(Madness::BadRequest("Too many fits".to_string()));
     }
+	// X-up message character limit
+	if messagexup.len() > 100 {
+		return Err(Madness::BadRequest("X-up message too long!".to_string()));
+	}
+
 
     // Make sure the waitlist is actually open
     if sqlx::query!(
