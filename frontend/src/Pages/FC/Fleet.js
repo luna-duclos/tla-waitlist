@@ -8,10 +8,10 @@ import { Cell, CellHead, Row, Table, TableBody, TableHead } from "../../Componen
 import { BorderedBox } from "../../Components/NoteBox";
 import _ from "lodash";
 import { usePageTitle } from "../../Util/title";
+import fleetcomp from "./fleetcomp.png";
 
 const marauders = ["Paladin", "Kronos"];
-const logi = ["Nestor", "Guardian", "Oneiros"];
-const bad = ["Megathron", "Nightmare"];
+const booster = ["Eos", "Damnation", "Claymore", "Vulture"];
 
 async function setWaitlistOpen(waitlistId, isOpen) {
   return await apiCall("/api/waitlist/set_open", {
@@ -141,9 +141,10 @@ function FleetMembers() {
   }
   var cats = {
     Marauder: 0,
-    Logi: 0,
+    Logiarmor: 0,
+    Logishield: 0,
     Vindicator: 0,
-    "Mega/Night": 0,
+    Booster: 0,
   };
 
   var summary = {};
@@ -151,10 +152,11 @@ function FleetMembers() {
     fleetMembers.members.forEach((member) => {
       if (!summary[member.ship.name]) summary[member.ship.name] = 0;
       summary[member.ship.name]++;
+      if (booster.includes(member.ship.name)) cats["Booster"]++;
       if (marauders.includes(member.ship.name)) cats["Marauder"]++;
-      if (logi.includes(member.ship.name)) cats["Logi"]++;
       if ("Vindicator" === member.ship.name) cats["Vindicator"]++;
-      if (bad.includes(member.ship.name)) cats["Mega/Night"]++;
+      if ("Loki" === member.ship.name) cats["Logishield"]++;
+      if ("Nestor" === member.ship.name) cats["Logiarmor"]++;
     });
   }
   return (
@@ -163,9 +165,11 @@ function FleetMembers() {
       <Title>Fleet composition</Title>
       <InputGroup>
         <BorderedBox>Marauders: {cats["Marauder"]} </BorderedBox>
-        <BorderedBox>Logistics: {cats["Logi"]} </BorderedBox>
+        <BorderedBox>
+          Logistics (N/L): {cats["Logiarmor"]}/{cats["Logishield"]}{" "}
+        </BorderedBox>
         <BorderedBox>Vindicators: {cats["Vindicator"]} </BorderedBox>
-        <BorderedBox>Megathron/Nightmare: {cats["Mega/Night"]} </BorderedBox>
+        <BorderedBox>Boosters: {cats["Booster"]} </BorderedBox>
       </InputGroup>
       <Table>
         <TableHead>
@@ -210,15 +214,13 @@ function detectSquads({ matches, categories, wings }) {
   for (const category of categories) {
     if (!(category.id in matches)) {
       for (const wing of wings) {
-        if (wing.name.match(/on\s+grid/i)) {
-          for (const squad of wing.squads) {
-            if (
-              squad.name.toLowerCase().includes(category.name.toLowerCase()) ||
-              squad.name.toLowerCase().includes(category.id.toLowerCase())
-            ) {
-              newMatches[category.id] = [wing.id, squad.id];
-              hadChanges = true;
-            }
+        for (const squad of wing.squads) {
+          if (
+            squad.name.toLowerCase().includes(category.name.toLowerCase()) ||
+            squad.name.toLowerCase().includes(category.id.toLowerCase())
+          ) {
+            newMatches[category.id] = [wing.id, squad.id];
+            hadChanges = true;
           }
         }
       }
@@ -271,13 +273,23 @@ export function FleetRegister() {
 
   return (
     <>
-      <span>Will be automatically filled if the squad names in your fleet match.</span>
-      <CategoryMatcher
-        categories={categories}
-        wings={fleetInfo.wings}
-        value={categoryMatches}
-        onChange={setCategoryMatches}
-      />
+      <div style={{ marginBottom: "1em" }}>
+        Will be automatically filled if the squad names in your fleet match.{" "}
+      </div>
+      <div style={{ display: "flex" }}>
+        <CategoryMatcher
+          categories={categories}
+          wings={fleetInfo.wings}
+          value={categoryMatches}
+          onChange={setCategoryMatches}
+        />
+        <img
+          style={{ marginLeft: "3em" }}
+          src={fleetcomp}
+          alt="For auto filling, make sure the squad names match!"
+        />
+      </div>
+
       <Button
         variant="primary"
         onClick={(evt) =>
