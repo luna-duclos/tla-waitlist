@@ -5,19 +5,14 @@
 ## Things you need access to:
 
 - Full waitlist site access _(ACL permission)_
-- TDF-FCs _(In game channel)_
-- tdf-backseat-report _(Mailing list)_
-- FC-chat on discord _(FC roles for discord)_
-- TDF PILOTS _(Mailing list)_
-- TDF FC _(Mailing list)_
-- TDF-Official motd _(rights to edit motd)_
+- TLA FC _(In game channel)_
+- FC chat on discord _(FC roles for discord)_
+- TLA Incrusions MOTD _(rights to edit motd)_
 
 ## Usefull links
 
-- [FC training guidelines](https://docs.google.com/document/d/1C2ORQsVMFmiyYCPaFMOZ0ZskeRNlpYy4oLu9Z65XMcs/edit)
-- [Van fleet brief](https://docs.google.com/document/d/1jweH42wDMwT2vn4JAcyBEJ5UIOOxRVcTMiQas7mq7X0/edit)
-- [Upgrade hours calculator](https://docs.google.com/spreadsheets/d/1DtKVRmad5DVM9EmCC46LOARRJw0pIjjHUNbr0nizZu8/edit?usp=sharing)
-- [Rep diminishing tests](https://www.dropbox.com/s/pv80oowbtr3o9xp/Rep%20dimishing.xlsx?dl=0)
+- [TLA Site](https://www.tlaincursions.com/)
+- [dscan tool](https://adashboard.info/intel)
 
 ## Rules
 
