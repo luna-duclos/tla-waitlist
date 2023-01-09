@@ -31,6 +31,7 @@ alternatives:
   - - - Centum A-Type Medium Remote Armor Repairer
     - - Large Remote Armor Repairer II
     - - "'Peace' Large Remote Armor Repairer"
+    - - Large Ancillary Remote Armor Repairer
 
   - - - Tachyon Modulated Energy Beam I
       - True Sansha Mega Pulse Laser
@@ -86,6 +87,11 @@ alternatives:
     - - Imperial Navy 1600mm Steel Plates
     - - Large Abyssal Armor Plates
 
+  - - - Thukker Large Shield Extender
+    - - Republic Fleet Large Shield Extender
+    - - Caldari Navy Large Shield Extender
+      - Large Abyssal Shield Extender
+
 from_meta:
   # Automagically determine alternatives
   # Base is the lowest allowed meta level alternative module
@@ -115,6 +121,7 @@ from_meta:
     abyssal: 10MN Abyssal Afterburner
   - base: Federation Navy Stasis Webifier
     abyssal: Abyssal Stasis Webifier
+    alternative: Large Micro Jump Drive
   - base: True Sansha Heat Sink
     abyssal: Abyssal Heat Sink
   - base: Federation Navy Magnetic Field Stabilizer
