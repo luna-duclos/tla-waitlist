@@ -31,6 +31,7 @@ alternatives:
   - - - Centum A-Type Medium Remote Armor Repairer
     - - Large Remote Armor Repairer II
     - - "'Peace' Large Remote Armor Repairer"
+      - Large Ancillary Remote Armor Repairer
 
   - - - Tachyon Modulated Energy Beam I
       - True Sansha Mega Pulse Laser
@@ -94,12 +95,13 @@ from_meta:
   # Optional alternative module can be added (does not add all meta's of that alternative)
   - base: Sensor Booster II
   - base: Tracking Computer II
-    alternative: Large Micro Jump Drive
   - base: Supratidal Entropic Disintegrator II
   - base: Imperial Navy Drone Damage Amplifier
   - base: Remote Tracking Computer II
   - base: Dark Blood Capacitor Power Relay
   - base: Multispectrum Shield Hardener II
+  - base: Large Shield Extender II
+    abyssal: Large Abyssal Shield Extender
   - base: X-Large Shield Booster II
     abyssal: X-Large Abyssal Shield Booster
   - base: Gyrostabilizer II
@@ -115,6 +117,7 @@ from_meta:
     abyssal: 10MN Abyssal Afterburner
   - base: Federation Navy Stasis Webifier
     abyssal: Abyssal Stasis Webifier
+    alternative: Large Micro Jump Drive
   - base: True Sansha Heat Sink
     abyssal: Abyssal Heat Sink
   - base: Federation Navy Magnetic Field Stabilizer
