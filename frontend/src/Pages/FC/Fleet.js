@@ -10,7 +10,7 @@ import _ from "lodash";
 import { usePageTitle } from "../../Util/title";
 import fleetcomp from "./fleetcomp.png";
 
-const marauders = ["Paladin", "Kronos"];
+const marauders = ["Paladin", "Kronos", "Golem", "Vargur"];
 const booster = ["Eos", "Damnation", "Claymore", "Vulture"];
 
 async function setWaitlistOpen(waitlistId, isOpen) {

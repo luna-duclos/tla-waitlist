@@ -11,18 +11,11 @@ import { faDiscord, faTeamspeak } from "@fortawesome/free-brands-svg-icons";
 import { NavLinks, MobileNavButton, MobileNav } from "./Navigation";
 
 const NavBar = styled.div`
-  /* existing styles */
-
-  background: linear-gradient(
-    to right,
-    ${(props) => props.theme.colors.primary},
-    ${(props) => props.theme.colors.secondary}
-  );
-  border-radius: 5px;
-  transition: background-color 0.2s ease-in-out;
-  &:hover {
-    background-color: ${(props) => props.theme.colors.primaryDark};
-  }
+  background-color: ${(props) => props.theme.colors.accent1};
+  border-radius: 0 0 5px 5px;
+  margin-bottom: 2em;
+  padding: 0.5em;
+  
 `;
 
 NavBar.Header = styled.div`
