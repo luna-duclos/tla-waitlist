@@ -1,6 +1,7 @@
 import React from "react";
 import { AuthContext, ToastContext, EventContext } from "../../contexts";
 import { apiCall, errorToaster, useApi } from "../../api";
+import styled from "styled-components";
 import { InputGroup, Button, Buttons, AButton } from "../../Components/Form";
 import {
   ColumnWaitlist,
@@ -19,6 +20,9 @@ import { usePageTitle } from "../../Util/title";
 import { Xup } from "../Xup";
 import { Modal } from "../../Components/Modal";
 import { Box } from "../../Components/Box";
+const FixedBox = styled.div`
+  width: 100%;
+`;
 
 function coalesceCalls(func, wait) {
   var nextCall = null;
@@ -178,10 +182,12 @@ export function Waitlist() {
       <Buttons>
         <InputGroup>
           {xupOpen ? (
-            <Modal open={true} setOpen={setXupOpen}>
-			<Box>
-			<Xup />
-              </Box>
+            <Modal open={true} setOpen={setXupOpen} fill={true}>
+              <FixedBox>
+                <Box>
+                  <Xup />
+                </Box>
+              </FixedBox>
             </Modal>
           ) : null}
           <AButton variant={myEntry ? null : "primary"} onClick={(evt) => setXupOpen(true)}>

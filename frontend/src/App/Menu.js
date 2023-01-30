@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../contexts";
 import banner from "./banner.png";
@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord, faTeamspeak } from "@fortawesome/free-brands-svg-icons";
 import { NavLinks, MobileNavButton, MobileNav } from "./Navigation";
 
-
 const Tlaimage = styled.div`
   background-image: url(${banner});
   background-size: 100% auto;
@@ -21,7 +20,7 @@ const Tlaimage = styled.div`
   transition: border-radius 0.1s ease-in-out;
   @media (max-width: 700px) {
 	  background-size: auto 100%;
-	  border-radius: ${(props) => (props.mobileopen && "unset")};
+	  border-radius: ${(props) => props.mobileopen && "unset"};
 	  
     
   }
@@ -41,11 +40,8 @@ const MyProfile = styled(NavLink).attrs((props) => ({
 `;
 
 const NavBar = styled.div`
-	margin-bottom: 2em;
-  
+  margin-bottom: 2em;
 `;
-
-
 
 NavBar.LogoLink = styled(NavLink).attrs((props) => ({
   activeClassName: "active",
@@ -128,10 +124,17 @@ const Teamspeak = () => {
 
 export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }) {
   const [isOpenMobileView, setOpenMobileView] = React.useState(false);
+  const [width, setWidth] = useState(window.innerWidth);
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <AuthContext.Consumer>
       {(whoami) => (
-        <NavBar><Tlaimage mobileopen={isOpenMobileView}>
+        <NavBar>
+          <Tlaimage mobileopen={isOpenMobileView}>
             <NavBar.Menu>
               <NavBar.Main>
                 <NavLinks whoami={whoami} />
@@ -170,8 +173,11 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                     </NavBar.Name>
                   </>
                 )}
+
                 <InputGroup fixed>
-				<MobileNavButton isOpen={isOpenMobileView} setIsOpen={setOpenMobileView} />
+                  {width < 481 && (
+                    <MobileNavButton isOpen={isOpenMobileView} setIsOpen={setOpenMobileView} />
+                  )}
                   <Teamspeak />
                   <AButtonAlt title="Discord" href="https://discord.gg/MR3nA9BD9K">
                     <FontAwesomeIcon icon={faDiscord} />
@@ -194,11 +200,10 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                   )}
                 </InputGroup>
               </NavBar.End>
-              
             </NavBar.Menu>
-          
-        </Tlaimage>
-		<MobileNav isOpen={isOpenMobileView} whoami={whoami} /></NavBar>
+          </Tlaimage>
+          <MobileNav isOpen={isOpenMobileView} whoami={whoami} />
+        </NavBar>
       )}
     </AuthContext.Consumer>
   );

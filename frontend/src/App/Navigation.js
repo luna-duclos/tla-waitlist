@@ -22,7 +22,7 @@ const Links = styled(NavLink).attrs((props) => ({
     text-shadow: 0px 0px 10px white;
   }
   @media (max-width: 480px) {
-	padding: 1em;
+    padding: 1em;
     &.active {
       background-color: ${(props) => props.theme.colors.accent2};
       border-radius: 4px;
@@ -84,6 +84,9 @@ export function MobileNavButton({ isOpen, setIsOpen }) {
 export function NavLinks({ whoami }) {
   return (
     <>
+      <Links exact to="/home">
+        Home
+      </Links>
       {whoami && (
         <>
           <Links exact to="/waitlist">
@@ -91,9 +94,9 @@ export function NavLinks({ whoami }) {
           </Links>
         </>
       )}
-      {/*<Links exact to="/guide">
+      <Links exact to="/guide">
         Guides
-      </Links>*/}
+      </Links>
       <Links exact to="/fits">
         Fits
       </Links>

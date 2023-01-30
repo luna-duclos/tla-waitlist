@@ -120,15 +120,15 @@ export function Xup() {
               <input type="checkbox" checked={alt} onChange={handleChange} />
               This is an ALT (I already have a character in fleet)
 		  </label>*/}
-<h2>X-up mesage (optional)</h2>
+            <h2>X-up message (optional)</h2>
             <Textarea
               placeholder={exampleMessage}
               rows={1}
               onChange={(evt) => setMessagexup(evt.target.value)}
               value={messagexup}
-              style={{ width: "100%"}}
+              style={{ width: "100%" }}
             />
-			Characters left: {messagexup.length < 101 ? 100-messagexup.length : "Too long" }
+            Characters left: {messagexup.length < 101 ? 100 - messagexup.length : "Too long"}
           </div>
           <InputGroup>
             <Button static>{authContext.current.name}</Button>

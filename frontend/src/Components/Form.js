@@ -68,6 +68,7 @@ export const MobileButton = styled.button.attrs((props) => ({
   &:hover:not(:disabled):not(.static) {
     background-color: #000000a3;
   }
+  color: #cccccc !important;
 `;
 
 export const AButton = styled.a.attrs((props) => ({
@@ -132,7 +133,7 @@ export const NavButtonAlt = styled(NavLink).attrs((props) => ({
   color: #cccccc !important;
 
   &:hover:not(:disabled):not(.static) {
-    background-color: #f9f9f921;  
+    background-color: #f9f9f921;
   }
 `;
 

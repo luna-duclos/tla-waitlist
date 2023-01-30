@@ -6,22 +6,7 @@ import { ToastContext } from "../../contexts";
 import { BadgeData } from "./Badges";
 import { errorToaster } from "../../api";
 import { Markdown } from "../../Components/Markdown";
-import { Card, CardArray, CardMargin } from "../../Components/Card";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAnchor,
-  faBinoculars,
-  faFistRaised,
-  faGraduationCap,
-  faHeart,
-  faIdBadge,
-  faBook,
-  faInfo,
-  faLevelUpAlt,
-  faSignInAlt,
-  faUserGraduate,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
+import { CardMargin } from "../../Components/Card";
 import { replaceTitle, parseMarkdownTitle, usePageTitle } from "../../Util/title";
 
 const guideData = {};
@@ -33,6 +18,58 @@ importAll(require.context("./guides", true, /\.(md|jpg|png)$/));
 const GuideContent = styled(Content)`
   max-width: 800px;
 `;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 150px;
+  background-color: ${(props) => props.theme.colors.accent1};
+  border-radius: 5px;
+  cursor: pointer;
+  &:hover {
+    border: solid 1px ${(props) => props.theme.colors.accent2};
+  }
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+`;
+
+const Image = styled.img`
+  height: 40px;
+  margin-bottom: 5px;
+`;
+
+const Text = styled.span`
+  font-size: 20px;
+`;
+
+const Subtitle = styled.span`
+  font-size: 14px;
+  color: gray;
+`;
+
+const GuideArray = styled.div`
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  border-top: 2px solid;
+  padding-top: 5em;
+  border-color: ${(props) => props.theme.colors.accent2};
+`;
+const DivButton = ({ imageSrc, slug, title, subtitle }) => (
+  <CardMargin>
+    <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to={`${slug}`}>
+      <ButtonContainer>
+        <Image src={imageSrc} />
+        <Text>{title}</Text>
+        <Subtitle>{subtitle}</Subtitle>
+      </ButtonContainer>
+    </NavLink>
+  </CardMargin>
+);
 
 export function Guide() {
   const toastContext = React.useContext(ToastContext);
@@ -90,7 +127,7 @@ export function Guide() {
     </GuideContent>
   );
 }
-
+/*
 function GuideCard({ icon, slug, name, children }) {
   return (
     <CardMargin>
@@ -107,55 +144,27 @@ function GuideCard({ icon, slug, name, children }) {
       </NavLink>
     </CardMargin>
   );
-}
+}*/
 
 export function GuideIndex() {
   usePageTitle("Guides");
   return (
     <>
-      <PageTitle>Guides</PageTitle>
-      <CardArray>
-        <GuideCard slug="/guide/newbro" name="New-Bro guide" icon={faGraduationCap}>
-          Haven&apos;t flown with TDF yet? Read this first!
-        </GuideCard>
-        <GuideCard slug="/guide/xup" name="First Fleet guide" icon={faSignInAlt}>
-          What to do before joining your first fleet, how to join your first fleet, and how not to
-          die during your first fleet.
-        </GuideCard>
-        <GuideCard slug="/guide/anchoring" name="Anchoring" icon={faAnchor}>
-          Where should you park your ship?
-        </GuideCard>
-        <GuideCard slug="/guide/roles" name="Roles" icon={faUsers}>
-          What is my purpose? Learn the roles here.
-        </GuideCard>
-        <GuideCard slug="/guide/upgrade" name="Upgrading" icon={faLevelUpAlt}>
-          TDF expects you to upgrade. What is the policy and the recommended way to do it?
-        </GuideCard>
-        <GuideCard slug="/skills/plans" name="Skill Plans" icon={faBook}>
-          Skill plans for anyone with doubts what to skill first.
-        </GuideCard>
-        <GuideCard slug="/guide/logi" name="Logistics guide" icon={faHeart}>
-          Logistics are in charge of keeping the fleet alive. How do we do this?
-        </GuideCard>
-        <GuideCard slug="/guide/bastion" name="Using Bastion" icon={faFistRaised}>
-          The Bastion Module offers a great damage increase, but it has to be used safely. Learn
-          how!
-        </GuideCard>
-        <GuideCard slug="/badges" name="Information about badges" icon={faIdBadge}>
-          What are all these badges I see?
-        </GuideCard>
-        <GuideCard slug="/guide/tips" name="General tips" icon={faInfo}>
-          Contains advice on item variants, implants, remaps, accelerators, abyssals and usefull
-          links.
-        </GuideCard>
-        <GuideCard slug="/guide/scouting" name="Scouting guide" icon={faBinoculars}>
-          Scouts give the FC information on what&apos;s happening elsewhere. Learn how to perform
-          this role!
-        </GuideCard>
-        <GuideCard slug="/guide/fctraining" name="Becoming an FC" icon={faUserGraduate}>
-          Do you want to join the TDF team?
-        </GuideCard>
-      </CardArray>
+      <PageTitle style={{ marginLeft: "40%", marginBottom: "1em" }}>Guides</PageTitle>
+      <GuideArray style={{ justifyContent: "space-around" }}>
+        <DivButton
+          imageSrc="https://images.evetech.net/types/14268/icon"
+          title="DDD Guide"
+          subtitle="get GUD & Read"
+          slug="guide/ddd"
+        />
+        <DivButton
+          imageSrc="https://images.evetech.net/types/33400/icon"
+          title="Marauder Guide"
+          subtitle="Count to 2 and you gucci"
+          slug="guide/marauder"
+        />
+      </GuideArray>
     </>
   );
 }

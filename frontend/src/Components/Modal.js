@@ -33,9 +33,18 @@ ModalDom.Content = styled.div`
     min-height: 200px;
     max-width: 1300px;
   }
+  width: ${(props) => props.fill && "70%"};
+
+  ${(props) =>
+    props.fill &&
+    `
+  @media (max-width: 900px) {
+    width: 100%;
+  }
+`}
 `;
 
-export function Modal({ children, open = false, setOpen }) {
+export function Modal({ children, open = false, setOpen, fill = false }) {
   React.useEffect(() => {
     const handler = (evt) => {
       if (evt.key === "Escape") {
@@ -50,7 +59,7 @@ export function Modal({ children, open = false, setOpen }) {
   return ReactDOM.createPortal(
     <ModalDom open={open}>
       <ModalDom.Background onClick={(evt) => setOpen(false)}></ModalDom.Background>
-      <ModalDom.Content>{children}</ModalDom.Content>
+      <ModalDom.Content fill={fill}>{children}</ModalDom.Content>
     </ModalDom>,
     document.body
   );
