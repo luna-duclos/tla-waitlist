@@ -10,16 +10,16 @@ const Links = styled(NavLink).attrs((props) => ({
   activeClassName: "active",
 }))`
   padding: 0 1em;
-  color: #ababab;
+  color: #bbb;
   text-decoration: none;
-
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
   &:hover {
     color: #cccccc;
     border-radius: 2px;
   }
   &.active {
     color: #eeeeee;
-    text-shadow: 0px 0px 10px white;
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
   }
   @media (max-width: 480px) {
     padding: 1em;
