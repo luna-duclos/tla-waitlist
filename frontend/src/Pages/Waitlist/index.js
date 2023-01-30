@@ -182,7 +182,7 @@ export function Waitlist() {
       <Buttons>
         <InputGroup>
           {xupOpen ? (
-            <Modal open={true} setOpen={setXupOpen} fill={true}>
+            <Modal open={true} setOpen={setXupOpen} fill={"true"}>
               <FixedBox>
                 <Box>
                   <Xup />

@@ -50,13 +50,10 @@ const AuthenticatedRoute = ({ component, loginRequired = false, access = null })
 export function Routes() {
   return (
     <Switch>
-      <Route exact path="/">
-        {<AuthenticatedRoute component={<Waitlist />} loginRequired />}
-      </Route>
       <Route exact path="/fits">
         <Fits />
       </Route>
-      <Route exact path="/home">
+      <Route exact path="/">
         <Home />
       </Route>
       <Route exact path="/isk-h">

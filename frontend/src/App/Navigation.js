@@ -84,7 +84,7 @@ export function MobileNavButton({ isOpen, setIsOpen }) {
 export function NavLinks({ whoami }) {
   return (
     <>
-      <Links exact to="/home">
+      <Links exact to="/">
         Home
       </Links>
       {whoami && (

@@ -21,7 +21,6 @@ const CenteredParagraph = styled.div`
   align-items: center;
   text-align: center;
   width: 100%;
-  
 `;
 CenteredParagraph.Head = styled.h3`
   font-weight: bold;
@@ -47,7 +46,6 @@ CenteredParagraph.paragraphALT = styled.div`
     display: block;
   }
   border-color: ${(props) => props.theme.colors.accent2};
-  
 `;
 
 const ThreeColumn = styled.div`
@@ -57,7 +55,6 @@ const ThreeColumn = styled.div`
     flex-wrap: wrap;
   }
 `;
-
 
 export function Home() {
   return (

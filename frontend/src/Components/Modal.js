@@ -44,7 +44,7 @@ ModalDom.Content = styled.div`
 `}
 `;
 
-export function Modal({ children, open = false, setOpen, fill = false }) {
+export function Modal({ children, open = false, setOpen, fill }) {
   React.useEffect(() => {
     const handler = (evt) => {
       if (evt.key === "Escape") {
