@@ -4,7 +4,7 @@ import { EventContext } from "../../contexts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faBellSlash } from "@fortawesome/free-solid-svg-icons";
 import { Modal } from "../Modal";
-import { Button } from "../Form";
+import { Button, AButtonAlt } from "../Form";
 import { Box } from "../Box";
 import iconFile from "./notification-icon.png";
 import soundFile from "./bell-ringing-04.mp3";
@@ -112,7 +112,7 @@ export function EventNotifier() {
           </audio>
         </Box>
       </Modal>
-      <Button
+      <AButtonAlt
         onClick={(evt) => setModalOpen(true)}
         title={
           settings.enableSound
@@ -121,7 +121,7 @@ export function EventNotifier() {
         }
       >
         <FontAwesomeIcon fixedWidth icon={settings.enableSound ? faBell : faBellSlash} />
-      </Button>
+      </AButtonAlt>
     </>
   );
 }

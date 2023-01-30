@@ -10,50 +10,42 @@ import _ from "lodash";
 import { Box } from "../../Components/Box";
 import { Modal } from "../../Components/Modal";
 
-import howToX from "./howtox.png";
 import { usePageTitle } from "../../Util/title";
 
 const exampleFit = String.raw`
-[Vindicator, Vindicator]
-Shadow Serpentis Damage Control
-Centum A-Type Multispectrum Energized Membrane
-Centum A-Type Multispectrum Energized Membrane
-Federation Navy Magnetic Field Stabilizer
-Federation Navy Magnetic Field Stabilizer
-Federation Navy Magnetic Field Stabilizer
-Federation Navy Magnetic Field Stabilizer
+[Paladin, Paladin]
+Mega Pulse Laser II
+Mega Pulse Laser II
+Mega Pulse Laser II
+Mega Pulse Laser II
+Small Tractor Beam I
+Large Remote Armor Repairer II
+Imperial Navy Large Remote Capacitor Transmitter
+Bastion Module I
 
-Core X-Type 500MN Microwarpdrive
-Federation Navy Stasis Webifier
-Federation Navy Stasis Webifier
-Federation Navy Stasis Webifier
 Large Micro Jump Drive
+Federation Navy Tracking Computer
+Federation Navy Tracking Computer
+Gist X-Type 500MN Microwarpdrive
 
-Neutron Blaster Cannon II
-Neutron Blaster Cannon II
-Neutron Blaster Cannon II
-Neutron Blaster Cannon II
-Neutron Blaster Cannon II
-Neutron Blaster Cannon II
-Neutron Blaster Cannon II
-Neutron Blaster Cannon II
+Imperial Navy Heat Sink
+Imperial Navy Heat Sink
+Imperial Navy Heat Sink
+Imperial Navy Heat Sink
+Centum A-Type Multispectrum Energized Membrane
+Centum A-Type Multispectrum Energized Membrane
+Imperial Navy 1600mm Steel Plates
 
-Large Hybrid Locus Coordinator II
-Large Explosive Armor Reinforcer II
-Large Hyperspatial Velocity Optimizer II
+Large Trimark Armor Pump II
+Large Energy Burst Aerator II
 
 
 
-'Augmented' Ogre x5
-
-Null L x10000
-Nanite Repair Paste x2000
-Void L x20000
-Agency 'Pyrolancea' DB7 Dose III x1
-Standard Drop Booster x10
-Quafe Zero Classic x1
-Agency 'Pyrolancea' DB3 Dose I x10
-Agency 'Pyrolancea' DB5 Dose II x10
+Conflagration L x40
+Scorch L x40
+Blood Radio L x20
+Optimal Range Script x2
+Tracking Speed Script x2
 `.trim();
 
 const exampleMessage = String.raw`
@@ -123,25 +115,21 @@ export function Xup() {
             value={eft}
             style={{ width: "100%", marginBottom: "1em" }}
           />
-          <div>
+          <div style={{ marginBottom: "1em" }}>
             {/*<label>
               <input type="checkbox" checked={alt} onChange={handleChange} />
               This is an ALT (I already have a character in fleet)
 		  </label>*/}
-            {messagexup.length > 100 ? (
-              <h2>X-up mesage (optional) - TOO LONG!</h2>
-            ) : (
-              <h2>X-up mesage (optional)</h2>
-            )}
+<h2>X-up mesage (optional)</h2>
             <Textarea
               placeholder={exampleMessage}
               rows={1}
               onChange={(evt) => setMessagexup(evt.target.value)}
               value={messagexup}
-              style={{ width: "100%", marginBottom: "1em" }}
+              style={{ width: "100%"}}
             />
+			Characters left: {messagexup.length < 101 ? 100-messagexup.length : "Too long" }
           </div>
-
           <InputGroup>
             <Button static>{authContext.current.name}</Button>
             <Button
@@ -170,12 +158,6 @@ export function Xup() {
               X-up
             </Button>
           </InputGroup>
-
-          <h2>How to X up?</h2>
-          <img
-            src={howToX}
-            alt="On the bottom left of the Fitting window you will find a copy button"
-          />
         </Content>
         <Box style={{ flex: 1 }}>
           {implants ? (

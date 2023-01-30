@@ -1,7 +1,7 @@
 import React from "react";
 import { AuthContext, ToastContext, EventContext } from "../../contexts";
 import { apiCall, errorToaster, useApi } from "../../api";
-import { InputGroup, Button, Buttons, NavButton } from "../../Components/Form";
+import { InputGroup, Button, Buttons, AButton } from "../../Components/Form";
 import {
   ColumnWaitlist,
   CompactWaitlist,
@@ -16,6 +16,9 @@ import {
 import _ from "lodash";
 import { useQuery } from "../../Util/query";
 import { usePageTitle } from "../../Util/title";
+import { Xup } from "../Xup";
+import { Modal } from "../../Components/Modal";
+import { Box } from "../../Components/Box";
 
 function coalesceCalls(func, wait) {
   var nextCall = null;
@@ -125,6 +128,7 @@ export function Waitlist() {
       ? window.localStorage.getItem("AltColumn") === "true"
       : false
   );
+  const [xupOpen, setXupOpen] = React.useState(false);
   const waitlistId = parseInt(query.wl);
   const [waitlistData, refreshWaitlist] = useWaitlist(waitlistId);
   const fleetComposition = useFleetComposition();
@@ -173,9 +177,17 @@ export function Waitlist() {
     <>
       <Buttons>
         <InputGroup>
-          <NavButton variant={myEntry ? null : "primary"} to={`/xup?wl=${waitlistId}`}>
+          {xupOpen ? (
+            <Modal open={true} setOpen={setXupOpen}>
+			<Box>
+			<Xup />
+              </Box>
+            </Modal>
+          ) : null}
+          <AButton variant={myEntry ? null : "primary"} onClick={(evt) => setXupOpen(true)}>
             {myEntry ? "Update fit(s)" : "Join waitlist"}
-          </NavButton>
+          </AButton>
+
           <Button
             variant={myEntry ? "danger" : null}
             onClick={(evt) => errorToaster(toastContext, removeEntry(myEntry.id))}

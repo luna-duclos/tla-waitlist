@@ -24,7 +24,7 @@ FC has the final say on what is allowed into the fleet, however the FC should tr
 1 DDD: Vindi
 35 DPS: Marauders
 
-*Fleets can be run with 2 Nestor - 1 Loki provided sufficient precautions are taken (e.g., killing yulais in TCRC, having a shield booster on grid, etc.). The FC is responsible for any losses running the lower logi comp.
+\*Fleets can be run with 2 Nestor - 1 Loki provided sufficient precautions are taken (e.g., killing yulais in TCRC, having a shield booster on grid, etc.). The FC is responsible for any losses running the lower logi comp.
 
 ## Loss mails
 
@@ -39,3 +39,4 @@ Killmail:
 Situation:
 
 Recommendation:
+```
