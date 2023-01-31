@@ -3,7 +3,9 @@ import { Box } from "../../Components/Box";
 import { Modal } from "../../Components/Modal";
 import { Title, Content } from "../../Components/Page";
 import styled from "styled-components";
+
 //import { ImplantOut } from "../Fits/FittingSortDisplay";
+import { AButton } from "../../Components/Form";
 //import { NavButton, InputGroup } from "../../Components/Form";
 //import { InfoNote } from "../../Components/NoteBox";
 
@@ -59,18 +61,29 @@ function BadgeButton({ name, icon, children }) {
 
 export function BadgeData() {
   usePageTitle("Badges");
+  const [exampleOpen, setExampleOpen] = React.useState(false);
   return (
     <>
+      {exampleOpen ? (
+        <Modal open={true} setOpen={setExampleOpen}>
+          <Box style={{ width: "100%" }}>
+            <img
+              src={BadgeImages["./examplediscord.png"]}
+              alt={"examplediscord"}
+              style={{ width: "100%" }}
+            />
+          </Box>
+        </Modal>
+      ) : null}
       <Content style={{ marginBottom: "2em" }}>
         <h1>Badges</h1>
-        <h2>What are badges for?</h2>
         <p>
           {" "}
-          BLABLABLA BLABLABLABLABLABLA BLABLABLABLABLABLABLABLABLA BLABLABLABLABLABLA BLABLABLA
-          BLABLABLABLABLABLA BLABLABLA
+          To get the T or A badge, DM an FC on Discord with a screenshot for proof.
+          <AButton onClick={(evt) => setExampleOpen(true)} style={{ marginLeft: "0.5em" }}>
+            Example
+          </AButton>
         </p>
-
-        <p>BLABLABLA</p>
         <Title>Pilot Badge</Title>
         <BadgeDisplay>
           <BadgeButton name="DPS" icon={"DPS"}>
