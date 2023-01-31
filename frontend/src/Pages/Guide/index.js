@@ -161,7 +161,7 @@ export function GuideIndex() {
           subtitle="get GUD & Read"
           slug="guide/ddd"
         />
-        <DivButton title="Badges" subtitle="Showing u GUD" slug="badges">
+        <DivButton title="Badges" subtitle="Showing off u GUD" slug="badges">
           <BadgeIcon type={"DPS"} height={"30px"} />
           <BadgeIcon type={"LOGI"} height={"30px"} />
           <BadgeIcon type={"ALT"} height={"30px"} />
