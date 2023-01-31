@@ -8,6 +8,7 @@ import { errorToaster } from "../../api";
 import { Markdown } from "../../Components/Markdown";
 import { CardMargin } from "../../Components/Card";
 import { replaceTitle, parseMarkdownTitle, usePageTitle } from "../../Util/title";
+import BadgeIcon from "../../Components/Badge";
 
 const guideData = {};
 function importAll(r) {
@@ -24,7 +25,6 @@ const ButtonContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: 150px;
   background-color: ${(props) => props.theme.colors.accent1};
   border-radius: 5px;
@@ -59,11 +59,14 @@ const GuideArray = styled.div`
   padding-top: 5em;
   border-color: ${(props) => props.theme.colors.accent2};
 `;
-const DivButton = ({ imageSrc, slug, title, subtitle }) => (
+const DivButton = ({ imageSrc, slug, title, subtitle, children }) => (
   <CardMargin>
     <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to={`${slug}`}>
       <ButtonContainer>
-        <Image src={imageSrc} />
+        <div style={{ display: "flex", height: "40px" }}>
+          {children}
+          {imageSrc && <Image src={imageSrc} />}
+        </div>
         <Text>{title}</Text>
         <Subtitle>{subtitle}</Subtitle>
       </ButtonContainer>
@@ -158,6 +161,11 @@ export function GuideIndex() {
           subtitle="get GUD & Read"
           slug="guide/ddd"
         />
+        <DivButton title="Badges" subtitle="Showing u GUD" slug="badges">
+          <BadgeIcon type={"DPS"} height={"30px"} />
+          <BadgeIcon type={"LOGI"} height={"30px"} />
+          <BadgeIcon type={"ALT"} height={"30px"} />
+        </DivButton>
         <DivButton
           imageSrc="https://images.evetech.net/types/33400/icon"
           title="Marauder Guide"
