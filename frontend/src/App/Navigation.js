@@ -9,18 +9,20 @@ import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 const Links = styled(NavLink).attrs((props) => ({
   activeClassName: "active",
 }))`
-  padding: 1em;
-  color: ${(props) => props.theme.colors.accent4};
+  padding: 0 1em;
+  color: #bbb;
   text-decoration: none;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
   &:hover {
-    color: ${(props) => props.theme.colors.text};
-    background-color: ${(props) => props.theme.colors.accent1};
+    color: #cccccc;
     border-radius: 2px;
   }
   &.active {
-    color: ${(props) => props.theme.colors.active};
+    color: #eeeeee;
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
   }
   @media (max-width: 480px) {
+    padding: 1em;
     &.active {
       background-color: ${(props) => props.theme.colors.accent2};
       border-radius: 4px;
@@ -43,8 +45,8 @@ const Content = styled.div`
   opacity: ${(props) => (props.open ? "1" : "0")};
   height: ${(props) => (props.open ? "100%" : "0")};
   transition: all 0.3s;
-  background-color: ${(props) => props.theme.colors.accent1};
-  border-radius: 5px;
+  background-color: #2e2e2e;
+  border-radius: 0 0 5px 5px;
 `;
 
 export function MobileNav({ isOpen, whoami }) {
@@ -82,19 +84,19 @@ export function MobileNavButton({ isOpen, setIsOpen }) {
 export function NavLinks({ whoami }) {
   return (
     <>
+      <Links exact to="/">
+        Home
+      </Links>
       {whoami && (
         <>
           <Links exact to="/waitlist">
             Waitlist
           </Links>
-          <Links exact to="/pilot">
-            Pilot
-          </Links>
         </>
       )}
-      {/*<Links exact to="/guide">
+      <Links exact to="/guide">
         Guides
-      </Links>*/}
+      </Links>
       <Links exact to="/fits">
         Fits
       </Links>

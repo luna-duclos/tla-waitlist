@@ -4,7 +4,7 @@ import themes from "../App/theme";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoon, faSun, faKissWinkHeart } from "@fortawesome/free-solid-svg-icons";
-import { Button, Radio } from "../Components/Form";
+import { Button, Radio, AButtonAlt } from "../Components/Form";
 import { Modal } from "../Components/Modal";
 import { Box } from "../Components/Box";
 import { Title } from "./Page";
@@ -41,7 +41,7 @@ export function ThemeSelect({ theme, setTheme, sticker, setSticker }) {
           )}
         </Box>
       </Modal>
-      <Button onClick={(evt) => setIsOpen(true)}>
+      <AButtonAlt onClick={(evt) => setIsOpen(true)}>
         <FontAwesomeIcon
           fixedWidth
           icon={
@@ -52,7 +52,7 @@ export function ThemeSelect({ theme, setTheme, sticker, setSticker }) {
               : faSun
           }
         />
-      </Button>
+      </AButtonAlt>
     </>
   );
 }

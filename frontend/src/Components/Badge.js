@@ -15,6 +15,11 @@ export const Badge = styled.span`
   white-space: nowrap;
 `;
 
+const ShieldWrapper = styled.span`
+  display: flex;
+  align-items: center;
+`;
+
 export const BadgeDOM = styled.div`
   margin: 0em 0.5em 0.5em 0;
   border: solid 2px ${(props) => props.theme.colors.accent2};
@@ -22,7 +27,7 @@ export const BadgeDOM = styled.div`
   background-color: ${(props) => props.theme.colors.background};
   font-size: 1em;
   filter: drop-shadow(0px 3px 4px ${(props) => props.theme.colors.shadow});
-  width: 180px;
+  width: 200px;
   height: 2.6em;
   a {
   }
@@ -120,7 +125,7 @@ export default BadgeIcon;
 export function Shield({ color, letter, title, h = "1.2em" }) {
   const theme = React.useContext(ThemeContext);
   return (
-    <span title={title}>
+    <ShieldWrapper title={title}>
       <svg
         style={{ height: h, filter: `drop-shadow(0px 1px 1px ${theme.colors.shadow})` }}
         viewBox="0 0 26.5 27.8"
@@ -146,6 +151,6 @@ export function Shield({ color, letter, title, h = "1.2em" }) {
           </text>
         </g>
       </svg>
-    </span>
+    </ShieldWrapper>
   );
 }

@@ -4,7 +4,7 @@ import { Route, Switch } from "react-router-dom";
 import { AuthContext } from "../contexts";
 
 import { AuthStart, AuthCallback, AuthLogout } from "../Pages/Auth";
-//import { BadgeIndex, Guide, GuideIndex } from "../Pages/Guide";
+import { BadgeIndex, Guide, GuideIndex } from "../Pages/Guide";
 import { Fits } from "../Pages/Fits";
 import { FCMenu, GuideFC } from "../Pages/FC/Index";
 import { Fleet, FleetRegister } from "../Pages/FC/Fleet";
@@ -19,6 +19,7 @@ import { Search } from "../Pages/FC/Search";
 import { Statistics } from "../Pages/FC/Statistics";
 import { Waitlist } from "../Pages/Waitlist";
 import { Xup } from "../Pages/Xup";
+import { Home } from "../Pages/Home";
 
 import AnnouncementsPage from "../Pages/FC/Announcements";
 import BadgesPage from "../Pages/FC/Badges";
@@ -49,11 +50,11 @@ const AuthenticatedRoute = ({ component, loginRequired = false, access = null })
 export function Routes() {
   return (
     <Switch>
-      <Route exact path="/">
-        {<AuthenticatedRoute component={<Waitlist />} loginRequired />}
-      </Route>
       <Route exact path="/fits">
         <Fits />
+      </Route>
+      <Route exact path="/">
+        <Home />
       </Route>
       <Route exact path="/isk-h">
         <ISKh />
@@ -71,7 +72,7 @@ export function Routes() {
         <Plans />
       </Route>
       {/* Guides: Badges, Index, Guide Page */}
-      {/*
+
       <Route exact path="/badges">
         <BadgeIndex />
       </Route>
@@ -80,8 +81,7 @@ export function Routes() {
       </Route>
       <Route exact path="/guide/:guideName">
         <Guide />
-		  
-      </Route>*/}
+      </Route>
       <Route exact path="/legal">
         <Legal />
       </Route>

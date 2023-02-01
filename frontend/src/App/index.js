@@ -26,6 +26,7 @@ const GlobalStyle = createGlobalStyle`
     font-family: ${(props) => props.theme.font.family};
     line-height: 1.5;
     font-weight: 400;
+	overflow-y: scroll;
 	${(props) =>
     props.sticker &&
     props.theme.sticker &&

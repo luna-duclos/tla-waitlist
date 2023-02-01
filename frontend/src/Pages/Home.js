@@ -1,78 +1,114 @@
-import { Content } from "../Components/Page";
-import { NavLink } from "react-router-dom";
 import { NavButton, InputGroup } from "../Components/Form";
+import { NavLink } from "react-router-dom";
+import { Content } from "../Components/Page";
+import styled from "styled-components";
+
+/*
+const BannerImage = styled.div`
+  background-image: url("https://i.imgur.com/8NXTXqj.png");
+  width: 100%;
+  height: 400px;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+  border-radius: 50px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+  margin-bottom: 2em;
+`;*/
+
+const CenteredParagraph = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+`;
+CenteredParagraph.Head = styled.h3`
+  font-weight: bold;
+  font-size: 1.5em;
+  text-decoration: underline;
+`;
+CenteredParagraph.paragraph = styled.div`
+  margin: 0;
+  border-top: 2px solid;
+  padding: 2em 5em;
+  @media (max-width: 720px) {
+    padding: 1em;
+  }
+  border-color: ${(props) => props.theme.colors.accent2};
+`;
+CenteredParagraph.paragraphALT = styled.div`
+  margin: 0;
+  padding: 2em 5em;
+  @media (max-width: 720px) {
+    padding: 1em;
+  }
+  b {
+    display: block;
+  }
+  border-color: ${(props) => props.theme.colors.accent2};
+`;
+
+const ThreeColumn = styled.div`
+  display: flex;
+  justify-conent: space-between;
+  @media (max-width: 720px) {
+    flex-wrap: wrap;
+  }
+`;
 
 export function Home() {
   return (
-    <>
-      <InputGroup>
-        <NavButton to={`/guide/rules`}>Rules</NavButton>
+    <Content>
+      <InputGroup style={{ marginTop: "5em" }}>
         <NavButton to={`/legal`}>Legal</NavButton>
       </InputGroup>
-      <Content>
-        <h2>Welcome to The Ditanian Fleet</h2>
+      <CenteredParagraph>
+        <CenteredParagraph.Head style={{ marginBottom: "1em" }}>
+          Are you new to TLA or incursions in general?
+        </CenteredParagraph.Head>
+        <CenteredParagraph.paragraph>
+          Please have a read of some of the <NavLink to="/guide">GUIDES</NavLink> and join the{" "}
+          <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> to ask any questioned that
+          aren&apos;t answered here. Look at our <NavLink to="/fits">FITS</NavLink> and make sure
+          your fit looks the same and meets the DPS numbers above the fit you choose to fly.
+        </CenteredParagraph.paragraph>
+        <CenteredParagraph.paragraph>
+          Please join the in-game channel <b>TLA Incursions</b> to X Up for our fleets For any
+          questions that aren&apos;t answered below, feel free to drop by and ask! We are more than
+          happy to help!
+        </CenteredParagraph.paragraph>
+      </CenteredParagraph>
 
-        <p>
-          Hello capsuleers, we would like to introduce you to the EVE Online incursion community
-          called The Ditanian Fleet (TDF). We are a new-bro friendly group where all are welcome. We
-          have affordable starter fits, and we can help make you space rich, all we ask in return is
-          you follow our upgrade policy to help the community excel and follow the rules! We exclude
-          pilots that have a previous history of ganking, and we have a no tolerance policy for
-          racism, sexism or anti-social behaviour.
-        </p>
-        <p>
-          The Ditanian Fleet is an armor doctrine incursion community. We run Vanguards (10 person),
-          Assaults (20 person), and Headquarters (40 person) Incursion sites. We have fleet
-          commanders from all over the world, so you should be able to join a fleet nearly 24/7.
-        </p>
-        <p>
-          Check out our <NavLink to="/guide">Guides</NavLink> section for all the information you
-          need to get started, see <NavLink to="/guide/newbro">new-bro guide</NavLink>,{" "}
-          <NavLink to="/guide/xup">first fleet guide</NavLink> etc, also join the in-game chat
-          channel <em>TDF-Official</em>, where you will find the mailing lists for fits and other
-          usual information in the MOTD (message of the day), we look forward to flying with you!
-          Disclaimer, TDF will never recruit or give loans to new players, any such activity is not
-          endorsed by TDF and should be met with skepticism!
-        </p>
-        <h3>Why Fly TDF?</h3>
-        <ul>
-          <li>
-            Armor fleets are far safer, as your tank is passive and thus not cap dependent. If you
-            get neuted your tank will not turn off, this gives you that extra bit of room for error
-            should you need it.
-          </li>
-          <li>
-            With our low slots being used for tanking, the mid slots on our ships are free for
-            damage application mods such as webifiers and tracking computers, giving us great damage
-            application.
-          </li>
-          <li>
-            Our upgrade policy ensures that everyone in the fleet is constantly improving and
-            contributing to that ever-important factor, your ISK per hour.
-          </li>
-          <li>
-            We provide peace of mind with our SRP (ship replacement program), so should you lose
-            your ship due to logi or FC error, you will be reimbursed.
-          </li>
-        </ul>
-        <h3>What are Incursions?</h3>
-        <p>
-          Incursions are automated events introduced with the Incursion expansion in which the NPC
-          faction known as the Sansha&apos;s Nation, led by Sansha Kuvakei, invade space in an
-          attempt to conquer it for themselves. Capsuleers must fight off Sansha&apos;s forces in
-          order to return the contested space back to an area which can be safely occupied.
-        </p>
-        <p>
-          Incursions are high-end PvE fleet content, well above that of regular level four missions,
-          where you can earn upwards of 200mil ISK/h on average. The introduction of incursions to
-          the game added some much-needed fleet content in highsec space. It also gives people a
-          very controlled environment to train up their skills as a logistics pilot, as well as
-          giving people a feel for organized fleets. Incursion fleets rely on buffers and resists
-          supported by logistics ships in order to survive. The NPCs you face in incursions use
-          electronic warfare, capacitor warfare as well as playing on speed and signature to their
-          advantage and this helps to teach you many of the ingame mechanics you may face.
-        </p>
-      </Content>
-    </>
+      <ThreeColumn>
+        <CenteredParagraph>
+          <CenteredParagraph.Head>What Is TLA?</CenteredParagraph.Head>
+          <CenteredParagraph.paragraphALT>
+            We are a HQ Incursion Community that specialises in multi-boxing Marauders (Suggested
+            fits can be found above). Marauder pilots are guaranteed an additional paid spot in
+            fleet for an alt. Your alt is preferred to be in a marauder but can come in anything to
+            get payout until its a marauder.
+          </CenteredParagraph.paragraphALT>
+        </CenteredParagraph>
+        <CenteredParagraph>
+          <CenteredParagraph.Head>Why are there both Armor and Shield Fits?</CenteredParagraph.Head>
+          <CenteredParagraph.paragraphALT>
+            We accommodate both tank types to allow anyone to fly their marauder with us.
+          </CenteredParagraph.paragraphALT>
+        </CenteredParagraph>
+        <CenteredParagraph>
+          <CenteredParagraph.Head>FAQ&apos;S</CenteredParagraph.Head>
+          <CenteredParagraph.paragraphALT>
+            <b>My fit is different to the one on the website. Can I bring it? </b>
+            Fits differing from the ones listed on the website may be welcome in fleet. Ask in-game,
+            in Discord or the active FC for clarification.
+            <b>Do I need abyssals? </b>
+            Abyssal mods are required for mains, the DPS numbers on the fitting page should be met
+            to fly with TLA. First alts must now hit at least 93% of their respective hull&apos;s
+            required DPS. Failure to do will be considered a sponge. (GUNS ONLY, NO HEAT, NO DRUGS,
+            NO DRONES)
+          </CenteredParagraph.paragraphALT>
+        </CenteredParagraph>
+      </ThreeColumn>
+    </Content>
   );
 }
