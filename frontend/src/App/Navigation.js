@@ -24,7 +24,7 @@ const Links = styled(NavLink).attrs((props) => ({
   @media (max-width: 480px) {
     padding: 1em;
     &.active {
-      background-color: ${(props) => props.theme.colors.accent2};
+      background-color: #454545;
       border-radius: 4px;
     }
   }
