@@ -91,9 +91,15 @@ export async function processAuth(callback) {
   whoami.access.forEach((level) => {
     access[level] = true;
   });
+  const idlocal = window.localStorage && parseInt(window.localStorage.getItem("selectedCharacter"));
+  var idx = 0;
+  if (idlocal) {
+    idx = whoami.characters.findIndex((obj) => obj.id === idlocal);
+    idx = idx === -1 ? 0 : idx;
+  }
   callback({
     ...whoami,
-    current: whoami.characters[0],
+    current: whoami.characters[idx],
     access: access,
   });
 }

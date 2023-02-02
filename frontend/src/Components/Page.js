@@ -11,7 +11,13 @@ export const Content = styled.div`
   }
 
   a {
-    color: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    color: ${(props) => props.theme.colors.highlight.text};
+    &:hover:not(:disabled):not(.static) {
+      cursor: pointer;
+      color: ${(props) => props.theme.colors.highlight.active};
+    }
   }
 
   i,

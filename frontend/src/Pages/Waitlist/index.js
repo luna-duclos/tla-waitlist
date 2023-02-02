@@ -185,7 +185,7 @@ export function Waitlist() {
             <Modal open={true} setOpen={setXupOpen} fill={"true"}>
               <FixedBox>
                 <Box>
-                  <Xup setXupOpen={setXupOpen} />
+                  <Xup />
                 </Box>
               </FixedBox>
             </Modal>

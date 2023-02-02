@@ -7,7 +7,7 @@ import { PilotHistory } from "./PilotHistory";
 import { apiCall, errorToaster, useApi } from "../../api";
 import { ActivitySummary } from "./ActivitySummary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import BadgeIcon, { icons, badgeOrder } from "../../Components/Badge";
+import { PilotTags } from "../../Components/Badge";
 import {
   faBan,
   faClipboard,
@@ -20,7 +20,7 @@ import {
 import styled from "styled-components";
 import { Button, InputGroup, NavButton } from "../../Components/Form";
 import { Row, Col } from "react-awesome-styled-grid";
-import _ from "lodash";
+
 import CommanderModal from "../FC/commanders/CommanderModal";
 import { AccountBannedBanner } from "../FC/bans/AccountBanned";
 import AltCharacters from "./AltCharacters";
@@ -40,25 +40,6 @@ async function OpenWindow(target_id, character_id) {
   return await apiCall(`/api/open_window`, {
     json: { target_id, character_id },
   });
-}
-
-function PilotTags({ tags }) {
-  const tagsord = _.sortBy(tags, function (item) {
-    return badgeOrder.indexOf(item);
-  });
-  var tagImages = [];
-  _.forEach(tagsord, (tag) => {
-    if (tag in icons) {
-      tagImages.push(
-        <div key={tag} style={{ marginRight: "0.2em" }}>
-          <BadgeIcon type={tag} height="40px" />
-        </div>
-      );
-    }
-  });
-  return (
-    <div style={{ display: "flex", marginBottom: "0.6em", flexWrap: "wrap" }}>{tagImages}</div>
-  );
 }
 
 export function Pilot() {

@@ -93,17 +93,11 @@ struct FleetInfoSquad {
     name: String,
 }
 
-#[get("/api/fleet/info?<character_id>")]
-async fn fleet_info(
+async fn fetch_fleet_wings(
     app: &rocket::State<Application>,
-    account: AuthenticatedAccount,
     character_id: i64,
-) -> Result<Json<FleetInfoResponse>, Madness> {
-    account.require_access("fleet-view")?;
-    authorize_character(app.get_db(), &account, character_id, None).await?;
-
-    let fleet_id = get_current_fleet_id(app, character_id).await?;
-
+	fleet_id: i64,
+) -> Result<Vec<FleetInfoWing>, Madness> {
     let wings = app
         .esi_client
         .get(
@@ -118,7 +112,19 @@ async fn fleet_info(
             e => return Err(e.into()),
         };
     }
-    let wings: Vec<FleetInfoWing> = wings?;
+    Ok(wings?)
+}
+
+#[get("/api/fleet/info?<character_id>")]
+async fn fleet_info(
+    app: &rocket::State<Application>,
+    account: AuthenticatedAccount,
+    character_id: i64,
+) -> Result<Json<FleetInfoResponse>, Madness> {
+    account.require_access("fleet-view")?;
+    authorize_character(app.get_db(), &account, character_id, None).await?;
+	let fleet_id = get_current_fleet_id(app, character_id).await?;
+    let wings = fetch_fleet_wings(app, character_id, fleet_id).await?;
 
     Ok(Json(FleetInfoResponse { fleet_id, wings }))
 }
@@ -134,6 +140,9 @@ struct FleetMembersMember {
     name: Option<String>,
     ship: Hull,
     wl_category: Option<String>,
+	category: Option<String>,
+	role: String,
+	
 }
 
 #[get("/api/fleet/members?<character_id>")]
@@ -173,6 +182,10 @@ async fn fleet_members(
     .into_iter()
     .map(|squad| (squad.squad_id, squad.category))
     .collect();
+	
+	let wings = fetch_fleet_wings(app, character_id, fleet_id).await?;
+	
+	
 
     Ok(Json(FleetMembersResponse {
         members: in_fleet
@@ -188,6 +201,12 @@ async fn fleet_members(
                     .get(&member.squad_id)
                     .and_then(|s| category_lookup.get(s.as_str()))
                     .map(|s| s.to_string()),
+				category: wings
+                .iter()
+                .flat_map(|wing| &wing.squads)
+                .find(|squad| squad.id == member.squad_id)
+                .map(|squad| squad.name.clone()),
+				role: member.role,
             })
             .collect(),
     }))

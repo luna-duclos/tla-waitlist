@@ -22,14 +22,26 @@ export const TableHead = styled.thead`
 export const TableBody = styled.tbody``;
 
 export const Row = styled.tr`
-  border-bottom: solid 1px ${(props) => props.theme.colors.accent2};
   background-color: ${(props) => props.theme.colors.background};
+  ${(props) =>
+    props.background &&
+    `
+    background-color: ${props.theme.colors.accent1};
+	border-bottom: solid 1px ${props.theme.colors.accent2};
+  `}
+
   &:last-child {
     border-bottom: none;
   }
-  &:nth-child(odd) {
-    background-color: ${(props) => props.theme.colors.accent1};
-  }
+  ${(props) =>
+    !props.noAlternating &&
+    `
+    border-bottom: solid 1px ${props.theme.colors.accent2};
+    &:nth-child(odd) {
+      background-color: ${props.theme.colors.accent1};
+    }
+	
+  `}
 `;
 
 export const CellHead = styled.th`
@@ -57,4 +69,43 @@ export const Cell = styled.td`
   @media (max-width: 480px) {
     padding: 0.3em;
   }
+`;
+
+export const CellTight = styled.td`
+  padding: 0 0.5em;
+  color: ${(props) => props.theme.colors.text};
+  a {
+    color: ${(props) => props.theme.colors.text};
+  }
+  @media (max-width: 480px) {
+    padding: 0.3em;
+  }
+`;
+
+export const CellWithLine = styled.td`
+  position: relative;
+  text-align: end;
+  &::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: ${(props) => props.theme.colors.accent2};
+  }
+
+  ${(props) =>
+    props.warn &&
+    `
+		  &::after {
+			content: "";
+			position: absolute;
+			left: 40%;
+			top: 0;
+			bottom: 0;
+			width: 10%;
+			background: ${props.warn};
+		  }
+		`}
 `;
