@@ -74,7 +74,7 @@ async function xUp({ character, eft, toastContext, waitlist_id, alt, messagexup 
   }
 }
 
-export function Xup() {
+export function Xup({ setXupOpen }) {
   usePageTitle("X-up");
   const toastContext = React.useContext(ToastContext);
   const authContext = React.useContext(AuthContext);
@@ -97,82 +97,78 @@ export function Xup() {
 
   return (
     <>
-      {reviewOpen && (
-        <Modal open={true} setOpen={(evt) => null}>
-          <Box>
-            <XupCheck waitlistId={waitlist_id} setOpen={setReviewOpen} />
-          </Box>
-        </Modal>
-      )}
-
-      <div style={{ display: "flex" }}>
-        <Content style={{ flex: 1 }}>
-          <h2>X-up with fit(s)</h2>
-          <Textarea
-            placeholder={exampleFit}
-            rows={15}
-            onChange={(evt) => setEft(evt.target.value)}
-            value={eft}
-            style={{ width: "100%", marginBottom: "1em" }}
-          />
-          <div style={{ marginBottom: "1em" }}>
-            {/*<label>
+      {reviewOpen ? (
+        <XupCheck waitlistId={waitlist_id} setOpen={setReviewOpen} setXupOpen={setXupOpen} />
+      ) : (
+        <div style={{ display: "flex" }}>
+          <Content style={{ flex: 1 }}>
+            <h2>X-up with fit(s)</h2>
+            <Textarea
+              placeholder={exampleFit}
+              rows={15}
+              onChange={(evt) => setEft(evt.target.value)}
+              value={eft}
+              style={{ width: "100%", marginBottom: "1em" }}
+            />
+            <div style={{ marginBottom: "1em" }}>
+              {/*<label>
               <input type="checkbox" checked={alt} onChange={handleChange} />
               This is an ALT (I already have a character in fleet)
 		  </label>*/}
-            <h2>X-up message (optional)</h2>
-            <Textarea
-              placeholder={exampleMessage}
-              rows={1}
-              onChange={(evt) => setMessagexup(evt.target.value)}
-              value={messagexup}
-              style={{ width: "100%" }}
-            />
-            Characters left: {messagexup.length < 101 ? 100 - messagexup.length : "Too long"}
-          </div>
-          <InputGroup>
-            <Button static>{authContext.current.name}</Button>
-            <Button
-              variant="success"
-              onClick={(evt) => {
-                setIsSubmitting(true);
-                errorToaster(
-                  toastContext,
-                  xUp({
-                    character: authContext.current.id,
-                    eft,
+              <h2>X-up message (optional)</h2>
+              <Textarea
+                placeholder={exampleMessage}
+                rows={1}
+                onChange={(evt) => setMessagexup(evt.target.value)}
+                value={messagexup}
+                style={{ width: "100%" }}
+              />
+              Characters left: {messagexup.length < 101 ? 100 - messagexup.length : "Too long"}
+            </div>
+            <InputGroup>
+              <Button static>{authContext.current.name}</Button>
+              <Button
+                variant="success"
+                onClick={(evt) => {
+                  setIsSubmitting(true);
+                  errorToaster(
                     toastContext,
-                    waitlist_id,
-                    alt,
-                    messagexup,
-                  }).then((evt) => setReviewOpen(true))
-                ).finally((evt) => setIsSubmitting(false));
-              }}
-              disabled={
-                eft.trim().length < 50 ||
-                !eft.startsWith("[") ||
-                isSubmitting ||
-                messagexup.length > 100
-              }
-            >
-              X-up
-            </Button>
-          </InputGroup>
-        </Content>
-        <Box style={{ flex: 1 }}>
-          {implants ? (
-            <ImplantDisplay
-              implants={implants.implants}
-              name={`${authContext.current.name}'s capsule`}
-            />
-          ) : null}
-        </Box>
-      </div>
+                    xUp({
+                      character: authContext.current.id,
+                      eft,
+                      toastContext,
+                      waitlist_id,
+                      alt,
+                      messagexup,
+                    }).then((evt) => setReviewOpen(true))
+                  ).finally((evt) => setIsSubmitting(false));
+                }}
+                disabled={
+                  eft.trim().length < 50 ||
+                  !eft.startsWith("[") ||
+                  isSubmitting ||
+                  messagexup.length > 100
+                }
+              >
+                X-up
+              </Button>
+            </InputGroup>
+          </Content>
+          <Box style={{ flex: 1 }}>
+            {implants ? (
+              <ImplantDisplay
+                implants={implants.implants}
+                name={`${authContext.current.name}'s capsule`}
+              />
+            ) : null}
+          </Box>
+        </div>
+      )}
     </>
   );
 }
 
-function XupCheck({ waitlistId, setOpen }) {
+function XupCheck({ waitlistId, setOpen, setXupOpen }) {
   const authContext = React.useContext(AuthContext);
   const [xupData] = useApi(`/api/waitlist?waitlist_id=${waitlistId}`);
 
@@ -198,9 +194,9 @@ function XupCheck({ waitlistId, setOpen }) {
         </Box>
       ))}
       <Buttons>
-        <NavButton variant="primary" to={`/waitlist?wl=${waitlistId}`}>
+        <Button variant="primary" onClick={(evt) => setXupOpen(false)}>
           Yes, looks good
-        </NavButton>
+        </Button>
         <Button variant="secondary" onClick={(evt) => setOpen(false)}>
           No, go back to update my fit
         </Button>
