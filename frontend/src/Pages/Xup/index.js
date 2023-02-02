@@ -2,13 +2,12 @@ import React from "react";
 import { ToastContext, AuthContext } from "../../contexts";
 import { addToast } from "../../Components/Toast";
 import { apiCall, errorToaster, useApi } from "../../api";
-import { Button, Buttons, InputGroup, NavButton, Textarea } from "../../Components/Form";
+import { Button, Buttons, InputGroup, Textarea } from "../../Components/Form";
 import { useLocation } from "react-router-dom";
 import { Content, PageTitle } from "../../Components/Page";
 import { FitDisplay, ImplantDisplay } from "../../Components/FitDisplay";
 import _ from "lodash";
 import { Box } from "../../Components/Box";
-import { Modal } from "../../Components/Modal";
 
 import { usePageTitle } from "../../Util/title";
 
