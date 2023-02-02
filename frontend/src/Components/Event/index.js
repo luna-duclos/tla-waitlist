@@ -50,7 +50,7 @@ export function EventNotifier() {
   const handleWakeup = React.useCallback(
     (event) => {
       if (window.Notification && Notification.permission === "granted") {
-        new Notification("The Ditanian Fleet", {
+        new Notification("TLA", {
           body: event.data,
           icon: iconFile,
           tag: event.data,

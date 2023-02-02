@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled, { ThemeContext } from "styled-components";
+import _ from "lodash";
 
 export const Badge = styled.span`
   background-color: ${(props) => (props.theme.colors[props.variant] || {}).color || "transparent"};
@@ -138,7 +139,7 @@ export function Shield({ color, letter, title, h = "1.2em" }) {
           />
           <text
             style={{
-              fontSize: "1.3em",
+              fontSize: "20px",
               fontWeight: "700",
               textAnchor: "middle",
               fill: theme.colors.tdfShields.text,
@@ -152,5 +153,24 @@ export function Shield({ color, letter, title, h = "1.2em" }) {
         </g>
       </svg>
     </ShieldWrapper>
+  );
+}
+
+export function PilotTags({ tags, height = "40px" }) {
+  const tagsord = _.sortBy(tags, function (item) {
+    return badgeOrder.indexOf(item);
+  });
+  var tagImages = [];
+  _.forEach(tagsord, (tag) => {
+    if (tag in icons) {
+      tagImages.push(
+        <div key={tag} style={{ marginRight: "0.2em" }}>
+          <BadgeIcon type={tag} height={height} />
+        </div>
+      );
+    }
+  });
+  return (
+    <div style={{ display: "flex", marginBottom: "0.6em", flexWrap: "wrap" }}>{tagImages}</div>
   );
 }

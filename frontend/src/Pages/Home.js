@@ -1,6 +1,7 @@
 import { NavButton, InputGroup } from "../Components/Form";
 import { NavLink } from "react-router-dom";
 import { Content } from "../Components/Page";
+
 import styled from "styled-components";
 
 /*
@@ -51,64 +52,68 @@ CenteredParagraph.paragraphALT = styled.div`
 const ThreeColumn = styled.div`
   display: flex;
   justify-conent: space-between;
-  @media (max-width: 720px) {
+  @media (max-width: 1100px) {
     flex-wrap: wrap;
   }
 `;
 
 export function Home() {
   return (
-    <Content>
+    <>
       <InputGroup style={{ marginTop: "5em" }}>
         <NavButton to={`/legal`}>Legal</NavButton>
       </InputGroup>
-      <CenteredParagraph>
-        <CenteredParagraph.Head style={{ marginBottom: "1em" }}>
-          Are you new to TLA or incursions in general?
-        </CenteredParagraph.Head>
-        <CenteredParagraph.paragraph>
-          Please have a read of some of the <NavLink to="/guide">GUIDES</NavLink> and join the{" "}
-          <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> to ask any questioned that
-          aren&apos;t answered here. Look at our <NavLink to="/fits">FITS</NavLink> and make sure
-          your fit looks the same and meets the DPS numbers above the fit you choose to fly.
-        </CenteredParagraph.paragraph>
-        <CenteredParagraph.paragraph>
-          Please join the in-game channel <b>TLA Incursions</b> to X Up for our fleets For any
-          questions that aren&apos;t answered below, feel free to drop by and ask! We are more than
-          happy to help!
-        </CenteredParagraph.paragraph>
-      </CenteredParagraph>
+      <Content>
+        <CenteredParagraph>
+          <CenteredParagraph.Head style={{ marginBottom: "1em" }}>
+            Are you new to TLA or incursions in general?
+          </CenteredParagraph.Head>
+          <CenteredParagraph.paragraph>
+            Please have a read of some of the <NavLink to="/guide">GUIDES</NavLink> and join the{" "}
+            <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> to ask any questioned that
+            aren&apos;t answered here. Look at our <NavLink to="/fits">FITS</NavLink> and make sure
+            your fit looks the same and meets the DPS numbers above the fit you choose to fly.
+          </CenteredParagraph.paragraph>
+          <CenteredParagraph.paragraph>
+            Please join the in-game channel <b>TLA Incursions</b> to X Up for our fleets For any
+            questions that aren&apos;t answered below, feel free to drop by and ask! We are more
+            than happy to help!
+          </CenteredParagraph.paragraph>
+        </CenteredParagraph>
 
-      <ThreeColumn>
-        <CenteredParagraph>
-          <CenteredParagraph.Head>What Is TLA?</CenteredParagraph.Head>
-          <CenteredParagraph.paragraphALT>
-            We are a HQ Incursion Community that specialises in multi-boxing Marauders (Suggested
-            fits can be found above). Marauder pilots are guaranteed an additional paid spot in
-            fleet for an alt. Your alt is preferred to be in a marauder but can come in anything to
-            get payout until its a marauder.
-          </CenteredParagraph.paragraphALT>
-        </CenteredParagraph>
-        <CenteredParagraph>
-          <CenteredParagraph.Head>Why are there both Armor and Shield Fits?</CenteredParagraph.Head>
-          <CenteredParagraph.paragraphALT>
-            We accommodate both tank types to allow anyone to fly their marauder with us.
-          </CenteredParagraph.paragraphALT>
-        </CenteredParagraph>
-        <CenteredParagraph>
-          <CenteredParagraph.Head>FAQ&apos;S</CenteredParagraph.Head>
-          <CenteredParagraph.paragraphALT>
-            <b>My fit is different to the one on the website. Can I bring it? </b>
-            Fits differing from the ones listed on the website may be welcome in fleet. Ask in-game,
-            in Discord or the active FC for clarification.
-            <b>Do I need abyssals? </b>
-            Abyssal mods are required for mains, the DPS numbers on the fitting page should be met
-            to fly with TLA. First alts must now hit at least 93% of their respective hull&apos;s
-            required DPS. Failure to do will be considered a sponge. (GUNS ONLY, NO HEAT, NO DRUGS,
-            NO DRONES)
-          </CenteredParagraph.paragraphALT>
-        </CenteredParagraph>
-      </ThreeColumn>
-    </Content>
+        <ThreeColumn>
+          <CenteredParagraph>
+            <CenteredParagraph.Head>What Is TLA?</CenteredParagraph.Head>
+            <CenteredParagraph.paragraphALT>
+              We are a HQ Incursion Community that specialises in multi-boxing Marauders (Suggested
+              fits can be found above). Marauder pilots are guaranteed an additional paid spot in
+              fleet for an alt. Your alt is preferred to be in a marauder but can come in anything
+              to get payout until its a marauder.
+            </CenteredParagraph.paragraphALT>
+          </CenteredParagraph>
+          <CenteredParagraph>
+            <CenteredParagraph.Head>
+              Why are there both Armor and Shield Fits?
+            </CenteredParagraph.Head>
+            <CenteredParagraph.paragraphALT>
+              We accommodate both tank types to allow anyone to fly their marauder with us.
+            </CenteredParagraph.paragraphALT>
+          </CenteredParagraph>
+          <CenteredParagraph>
+            <CenteredParagraph.Head>FAQ&apos;S</CenteredParagraph.Head>
+            <CenteredParagraph.paragraphALT>
+              <b>My fit is different to the one on the website. Can I bring it? </b>
+              Fits differing from the ones listed on the website may be welcome in fleet. Ask
+              in-game, in Discord or the active FC for clarification.
+              <b>Do I need abyssals? </b>
+              Abyssal mods are required for mains, the DPS numbers on the fitting page should be met
+              to fly with TLA. First alts must now hit at least 93% of their respective hull&apos;s
+              required DPS. Failure to do will be considered a sponge. (GUNS ONLY, NO HEAT, NO
+              DRUGS, NO DRONES)
+            </CenteredParagraph.paragraphALT>
+          </CenteredParagraph>
+        </ThreeColumn>
+      </Content>
+    </>
   );
 }

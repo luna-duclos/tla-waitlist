@@ -67,22 +67,27 @@ export function useApi(path) {
   const toastContext = React.useContext(ToastContext);
   const [data, setData] = React.useState(null);
 
-  const refreshFunction = React.useCallback(() => {
+  const refreshFunction = React.useCallback(async () => {
     if (!path) return;
 
     errorToaster(
       toastContext,
-      apiCall(path, {}).then(setData, (err) => {
-        setData(null);
-        throw err;
-      })
+      apiCall(path, {})
+        .then((res) => {
+          setData(res);
+        })
+        .catch((err) => {
+          setData(null);
+          throw err;
+        })
     );
   }, [toastContext, path]);
 
   React.useEffect(() => {
-    setData(null);
-    refreshFunction();
-  }, [refreshFunction]);
+    if (!data) {
+      refreshFunction();
+    }
+  }, [data, refreshFunction]);
 
   return [data, refreshFunction];
 }

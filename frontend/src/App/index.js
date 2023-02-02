@@ -74,7 +74,6 @@ export default class App extends React.Component {
           "true") === "true",
     };
   }
-
   componentDidUpdate() {
     if (this.state.auth && !this.state.events) {
       var events = new EventSource("/api/sse/stream");
@@ -104,6 +103,7 @@ export default class App extends React.Component {
     var theChar = this.state.auth.characters.filter((char) => char.id === newChar)[0];
     newState.current = theChar;
     this.setState({ auth: newState });
+    localStorage.setItem("selectedCharacter", newChar);
   };
 
   render() {
