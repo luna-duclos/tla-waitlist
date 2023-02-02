@@ -6,6 +6,8 @@ import { useHistory } from "react-router-dom";
 import { options } from "../Pages/FC/announcements/page-options";
 import { CharacterName } from "./EntityLinks";
 import { timeTillNow } from "../Util/time";
+import { Markdown } from "./Markdown";
+import { Content } from "./Page";
 
 const AnnouncementBar = styled.div`
   background: ${(props) => props.theme.colors.secondary.color};
@@ -52,6 +54,19 @@ const AnnouncementBar = styled.div`
   }
   .close:after {
     transform: rotate(-45deg);
+  }
+`;
+
+const AnnouncementMessage = styled(Content)`
+  padding-left: 42px;
+  p {
+    margin-bottom: 0em;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin-top: 0em;
   }
 `;
 
@@ -170,7 +185,9 @@ const AnnouncementBanner = () => {
             />
             , {timeTillNow(created_at)}
             <span className="close" onClick={() => handleClose(announcment.id)} />
-            <p style={{ paddingLeft: "42px" }}>{announcment.message}</p>
+            <AnnouncementMessage>
+              <Markdown>{announcment.message}</Markdown>
+            </AnnouncementMessage>
             {authContext && authContext.access["waitlist-tag:HQ-FC"] && (
               <small style={{ paddingLeft: "42px" }}>
                 Displayed on:&nbsp;

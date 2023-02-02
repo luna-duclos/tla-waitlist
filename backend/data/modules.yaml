@@ -87,6 +87,28 @@ alternatives:
     - - Imperial Navy 1600mm Steel Plates
     - - Large Abyssal Armor Plates
 
+  - - - Large Remote Capacitor Transmitter I 
+      - Large Inductive Compact Remote Capacitor Transmitter
+      - Large Radiative Scoped Remote Capacitor Transmitter 
+    - - Large Remote Capacitor Transmitter II
+    - - Imperial Navy Large Remote Capacitor Transmitter
+      - "'Chivalry' Large Remote Capacitor Transmitter"
+      
+  - - - Gyrostabilizer I
+      - Counterbalanced Compact Gyrostabilizer 
+    - - Gyrostabilizer II
+    - - "'Basic' Gyrostabilizer"    
+      - "'Kindred' Gyrostabilizer"
+      - Vadari's Custom Gyrostabilizer 
+    - - Domination Gyrostabilizer
+      - Republic Fleet Gyrostabilizer
+    - - Mizuro's Modified Gyrostabilizer
+      - Hakim's Modified Gyrostabilizer
+      - Shaqil's Modified Gyrostabilizer
+      - Gotan's Modified Gyrostabilizer
+      - Tobias' Modified Gyrostabilizer 
+      - Abyssal Gyrostabilizer
+  
 from_meta:
   # Automagically determine alternatives
   # Base is the lowest allowed meta level alternative module
@@ -104,12 +126,9 @@ from_meta:
     abyssal: Large Abyssal Shield Extender
   - base: X-Large Shield Booster II
     abyssal: X-Large Abyssal Shield Booster
-  - base: Gyrostabilizer II
-    abyssal: Abyssal Gyrostabilizer
   - base: 800mm Repeating Cannon II
   - base: Tracking Enhancer II
   - base: Imperial Navy Cap Recharger
-  - base: Large Inductive Compact Remote Capacitor Transmitter
   - base: True Sansha Power Diagnostic System
   - base: Core X-Type 500MN Microwarpdrive
     abyssal: 500MN Abyssal Microwarpdrive
@@ -130,6 +149,7 @@ from_meta:
     abyssal: Medium Abyssal Armor Plates
   - base: Damage Control I
     abyssal: Abyssal Damage Control
+
 
 from_attribute:
   - base:
