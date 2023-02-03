@@ -1,7 +1,7 @@
 import React from "react";
 import { CenteredParagraph } from "../../Components/Form";
 import styled, { keyframes } from "styled-components";
-import { Button } from "../../Components/Form";
+import { Button, InputGroup } from "../../Components/Form";
 
 const spin = keyframes`
   to {
@@ -40,9 +40,20 @@ export default function WaitlistClosed() {
         <LoadingSpinnerContainer>
           <LoadingSpinnerCircle />
         </LoadingSpinnerContainer>
-        <Button style={{ marginTop: "1.5em" }} onClick={(evt) => setShowVideo(true)}>
-          Click here to Ping FC&apos;s for Fleet
-        </Button>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginTop: "1.5em",
+          }}
+        >
+          <InputGroup>
+            <Button onClick={(evt) => setShowVideo(true)}>
+              Click here to Ping FC&apos;s for Fleet
+            </Button>
+          </InputGroup>
+        </div>
       </CenteredParagraph.Paragraph>
       {showVideo && (
         <iframe

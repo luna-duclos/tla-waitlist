@@ -34,6 +34,8 @@ const CategoryHeadingDOM = styled.div`
       }
     }
   }
+
+  box-shadow: 2px 2px 3px ${(props) => props.theme.colors.shadow};
 `;
 
 const CatHeadingSmall = styled(CategoryHeadingDOM)`

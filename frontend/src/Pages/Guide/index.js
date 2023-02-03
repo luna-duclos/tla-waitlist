@@ -35,6 +35,7 @@ const ButtonContainer = styled.div`
   @media (max-width: 600px) {
     width: 100%;
   }
+  box-shadow: 3px 3px 1px ${(props) => props.theme.colors.shadow};
 `;
 
 const Image = styled.img`

@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { AuthContext } from "../contexts";
 import banner from "./banner.png";
 import styled from "styled-components";
-import { InputGroup, SelectAlt, NavButton, AButtonAlt, NavButtonAlt } from "../Components/Form";
+import { InputGroupAlt, SelectAlt, NavButton, AButtonAlt, NavButtonAlt } from "../Components/Form";
 import { EventNotifier } from "../Components/Event";
 import { ThemeSelect } from "../Components/ThemeSelect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -143,7 +143,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                 {whoami && (
                   <>
                     <NavBar.Name>
-                      <InputGroup fixed>
+                      <InputGroupAlt fixed>
                         <MyProfile exact to="/pilot" title="My Profile">
                           <img
                             style={{ maxHeight: "100%", borderRadius: "20px 0 0 20px" }}
@@ -169,12 +169,12 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                         <NavButtonAlt exact to="/auth/start/alt">
                           +
                         </NavButtonAlt>
-                      </InputGroup>
+                      </InputGroupAlt>
                     </NavBar.Name>
                   </>
                 )}
 
-                <InputGroup fixed>
+                <InputGroupAlt fixed>
                   {width < 481 && (
                     <MobileNavButton isOpen={isOpenMobileView} setIsOpen={setOpenMobileView} />
                   )}
@@ -198,7 +198,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                       Log in
                     </NavButton>
                   )}
-                </InputGroup>
+                </InputGroupAlt>
               </NavBar.End>
             </NavBar.Menu>
           </Tlaimage>
