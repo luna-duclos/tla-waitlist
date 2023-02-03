@@ -14,6 +14,7 @@ import {
 } from "./displaymodes";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import { faColumns } from "@fortawesome/free-solid-svg-icons";
+import WaitlistClosed from "./WaitlistClosed";
 import _ from "lodash";
 import { useQuery } from "../../Util/query";
 import { usePageTitle } from "../../Util/title";
@@ -159,11 +160,7 @@ export function Waitlist() {
     return <em>Loading waitlist information.</em>;
   }
   if (!waitlistData.open) {
-    return (
-      <>
-        <em>The waitlist is currently closed.</em>
-      </>
-    );
+    return <WaitlistClosed />;
   }
   /*const handleChange = () => {
     setAltCol(!altCol);

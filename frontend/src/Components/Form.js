@@ -254,3 +254,36 @@ export const Highlight = styled.b`
     color: ${(props) => props.theme.colors.highlight.active};
   }
 `;
+
+export const CenteredParagraph = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+`;
+CenteredParagraph.Head = styled.h3`
+  font-weight: bold;
+  font-size: 1.5em;
+  text-decoration: underline;
+`;
+CenteredParagraph.Paragraph = styled.div`
+  margin: 0;
+  border-top: 2px solid;
+  padding: 2em 5em;
+  @media (max-width: 720px) {
+    padding: 1em;
+  }
+  border-color: ${(props) => props.theme.colors.accent2};
+`;
+CenteredParagraph.ParagraphALT = styled.div`
+  margin: 0;
+  padding: 2em 5em;
+  @media (max-width: 720px) {
+    padding: 1em;
+  }
+  b {
+    display: block;
+  }
+  border-color: ${(props) => props.theme.colors.accent2};
+`;
