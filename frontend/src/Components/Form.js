@@ -274,7 +274,6 @@ export const CenteredParagraph = styled.div`
   align-items: center;
   text-align: center;
   width: 100%;
-  justify-content: center;
 `;
 CenteredParagraph.Head = styled.h3`
   font-weight: bold;
