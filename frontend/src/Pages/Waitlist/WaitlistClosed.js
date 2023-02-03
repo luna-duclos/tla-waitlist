@@ -40,7 +40,7 @@ export default function WaitlistClosed() {
           <LoadingSpinnerCircle />
         </LoadingSpinnerContainer>
         <Button style={{ marginTop: "1.5em" }} onClick={(evt) => setShowVideo(true)}>
-          Click here to Ping for Fleet
+          Click here to Ping FC&apos;s for Fleet
         </Button>
       </CenteredParagraph.Paragraph>
       {showVideo && (
