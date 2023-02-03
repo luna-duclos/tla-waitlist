@@ -154,7 +154,6 @@ function ColumnWaitlist({ waitlist, onAction, fleetComposition, altCol }) {
           <ColumnWaitlistDOM.Category key={category[0]}>
             <CategoryHeading name={category[0]} fleetComposition={fleetComposition} />
             {category[1]}
-            {category[1].length ? null : <em>Nobody here!</em>}
           </ColumnWaitlistDOM.Category>
         ))}
       </ColumnWaitlistDOM>
@@ -300,10 +299,7 @@ function RowWaitlist({ waitlist, onAction, fleetComposition }) {
         {categories.map((category) => (
           <div key={category[0]}>
             <CategoryHeading name={category[0]} fleetComposition={fleetComposition} />
-            <RowWaitlistDOM.Category>
-              {category[1]}
-              {category[1].length ? null : <em>Nobody here!</em>}
-            </RowWaitlistDOM.Category>
+            <RowWaitlistDOM.Category>{category[1]}</RowWaitlistDOM.Category>
           </div>
         ))}
       </RowWaitlistDOM>
