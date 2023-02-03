@@ -45,13 +45,16 @@ export const Button = styled.button.attrs((props) => ({
   className: `${props.active ? "active" : ""} ${props.static ? "static" : ""}`,
 }))`
   ${inputStyle}
+  min-height: 2.5em;
   height: 2.5em;
   cursor: pointer;
   &:disabled {
     opacity: 0.6;
   }
-
   border-color: ${(props) => props.theme.colors[props.variant || "input"].color};
+  @media (max-width: 700px) {
+    height: max-content;
+  }
 `;
 
 export const MobileButton = styled.button.attrs((props) => ({
