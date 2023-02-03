@@ -50,6 +50,9 @@ export const Button = styled.button.attrs((props) => ({
   &:disabled {
     opacity: 0.6;
   }
+  @media (max-width: 800px) {
+    height: fit-content;
+  }
 `;
 
 export const MobileButton = styled.button.attrs((props) => ({

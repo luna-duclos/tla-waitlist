@@ -48,9 +48,9 @@ export default function WaitlistClosed() {
           title="Never Gonna Give You Up"
           width="560"
           height="315"
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
+          src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0"
           frameBorder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allow="autoplay; encrypted-media; picture-in-picture"
           allowFullScreen
         />
       )}
