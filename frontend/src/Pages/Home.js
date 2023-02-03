@@ -73,11 +73,6 @@ export function Home() {
               <b>My fit is different to the one on the website. Can I bring it? </b>
               Fits differing from the ones listed on the website may be welcome in fleet. Ask
               in-game, in Discord or the active FC for clarification.
-              <b>Do I need abyssals? </b>
-              Abyssal mods are required for mains, the DPS numbers on the fitting page should be met
-              to fly with TLA. First alts must now hit at least 93% of their respective hull&apos;s
-              required DPS. Failure to do will be considered a sponge. (GUNS ONLY, NO HEAT, NO
-              DRUGS, NO DRONES)
               <b>What is the DPS requirement?</b>
               The DPS requirement is the amount of DPS each pilot is expected to in their respective
               hulls (guns only, no heat, no drugs, no drones) after roughly 2 weeks of flying. A
