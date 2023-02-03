@@ -14,16 +14,18 @@ const LoadingSpinnerContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100%;
+  
 `;
 
 const LoadingSpinnerCircle = styled.div`
-  width: 5rem;
-  height: 5rem;
+  width: 4rem;
+  height: 4rem;
   border-radius: 50%;
   border: 0.2rem solid ${(props) => props.theme.colors.accent1};
   border-top-color: ${(props) => props.theme.colors.text};
-  animation: ${spin} 1s linear infinite;
-`;
+  animation: ${spin} 1.5s linear infinite;
+  box-shadow: 0px -12px 8px -5px ${(props) => props.theme.colors.text}40;
+`
 
 export default function WaitlistClosed() {
   const [showVideo, setShowVideo] = React.useState(false);
