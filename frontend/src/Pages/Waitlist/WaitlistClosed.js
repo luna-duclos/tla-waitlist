@@ -33,7 +33,7 @@ export default function WaitlistClosed() {
         We apologize, the waitlist is currently closed.
       </CenteredParagraph.Head>
       <CenteredParagraph.Paragraph style={{ width: "50%" }}>
-        Thank you for your patience. A fleet commander will be available shortly. Please stand by
+        Thank you for your patience. A fleet commander will be available shortly. Please stand by...
       </CenteredParagraph.Paragraph>
       <CenteredParagraph.Paragraph style={{ width: "50%" }}>
         <LoadingSpinnerContainer>
