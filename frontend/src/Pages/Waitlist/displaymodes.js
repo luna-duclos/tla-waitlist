@@ -5,11 +5,14 @@ import { XCard } from "./XCard";
 import _ from "lodash";
 
 const CategoryHeadingDOM = styled.div`
+  background-color: ${(props) => props.theme.colors.accent1};
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  border-bottom: solid 2px ${(props) => props.theme.colors.accent2};
+  padding: 0 1em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   > h2 {
     font-size: 1.2em;
     font-weight: 600;

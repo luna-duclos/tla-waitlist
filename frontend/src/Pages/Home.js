@@ -79,7 +79,8 @@ export function Home() {
               combination of Skills, Abyssals, and Implants are needed to achieve these numbers.
               <b>Can I bring my Vindicator? </b>
               Yes! Our Vindicator spots are limited so it is recommend to train into a Marauder. You
-              will be expected to DDD so please read the <NavLink to="/guide/ddd">GUIDE</NavLink>
+              will be expected to DDD so please read the{" "}
+              <NavLink to="/guide/ddd">DDD GUIDE</NavLink>
             </CenteredParagraph.ParagraphALT>
           </CenteredParagraph>
         </ThreeColumn>
