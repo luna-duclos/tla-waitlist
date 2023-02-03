@@ -35,17 +35,16 @@ fn load_notes_from_file() -> Vec<FittingNote> {
 
 #[get("/api/fittings")]
 async fn fittings() -> Result<Json<FittingResponse>, Madness> {
-    let mut fittingformatted = BTreeMap::new();
-    let mut id = 0;
-    for fit in crate::data::fits::get_fits().values().flatten() {
-        let fitname = fit.name.clone();
-        let dna = fit.fit.to_dna().unwrap();
-        fittingformatted.entry(id).or_insert_with(|| DNAFitting {
-            name: fitname,
-            dna: dna.clone(),
-        });
-        id += 1;
-    }
+    let fits = crate::data::fits::get_fits()
+        .values()
+        .flatten()
+        .filter(|fit| !fit.name.contains("ALTERNATIVE"))
+        .map(|fit| DNAFitting {
+            name: fit.name.clone(),
+            dna: fit.fit.to_dna().unwrap().clone(),
+        })
+        .collect::<Vec<_>>();
+
     let mut logirules = Vec::new();
 
     for rule in crate::data::categories::rules() {
@@ -54,12 +53,7 @@ async fn fittings() -> Result<Json<FittingResponse>, Madness> {
         }
     }
     Ok(Json(FittingResponse {
-        fittingdata: Some(
-            fittingformatted
-                .into_iter()
-                .map(|(_id, entry)| entry)
-                .collect(),
-        ),
+        fittingdata: Some(fits),
         notes: Some(load_notes_from_file()),
         rules: Some(logirules),
     }))
