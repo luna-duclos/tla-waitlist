@@ -39,7 +39,8 @@ export function Home() {
             Please have a read of some of the <NavLink to="/guide">GUIDES</NavLink> and join the{" "}
             <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> to ask any questioned that
             aren&apos;t answered here. Look at our <NavLink to="/fits">FITS</NavLink> and make sure
-            your fit looks the same and meets the DPS numbers above the fit you choose to fly.
+            your fit looks the same. The associated DPS number is expected after roughly 2 weeks of
+            flying with us.
           </CenteredParagraph.Paragraph>
           <CenteredParagraph.Paragraph>
             Please join the in-game channel <b>TLA Incursions</b> to X Up for our fleets For any
@@ -77,6 +78,13 @@ export function Home() {
               to fly with TLA. First alts must now hit at least 93% of their respective hull&apos;s
               required DPS. Failure to do will be considered a sponge. (GUNS ONLY, NO HEAT, NO
               DRUGS, NO DRONES)
+              <b>What is the DPS requirement?</b>
+              The DPS requirement is the amount of DPS each pilot is expected to in their respective
+              hulls (guns only, no heat, no drugs, no drones) after roughly 2 weeks of flying. A
+              combination of Skills, Abyssals, and Implants are needed to achieve these numbers.
+              <b>Can I bring my Vindicator? </b>
+              Yes! Our Vindicator spots are limited so it is recommend to train into a Marauder. You
+              will be expected to DDD so please read the <NavLink to="/guide/ddd">GUIDE</NavLink>
             </CenteredParagraph.ParagraphALT>
           </CenteredParagraph>
         </ThreeColumn>
