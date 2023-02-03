@@ -249,8 +249,10 @@ function filterSlots(counts, analysis, moduleInfo) {
   if (analysis && analysis.extra) {
     for (const [moduleId, count] of Object.entries(analysis.extra)) {
       const slot = getSlot(moduleId, moduleInfo);
-      _addCount(slots[slot].match, moduleId, -count);
-      _addCount(slots[slot].extra, moduleId, count);
+      if (slot !== "drone") {
+        _addCount(slots[slot].match, moduleId, -count);
+        _addCount(slots[slot].extra, moduleId, count);
+      }
     }
   }
   if (analysis && analysis.downgraded) {

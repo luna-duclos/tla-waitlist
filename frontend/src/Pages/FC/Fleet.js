@@ -60,8 +60,12 @@ export function Fleet() {
   return (
     <>
       <Buttons>
-        <NavButton to="/fc/fleet/register">Configure fleet</NavButton>
-        <NavButton to="/auth/start/fc">ESI re-auth as FC</NavButton>
+        <InputGroup>
+          <NavButton to="/fc/fleet/register">Configure fleet</NavButton>
+        </InputGroup>
+        <InputGroup>
+          <NavButton to="/auth/start/fc">ESI re-auth as FC</NavButton>
+        </InputGroup>
         <InputGroup>
           <Button variant="success" onClick={() => toaster(toastContext, setWaitlistOpen(1, true))}>
             Open waitlist
@@ -71,9 +75,11 @@ export function Fleet() {
           </Button>
           <Button onClick={() => setEmptyWaitlistModalOpen(true)}>Empty waitlist</Button>
         </InputGroup>
-        <Button variant="danger" onClick={() => setFleetCloseModalOpen(true)}>
-          Kick everyone from fleet
-        </Button>
+        <InputGroup>
+          <Button variant="danger" onClick={() => setFleetCloseModalOpen(true)}>
+            Kick everyone from fleet
+          </Button>
+        </InputGroup>
       </Buttons>
       <Content>
         <p>
@@ -95,7 +101,9 @@ export function Fleet() {
       </Content>
       {authContext.access["fleet-history-view"] && (
         <Buttons>
-          <NavButton to="/fc/fleet/history">Fleet comp history</NavButton>
+          <InputGroup>
+            <NavButton to="/fc/fleet/history">Fleet comp history</NavButton>
+          </InputGroup>
         </Buttons>
       )}
 

@@ -13,7 +13,7 @@ const inputStyle = css`
   display: inline-block;
   font: inherit;
   &.active {
-    border-color: ${(props) => props.theme.colors.active};
+    border-color: ${(props) => props.theme.colors.accent2};
   }
   &:hover:not(:disabled):not(.static) {
     color: ${(props) => props.theme.colors[props.variant || "input"].text};
@@ -45,10 +45,15 @@ export const Button = styled.button.attrs((props) => ({
   className: `${props.active ? "active" : ""} ${props.static ? "static" : ""}`,
 }))`
   ${inputStyle}
+  min-height: 2.5em;
   height: 2.5em;
   cursor: pointer;
   &:disabled {
     opacity: 0.6;
+  }
+  border-color: ${(props) => props.theme.colors[props.variant || "input"].color};
+  @media (max-width: 700px) {
+    height: max-content;
   }
 `;
 
@@ -81,6 +86,7 @@ export const AButton = styled.a.attrs((props) => ({
   &:hover:not(:disabled):not(.static) {
     cursor: pointer;
   }
+  border-color: ${(props) => props.theme.colors[props.variant || "input"].color};
 `;
 
 export const AButtonAlt = styled.a.attrs((props) => ({
@@ -119,6 +125,7 @@ export const NavButton = styled(NavLink).attrs((props) => ({
   height: 2.5em;
   text-decoration: none;
   line-height: 2.5em;
+  border-color: ${(props) => props.theme.colors[props.variant || "input"].color};
 `;
 
 export const NavButtonAlt = styled(NavLink).attrs((props) => ({
@@ -220,12 +227,18 @@ export const InputGroup = styled.div`
 	  }
   `}
   }
+  box-shadow: 3px 3px 1px ${(props) => props.theme.colors.shadow};
+  border-radius: 20px;
+  width: fit-content;
+`;
+
+export const InputGroupAlt = styled(InputGroup)`
+  box-shadow: none;
 `;
 
 export const Buttons = styled.div`
   display: flex;
   flex-wrap: wrap;
-
   > * {
     margin-bottom: ${(props) => (props.marginb ? props.marginb : "0.5em")};
     margin-right: 0.5em;
@@ -253,4 +266,38 @@ export const Highlight = styled.b`
     cursor: pointer;
     color: ${(props) => props.theme.colors.highlight.active};
   }
+`;
+
+export const CenteredParagraph = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  justify-content: center;
+`;
+CenteredParagraph.Head = styled.h3`
+  font-weight: bold;
+  font-size: 1.5em;
+  text-decoration: underline;
+`;
+CenteredParagraph.Paragraph = styled.div`
+  margin: 0;
+  border-top: 2px solid;
+  padding: 2em 5em;
+  @media (max-width: 720px) {
+    padding: 1em;
+  }
+  border-color: ${(props) => props.theme.colors.accent2};
+`;
+CenteredParagraph.ParagraphALT = styled.div`
+  margin: 0;
+  padding: 2em 5em;
+  @media (max-width: 720px) {
+    padding: 1em;
+  }
+  b {
+    display: block;
+  }
+  border-color: ${(props) => props.theme.colors.accent2};
 `;

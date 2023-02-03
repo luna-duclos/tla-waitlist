@@ -5,11 +5,14 @@ import { XCard } from "./XCard";
 import _ from "lodash";
 
 const CategoryHeadingDOM = styled.div`
+  background-color: ${(props) => props.theme.colors.accent1};
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  border-bottom: solid 2px ${(props) => props.theme.colors.accent2};
+  padding: 0 1em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   > h2 {
     font-size: 1.2em;
     font-weight: 600;
@@ -31,6 +34,8 @@ const CategoryHeadingDOM = styled.div`
       }
     }
   }
+
+  box-shadow: 2px 2px 3px ${(props) => props.theme.colors.shadow};
 `;
 
 const CatHeadingSmall = styled(CategoryHeadingDOM)`
@@ -151,7 +156,6 @@ function ColumnWaitlist({ waitlist, onAction, fleetComposition, altCol }) {
           <ColumnWaitlistDOM.Category key={category[0]}>
             <CategoryHeading name={category[0]} fleetComposition={fleetComposition} />
             {category[1]}
-            {category[1].length ? null : <em>Nobody here!</em>}
           </ColumnWaitlistDOM.Category>
         ))}
       </ColumnWaitlistDOM>
@@ -297,10 +301,7 @@ function RowWaitlist({ waitlist, onAction, fleetComposition }) {
         {categories.map((category) => (
           <div key={category[0]}>
             <CategoryHeading name={category[0]} fleetComposition={fleetComposition} />
-            <RowWaitlistDOM.Category>
-              {category[1]}
-              {category[1].length ? null : <em>Nobody here!</em>}
-            </RowWaitlistDOM.Category>
+            <RowWaitlistDOM.Category>{category[1]}</RowWaitlistDOM.Category>
           </div>
         ))}
       </RowWaitlistDOM>

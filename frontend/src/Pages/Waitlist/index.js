@@ -14,6 +14,7 @@ import {
 } from "./displaymodes";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import { faColumns } from "@fortawesome/free-solid-svg-icons";
+import WaitlistClosed from "./WaitlistClosed";
 import _ from "lodash";
 import { useQuery } from "../../Util/query";
 import { usePageTitle } from "../../Util/title";
@@ -159,11 +160,7 @@ export function Waitlist() {
     return <em>Loading waitlist information.</em>;
   }
   if (!waitlistData.open) {
-    return (
-      <>
-        <em>The waitlist is currently closed.</em>
-      </>
-    );
+    return <WaitlistClosed />;
   }
   /*const handleChange = () => {
     setAltCol(!altCol);
@@ -202,29 +199,40 @@ export function Waitlist() {
             Leave waitlist
           </Button>
         </InputGroup>
-        <InputGroup>
-          <Button active={displayMode === "columns"} onClick={(evt) => setDisplayMode("columns")}>
-            Columns
-          </Button>
-          <Button active={displayMode === "matrix"} onClick={(evt) => setDisplayMode("matrix")}>
-            Matrix
-          </Button>
-          <Button active={displayMode === "compact"} onClick={(evt) => setDisplayMode("compact")}>
-            Compact
-          </Button>
-          <Button active={displayMode === "linear"} onClick={(evt) => setDisplayMode("linear")}>
-            Linear
-          </Button>
-          <Button active={displayMode === "rows"} onClick={(evt) => setDisplayMode("rows")}>
-            Rows
-          </Button>
-        </InputGroup>
         {authContext.access["waitlist-view"] && (
-          <InputGroup>
-            <Button active={displayMode === "notepad"} onClick={(evt) => setDisplayMode("notepad")}>
-              Notepad
-            </Button>
-          </InputGroup>
+          <>
+            <InputGroup>
+              <Button
+                active={displayMode === "columns"}
+                onClick={(evt) => setDisplayMode("columns")}
+              >
+                Columns
+              </Button>
+              <Button active={displayMode === "matrix"} onClick={(evt) => setDisplayMode("matrix")}>
+                Matrix
+              </Button>
+              <Button
+                active={displayMode === "compact"}
+                onClick={(evt) => setDisplayMode("compact")}
+              >
+                Compact
+              </Button>
+              <Button active={displayMode === "linear"} onClick={(evt) => setDisplayMode("linear")}>
+                Linear
+              </Button>
+              <Button active={displayMode === "rows"} onClick={(evt) => setDisplayMode("rows")}>
+                Rows
+              </Button>
+            </InputGroup>
+            <InputGroup>
+              <Button
+                active={displayMode === "notepad"}
+                onClick={(evt) => setDisplayMode("notepad")}
+              >
+                Notepad
+              </Button>
+            </InputGroup>
+          </>
         )}
         {/*{displayMode === "columns" && (
           <InputGroup>
@@ -237,33 +245,34 @@ export function Waitlist() {
           <CategoryHeading name="Alts" fleetComposition={fleetComposition} altCol={altCol} />
         )}*/}
       </Buttons>
-
-      {displayMode === "columns" ? (
-        <ColumnWaitlist
-          waitlist={waitlistData}
-          onAction={refreshWaitlist}
-          fleetComposition={fleetComposition}
-          altCol={altCol}
-        />
-      ) : displayMode === "compact" ? (
-        <CompactWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
-      ) : displayMode === "linear" ? (
-        <LinearWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
-      ) : displayMode === "matrix" ? (
-        <MatrixWaitlist
-          waitlist={waitlistData}
-          onAction={refreshWaitlist}
-          fleetComposition={fleetComposition}
-        />
-      ) : displayMode === "rows" ? (
-        <RowWaitlist
-          waitlist={waitlistData}
-          onAction={refreshWaitlist}
-          fleetComposition={fleetComposition}
-        />
-      ) : displayMode === "notepad" ? (
-        <NotepadWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
-      ) : null}
+      <div style={{ marginTop: "1em" }}>
+        {displayMode === "columns" ? (
+          <ColumnWaitlist
+            waitlist={waitlistData}
+            onAction={refreshWaitlist}
+            fleetComposition={fleetComposition}
+            altCol={altCol}
+          />
+        ) : displayMode === "compact" ? (
+          <CompactWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
+        ) : displayMode === "linear" ? (
+          <LinearWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
+        ) : displayMode === "matrix" ? (
+          <MatrixWaitlist
+            waitlist={waitlistData}
+            onAction={refreshWaitlist}
+            fleetComposition={fleetComposition}
+          />
+        ) : displayMode === "rows" ? (
+          <RowWaitlist
+            waitlist={waitlistData}
+            onAction={refreshWaitlist}
+            fleetComposition={fleetComposition}
+          />
+        ) : displayMode === "notepad" ? (
+          <NotepadWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
+        ) : null}
+      </div>
     </>
   );
 }
