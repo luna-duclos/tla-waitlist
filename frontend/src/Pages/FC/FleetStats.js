@@ -4,6 +4,7 @@ import { AuthContext, ToastContext } from "../../contexts";
 import { InputGroup } from "../../Components/Form";
 import { Title } from "../../Components/Page";
 import { apiCall, useApi } from "../../api";
+import { addToast } from "../../Components/Toast";
 import {
   CellTight,
   Cell,
@@ -117,29 +118,40 @@ function FleetComposition({ cats, summary }) {
   );
 }
 
-export default function FleetMembers({ fleetcomp = true }) {
+export default function FleetMembers({ fleetcomp = true, handleChangeStat }) {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
   const [fleetMembers, setFleetMembers] = React.useState(null);
   const [fleetInfo, setFleetInfo] = React.useState(null);
+  const [errorCount, setErrorCount] = React.useState(0);
   const characterId = authContext.current.id;
 
   React.useEffect(() => {
-    setFleetMembers(null);
     apiCall("/api/fleet/members?character_id=" + characterId, {})
       .then(setFleetMembers)
       .catch((err) => {
         setFleetMembers(null);
       });
-    const intervalId = setInterval(() => {
-      apiCall("/api/fleet/members?character_id=" + characterId, {})
-        .then(setFleetMembers)
-        .catch((err) => {
-          setFleetMembers(null);
-        });
-    }, 10000);
-    return () => clearInterval(intervalId);
-  }, [characterId]);
+    if (!fleetcomp) {
+      const intervalId = setInterval(() => {
+        if (errorCount >= 5) {
+          addToast(toastContext, {
+            title: "Error",
+            message: "Consecutive Error Limit Exceeded, shutting down fleetmembers",
+            variant: "danger",
+          });
+          handleChangeStat();
+          return;
+        }
+        apiCall("/api/fleet/members?character_id=" + characterId, {})
+          .then(setFleetMembers)
+          .catch((err) => {
+            setErrorCount(errorCount + 1);
+          });
+      }, 15000);
+      return () => clearInterval(intervalId);
+    }
+  }, [characterId, errorCount]);
 
   React.useEffect(() => {
     apiCall("/api/fleet/info?character_id=" + characterId, {})
@@ -203,7 +215,7 @@ export default function FleetMembers({ fleetcomp = true }) {
                   </Cell>
                   <Cell style={{ width: "80px" }}></Cell>
                   <Cell></Cell>
-                  <Cell style={{ width: "50px" }}></Cell>
+                  <Cell style={{ width: "70px" }}></Cell>
                   <Cell style={{ width: "75px" }}></Cell>
                 </Row>
 

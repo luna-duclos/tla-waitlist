@@ -73,7 +73,6 @@ export const Cell = styled.td`
 `;
 
 export const CellTight = styled.td`
-  padding: 0 0.5em;
   color: ${(props) => props.theme.colors.text};
   a {
     color: ${(props) => props.theme.colors.text};
@@ -81,11 +80,16 @@ export const CellTight = styled.td`
   @media (max-width: 480px) {
     padding: 0.3em;
   }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 0.3em;
 `;
 
 export const CellWithLine = styled.td`
   position: relative;
   text-align: end;
+  padding: 0 0.5em;
   &::before {
     content: "";
     position: absolute;

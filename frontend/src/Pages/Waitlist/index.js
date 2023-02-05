@@ -315,7 +315,7 @@ export function Waitlist() {
             <CategoryHeadingDOM>
               <h2>Members</h2>
             </CategoryHeadingDOM>
-            <FleetMembers fleetcomp={false} />
+            <FleetMembers fleetcomp={false} handleChangeStat={handleChangeStat} />
           </ColumnWaitlistDOM.Category>
         )}
       </CenteredWl>
