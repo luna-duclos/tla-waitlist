@@ -71,6 +71,7 @@ export function Home() {
             <CenteredParagraph.Head>FAQ&apos;S</CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
               <b>My fit is different to the one on the website. Can I bring it? </b>
+              Hybrid Implant sets with the appropriate fits are accepted.
               Fits differing from the ones listed on the website may be welcome in fleet. Ask
               in-game, in Discord or the active FC for clarification.
               <b>What is the DPS requirement?</b>
