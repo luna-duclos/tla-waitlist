@@ -251,6 +251,13 @@ fit_variation_rules:
       - name: Large Hyperspatial Velocity Optimizer II
         amount: 1
   - hull: Kronos
+    missing: 
+      - name: Large Trimark Armor Pump II
+        amount: 1
+    extra:
+      - name: Large Hyperspatial Velocity Optimizer II
+        amount: 1
+  - hull: Kronos
     missing:
       - name: Auto Targeting System II
         amount: 1
