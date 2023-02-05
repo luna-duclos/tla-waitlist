@@ -151,7 +151,7 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat }) {
       }, 15000);
       return () => clearInterval(intervalId);
     }
-  }, [characterId, errorCount]);
+  }, [characterId, errorCount, fleetcomp, handleChangeStat, toastContext]);
 
   React.useEffect(() => {
     apiCall("/api/fleet/info?character_id=" + characterId, {})
