@@ -56,7 +56,7 @@ struct ModuleFile {
 }
 
 #[derive(Deserialize)]
-struct AddDrug {
+struct ModuleString {
     name: String,
     amount: i64,
 }
@@ -65,7 +65,7 @@ struct AddDrug {
 struct AddRemove {
     detect: String,
     remove: Vec<String>,
-    add: Vec<AddDrug>,
+    add: Vec<ModuleString>,
 }
 
 #[derive(Debug)]
@@ -267,6 +267,57 @@ pub fn drug_handling() -> Result<BTreeMap<TypeID, DrugChanger>, TypeError> {
         );
     }
     Ok(drugmap)
+}
+
+#[derive(Deserialize)]
+struct FitVariationRule {
+    hull: String,
+    missing: Vec<ModuleString>,
+    extra: Vec<ModuleString>,
+}
+
+#[derive(Deserialize)]
+struct FitVariationRules {
+    fit_variation_rules: Vec<FitVariationRule>,
+}
+
+#[derive(Debug)]
+pub struct ModuleVariation {
+    pub missing: BTreeMap<TypeID, i64>,
+    pub extra: BTreeMap<TypeID, i64>,
+}
+
+pub fn fit_module_variations() -> Result<BTreeMap<TypeID, Vec<ModuleVariation>>, TypeError> {
+    let data: FitVariationRules = yamlhelper::from_file("./data/modules.yaml");
+    let mut hull_variations = BTreeMap::<TypeID, Vec<ModuleVariation>>::new();
+
+    for rule in &data.fit_variation_rules {
+        let mut missing = BTreeMap::<TypeID, i64>::new();
+        let mut extra = BTreeMap::<TypeID, i64>::new();
+        for module in &rule.missing {
+            missing.insert(TypeDB::id_of(&module.name)?, module.amount);
+        }
+        for module in &rule.extra {
+            extra.insert(TypeDB::id_of(&module.name)?, module.amount);
+        }
+        let hull_id = TypeDB::id_of(&rule.hull)?;
+        if let Some(hull_var) = hull_variations.get_mut(&hull_id) {
+            hull_var.push(ModuleVariation {
+                missing: missing,
+                extra: extra,
+            });
+        } else {
+            hull_variations.insert(
+                hull_id,
+                vec![ModuleVariation {
+                    missing: missing,
+                    extra: extra,
+                }],
+            );
+        }
+    }
+
+    Ok(hull_variations)
 }
 
 pub fn get() -> &'static Variator {

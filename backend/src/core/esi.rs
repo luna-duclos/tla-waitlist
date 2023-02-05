@@ -33,8 +33,8 @@ impl EsiErrorReason {
                 return EsiErrorReason {
                     error: parts[0].to_string().replace('"', ""),
                     details: "".to_string(), // We could grab the remaining JSON value but
-                };                           // I don't know how to do it without the logic
-            }                                // crashing due to index out of bounds
+                }; // I don't know how to do it without the logic
+            } // crashing due to index out of bounds
             Err(e) => {
                 return EsiErrorReason {
                     error: "Failed to parse ESI error reason".to_string(),
@@ -484,7 +484,7 @@ pub mod fleet_members {
         pub character_id: i64,
         pub ship_type_id: TypeID,
         pub squad_id: i64,
-		pub role: String,
+        pub role: String,
     }
 
     pub async fn get(

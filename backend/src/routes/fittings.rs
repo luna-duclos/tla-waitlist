@@ -3,7 +3,6 @@ use crate::util::madness::Madness;
 use eve_data_core::TypeID;
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
 
 #[derive(Debug, Serialize)]
 pub struct DNAFitting {

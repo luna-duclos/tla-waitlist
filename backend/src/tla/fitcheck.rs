@@ -1,8 +1,6 @@
-use std::{
-    collections::{BTreeMap, BTreeSet},
-};
+use std::collections::{BTreeMap, BTreeSet};
 
-use super::{fitmatch};
+use super::fitmatch;
 use crate::data::{categories, fits::DoctrineFit, skills::Skills};
 use eve_data_core::{FitError, Fitting, TypeDB, TypeID};
 use serde::Serialize;
@@ -74,7 +72,7 @@ impl<'a> FitChecker<'a> {
 
         checker.finish()
     }
-/*
+    /*
     fn check_skill_reqs_tier(&self, tier: SkillTier) -> Result<bool, FitError> {
         let ship_name = TypeDB::name_of(self.fit.hull)?;
         if let Some(reqs) = super::skills::skill_data().requirements.get(&ship_name) {
@@ -90,7 +88,6 @@ impl<'a> FitChecker<'a> {
             Ok(false)
         }
     }*/
-
 
     fn check_module_skills(&mut self) -> Result<(), FitError> {
         let mut module_ids = vec![self.fit.hull];
@@ -111,7 +108,6 @@ impl<'a> FitChecker<'a> {
         Ok(())
     }
 
-
     fn check_fit(&mut self) {
         if let Some((doctrine_fit, diff)) = fitmatch::find_fit(self.fit) {
             self.doctrine_fit = Some(doctrine_fit);
@@ -131,84 +127,82 @@ impl<'a> FitChecker<'a> {
         }
     }
 
-
     fn check_time_in_fleet(&mut self) {
         let pilot_dps = self.tags.contains("DPS");
-            
+
         if self.fit.hull == type_id!("Vindicator") {
             if self.pilot.time_in_fleet > (20 * 3600) && !pilot_dps {
                 self.approved = false;
                 self.tags.insert("DPS-HOURS-REACHED");
             }
-        } 
+        }
     }
-/*
-    fn check_fit_implants_reqs(&mut self) {
-        if let Some(doctrine_fit) = self.doctrine_fit {
-            let set_tag = implantmatch::detect_base_set(self.pilot.implants).unwrap_or("");
-            if set_tag != "SAVIOR" {
-                let mut implants_nok = "";
-                if doctrine_fit.name.contains("ASCENDANCY") && set_tag != "WARPSPEED" {
-                    implants_nok = "Ascendancy";
-                } else if doctrine_fit.name.contains("HYBRID") && set_tag != "AMULET" {
-                    let implants = [
-                        type_id!("High-grade Amulet Alpha"),
-                        type_id!("High-grade Amulet Beta"),
-                        type_id!("High-grade Amulet Delta"),
-                        type_id!("High-grade Amulet Epsilon"),
-                        type_id!("High-grade Amulet Gamma"),
-                    ];
-                    for implant in implants {
-                        if !self.pilot.implants.contains(&implant) {
-                            implants_nok = "Hybrid";
+    /*
+        fn check_fit_implants_reqs(&mut self) {
+            if let Some(doctrine_fit) = self.doctrine_fit {
+                let set_tag = implantmatch::detect_base_set(self.pilot.implants).unwrap_or("");
+                if set_tag != "SAVIOR" {
+                    let mut implants_nok = "";
+                    if doctrine_fit.name.contains("ASCENDANCY") && set_tag != "WARPSPEED" {
+                        implants_nok = "Ascendancy";
+                    } else if doctrine_fit.name.contains("HYBRID") && set_tag != "AMULET" {
+                        let implants = [
+                            type_id!("High-grade Amulet Alpha"),
+                            type_id!("High-grade Amulet Beta"),
+                            type_id!("High-grade Amulet Delta"),
+                            type_id!("High-grade Amulet Epsilon"),
+                            type_id!("High-grade Amulet Gamma"),
+                        ];
+                        for implant in implants {
+                            if !self.pilot.implants.contains(&implant) {
+                                implants_nok = "Hybrid";
+                            }
+                        }
+                    } else if doctrine_fit.name.contains("AMULET") && set_tag != "AMULET" {
+                        implants_nok = "Amulet";
+                    }
+                    if implants_nok != "" {
+                        self.errors.push(format!(
+                            "Missing required implants to fly {} fit",
+                            implants_nok
+                        ));
+                    }
+                }
+            }
+        }
+
+        fn add_implant_tag(&mut self) {
+            if let Some(doctrine_fit) = self.doctrine_fit {
+                // Implant badge will show if you have 1-9
+                if let Some(set_tag) = implantmatch::detect_set(self.fit.hull, self.pilot.implants) {
+                    // all non tagged fits are ascendancy (warpspeed)
+                    // logi cruisers are an expection, they can fly whatever they want
+                    // full amulet is still elite on hybrid fit
+                    if set_tag == "SAVIOR" {
+                        self.tags.insert("SAVIOR");
+                    } else if doctrine_fit.name.contains(set_tag)
+                        || (set_tag == "WARPSPEED"
+                            && !(doctrine_fit.name.contains("AMULET")
+                                || doctrine_fit.name.contains("HYBRID")))
+                        || self.fit.hull == type_id!("Oneiros")
+                        || self.fit.hull == type_id!("Guardian")
+                        || (set_tag == "AMULET" && doctrine_fit.name.contains("HYBRID"))
+                    {
+                        self.tags.insert(set_tag);
+                        // give warning if you have all but slot 10 or wrong slot for that ship
+                        if implantmatch::detect_slot10(self.fit.hull, self.pilot.implants).is_none() {
+                            self.tags.insert("NO-SLOT10");
+                        }
+                        if set_tag == "AMULET" && doctrine_fit.name.contains("HYBRID") {
+                            self.tags.insert("SLOW");
                         }
                     }
-                } else if doctrine_fit.name.contains("AMULET") && set_tag != "AMULET" {
-                    implants_nok = "Amulet";
-                }
-                if implants_nok != "" {
-                    self.errors.push(format!(
-                        "Missing required implants to fly {} fit",
-                        implants_nok
-                    ));
                 }
             }
         }
-    }
-
-    fn add_implant_tag(&mut self) {
-        if let Some(doctrine_fit) = self.doctrine_fit {
-            // Implant badge will show if you have 1-9
-            if let Some(set_tag) = implantmatch::detect_set(self.fit.hull, self.pilot.implants) {
-                // all non tagged fits are ascendancy (warpspeed)
-                // logi cruisers are an expection, they can fly whatever they want
-                // full amulet is still elite on hybrid fit
-                if set_tag == "SAVIOR" {
-                    self.tags.insert("SAVIOR");
-                } else if doctrine_fit.name.contains(set_tag)
-                    || (set_tag == "WARPSPEED"
-                        && !(doctrine_fit.name.contains("AMULET")
-                            || doctrine_fit.name.contains("HYBRID")))
-                    || self.fit.hull == type_id!("Oneiros")
-                    || self.fit.hull == type_id!("Guardian")
-                    || (set_tag == "AMULET" && doctrine_fit.name.contains("HYBRID"))
-                {
-                    self.tags.insert(set_tag);
-                    // give warning if you have all but slot 10 or wrong slot for that ship
-                    if implantmatch::detect_slot10(self.fit.hull, self.pilot.implants).is_none() {
-                        self.tags.insert("NO-SLOT10");
-                    }
-                    if set_tag == "AMULET" && doctrine_fit.name.contains("HYBRID") {
-                        self.tags.insert("SLOW");
-                    }
-                }
-            }
-        }
-    }
-*/
+    */
     fn set_category(&mut self) {
-        let category =
-            categories::categorize(self.fit).unwrap_or_else(|| "offgrid".to_string());
+        let category = categories::categorize(self.fit).unwrap_or_else(|| "offgrid".to_string());
         self.category = Some(category);
     }
 
@@ -217,22 +211,19 @@ impl<'a> FitChecker<'a> {
             self.tags.insert("HQ-FC");
         } else if self.pilot.access_keys.contains("waitlist-tag:TRAINEE") {
             self.tags.insert("TRAINEE");
-        }
-        else {
-			if self.badges.contains(&String::from("LOGI")) {
+        } else {
+            if self.badges.contains(&String::from("LOGI")) {
                 self.tags.insert("LOGI");
             }
-    
+
             if self.badges.contains(&String::from("ALT")) {
                 self.tags.insert("ALT");
             }
-			if self.badges.contains(&String::from("DPS")) {
+            if self.badges.contains(&String::from("DPS")) {
                 self.tags.insert("DPS");
             }
         }
     }
-
-
 
     fn finish(self) -> Result<Output, FitError> {
         Ok(Output {

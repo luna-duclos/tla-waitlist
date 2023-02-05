@@ -104,9 +104,12 @@ impl FitDiffer {
 
     pub fn diff(expect: &Fitting, actual: &Fitting) -> DiffResult {
         let variator = crate::data::variations::get();
-        let modules = Self::section_diff(&expect.modules, &actual.modules, &variator);
+        let mut modules = Self::section_diff(&expect.modules, &actual.modules, &variator);
         let cargo_changer = crate::data::variations::drug_handling().unwrap_or(BTreeMap::new());
         let mut mexcargo = expect.cargo.clone();
+        let amvariations =
+            crate::data::variations::fit_module_variations().unwrap_or(BTreeMap::new());
+
         mexcargo.retain(|id, _| !&variator.cargo_ignore.contains(id));
         // Change expected cargo (yaml config) does fit have the detecting drug?
         for (detect, drugchange) in &cargo_changer {
@@ -138,6 +141,32 @@ impl FitDiffer {
                 }
             })
             .collect();
+
+        if let Some(shipvar) = amvariations.get(&actual.hull) {
+            for allowed_variation in shipvar {
+                let missing_matches = modules.missing.iter().all(|(module, count)| {
+                    allowed_variation
+                        .missing
+                        .get(module)
+                        .map_or(false, |allowed_count| allowed_count == count)
+                });
+                let extra_matches = modules.extra.iter().all(|(module, count)| {
+                    allowed_variation
+                        .extra
+                        .get(module)
+                        .map_or(false, |allowed_count| allowed_count == count)
+                });
+
+                if missing_matches && extra_matches {
+                    for module in allowed_variation.missing.keys() {
+                        modules.missing.remove(module);
+                    }
+                    for module in allowed_variation.extra.keys() {
+                        modules.extra.remove(module);
+                    }
+                }
+            }
+        }
 
         DiffResult {
             module_missing: modules.missing,

@@ -25,7 +25,7 @@ struct XupRequest {
     character_id: i64,
     eft: String,
     is_alt: bool,
-	messagexup: String,
+    messagexup: String,
 
     #[serde(default)]
     dna: Vec<DnaXup>,
@@ -90,7 +90,7 @@ async fn xup_multi(
     waitlist_id: i64,
     xups: Vec<(i64, Fitting)>,
     is_alt: bool,
-	messagexup: &String
+    messagexup: &String,
 ) -> Result<(), Madness> {
     // Track the "now" from the start of the operation, to keep things fair
     let now = chrono::Utc::now().timestamp();
@@ -101,11 +101,10 @@ async fn xup_multi(
     } else if xups.len() > MAX_X_PER_ACCOUNT {
         return Err(Madness::BadRequest("Too many fits".to_string()));
     }
-	// X-up message character limit
-	if messagexup.len() > 100 {
-		return Err(Madness::BadRequest("X-up message too long!".to_string()));
-	}
-
+    // X-up message character limit
+    if messagexup.len() > 100 {
+        return Err(Madness::BadRequest("X-up message too long!".to_string()));
+    }
 
     // Make sure the waitlist is actually open
     if sqlx::query!(
@@ -288,7 +287,15 @@ async fn xup(
         xups.push((dna_xup.character_id, fit));
     }
 
-    xup_multi(app, account, input.waitlist_id, xups, input.is_alt, &input.messagexup).await?;
+    xup_multi(
+        app,
+        account,
+        input.waitlist_id,
+        xups,
+        input.is_alt,
+        &input.messagexup,
+    )
+    .await?;
 
     Ok("OK")
 }

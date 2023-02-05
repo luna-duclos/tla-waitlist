@@ -67,6 +67,7 @@ function encodeData(input) {
       input.minTime,
       input.maxTime,
       input.chars,
+      input.firstSitePayout,
     ])
   );
 }
@@ -74,6 +75,7 @@ function encodeData(input) {
 function decodeData(encoded) {
   if (encoded[0] === "1") {
     const numbers = decodeString1(encoded.slice(1));
+    console.log(numbers);
     return {
       isk: numbers[0],
       lp: numbers[1],
@@ -83,6 +85,7 @@ function decodeData(encoded) {
       minTime: numbers[5],
       maxTime: numbers[6],
       chars: numbers[7],
+      firstSitePayout: numbers[8] || 31500000,
     };
   } else {
     throw new Error("Cannot decode input");
@@ -195,12 +198,11 @@ function parseWallet(input) {
   if (siteTimes.length < 1) {
     return null;
   }
-
   result.minTime = Math.min(...siteTimes);
   result.maxTime = Math.max(...siteTimes);
   result.startTime = Math.min(...result.raw.map((row) => row.time));
   result.endTime = Math.max(...result.raw.map((row) => row.time));
-
+  result.firstSitePayout = result.raw.find((obj) => obj.time === result.startTime).isk;
   return result;
 }
 
@@ -261,7 +263,6 @@ export function ISKhCalc() {
 export function ISKh() {
   const queryParams = new URLSearchParams(useLocation().search);
   const dataStr = queryParams.get("d") || "";
-
   return (
     <>
       <div>
@@ -333,9 +334,10 @@ function ResultDisplay({ dataStr }) {
   }
 
   const duration = decoded.endTime - decoded.startTime;
-  const iskH = Math.round(decoded.isk / (duration / 3600) / (decoded.sites / (decoded.sites - 1)));
+  const iskH = Math.round((decoded.isk - decoded.firstSitePayout) / (duration / 3600));
   const url = window.location.origin + `/isk-h?d=${dataStr}`;
 
+  console.log(decoded);
   return (
     <>
       <ResultDOM>
