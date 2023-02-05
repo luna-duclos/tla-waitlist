@@ -252,7 +252,7 @@ fit_variation_rules:
         amount: 1
   - hull: Kronos
     missing:
-      - name: Small Tractor Beam I
+      - name: Auto Targeting System II
         amount: 1
     extra:
       - name: Large Remote Armor Repairer II

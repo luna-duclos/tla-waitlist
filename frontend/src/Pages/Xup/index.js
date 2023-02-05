@@ -58,7 +58,6 @@ const WaitlistWrap = styled.div`
   }
 `;
 
-
 async function xUp({ character, eft, toastContext, waitlist_id, alt, messagexup }) {
   await apiCall("/api/waitlist/xup", {
     json: {

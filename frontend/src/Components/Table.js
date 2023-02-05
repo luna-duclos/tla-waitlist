@@ -27,7 +27,8 @@ export const Row = styled.tr`
     props.background &&
     `
     background-color: ${props.theme.colors.accent1};
-	border-bottom: solid 1px ${props.theme.colors.accent2};
+    box-shadow: 2px 2px 5px ${props.theme.colors.shadow};
+    
   `}
 
   &:last-child {

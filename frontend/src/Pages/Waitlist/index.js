@@ -3,6 +3,7 @@ import { AuthContext, ToastContext, EventContext } from "../../contexts";
 import { apiCall, errorToaster, useApi } from "../../api";
 import styled from "styled-components";
 import { InputGroup, Button, Buttons, AButton } from "../../Components/Form";
+import FleetMembers from "../FC/FleetStats";
 import {
   ColumnWaitlist,
   CompactWaitlist,
@@ -10,7 +11,8 @@ import {
   MatrixWaitlist,
   RowWaitlist,
   NotepadWaitlist,
-  //CategoryHeading,
+  CategoryHeadingDOM,
+  ColumnWaitlistDOM,
 } from "./displaymodes";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import { faColumns } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +25,20 @@ import { Modal } from "../../Components/Modal";
 import { Box } from "../../Components/Box";
 const FixedBox = styled.div`
   width: 100%;
+`;
+
+const CenteredWl = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 1em;
+  @media (max-width: 1000px) {
+    flex-wrap: wrap;
+  }
+`;
+
+const WaitlistWrapper = styled.div`
+  width: 70%;
 `;
 
 function coalesceCalls(func, wait) {
@@ -128,9 +144,14 @@ export function Waitlist() {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
   const [query, setQuery] = useQuery();
-  const [altCol /*setAltCol*/] = React.useState(
+  /*const [altCol /*setAltCol] = React.useState(
     window.localStorage && window.localStorage.getItem("AltColumn")
       ? window.localStorage.getItem("AltColumn") === "true"
+      : false
+  );*/
+  const [showMembers, setShowMembers] = React.useState(
+    window.localStorage && window.localStorage.getItem("FleetStat")
+      ? window.localStorage.getItem("FleetStat") === "true"
       : false
   );
   const [xupOpen, setXupOpen] = React.useState(false);
@@ -168,6 +189,13 @@ export function Waitlist() {
       window.localStorage.setItem("AltColumn", !altCol);
     }
   };*/
+
+  const handleChangeStat = () => {
+    setShowMembers(!showMembers);
+    if (window.localStorage) {
+      window.localStorage.setItem("FleetStat", !showMembers);
+    }
+  };
 
   var myEntry = _.find(
     waitlistData.waitlist,
@@ -232,6 +260,13 @@ export function Waitlist() {
                 Notepad
               </Button>
             </InputGroup>
+            {displayMode === "columns" && (
+              <InputGroup>
+                <Button onClick={handleChangeStat}>
+                  {showMembers ? "Disable Fleet Stats" : "Enable Fleet Stats"}
+                </Button>
+              </InputGroup>
+            )}
           </>
         )}
         {/*{displayMode === "columns" && (
@@ -245,34 +280,45 @@ export function Waitlist() {
           <CategoryHeading name="Alts" fleetComposition={fleetComposition} altCol={altCol} />
         )}*/}
       </Buttons>
-      <div style={{ marginTop: "1em" }}>
-        {displayMode === "columns" ? (
-          <ColumnWaitlist
-            waitlist={waitlistData}
-            onAction={refreshWaitlist}
-            fleetComposition={fleetComposition}
-            altCol={altCol}
-          />
-        ) : displayMode === "compact" ? (
-          <CompactWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
-        ) : displayMode === "linear" ? (
-          <LinearWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
-        ) : displayMode === "matrix" ? (
-          <MatrixWaitlist
-            waitlist={waitlistData}
-            onAction={refreshWaitlist}
-            fleetComposition={fleetComposition}
-          />
-        ) : displayMode === "rows" ? (
-          <RowWaitlist
-            waitlist={waitlistData}
-            onAction={refreshWaitlist}
-            fleetComposition={fleetComposition}
-          />
-        ) : displayMode === "notepad" ? (
-          <NotepadWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
-        ) : null}
-      </div>
+      <CenteredWl>
+        <WaitlistWrapper>
+          {displayMode === "columns" ? (
+            <ColumnWaitlist
+              waitlist={waitlistData}
+              onAction={refreshWaitlist}
+              fleetComposition={fleetComposition}
+              authContext={authContext}
+              showMembers={showMembers}
+            />
+          ) : displayMode === "compact" ? (
+            <CompactWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
+          ) : displayMode === "linear" ? (
+            <LinearWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
+          ) : displayMode === "matrix" ? (
+            <MatrixWaitlist
+              waitlist={waitlistData}
+              onAction={refreshWaitlist}
+              fleetComposition={fleetComposition}
+            />
+          ) : displayMode === "rows" ? (
+            <RowWaitlist
+              waitlist={waitlistData}
+              onAction={refreshWaitlist}
+              fleetComposition={fleetComposition}
+            />
+          ) : displayMode === "notepad" ? (
+            <NotepadWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
+          ) : null}
+        </WaitlistWrapper>
+        {showMembers && authContext.access["waitlist-view"] && (
+          <ColumnWaitlistDOM.Category key={"Members"}>
+            <CategoryHeadingDOM>
+              <h2>Members</h2>
+            </CategoryHeadingDOM>
+            <FleetMembers fleetcomp={false} />
+          </ColumnWaitlistDOM.Category>
+        )}
+      </CenteredWl>
     </>
   );
 }

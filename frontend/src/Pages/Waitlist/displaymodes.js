@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { XCard } from "./XCard";
 import _ from "lodash";
 
-const CategoryHeadingDOM = styled.div`
+export const CategoryHeadingDOM = styled.div`
   background-color: ${(props) => props.theme.colors.accent1};
   display: flex;
   flex-wrap: wrap;
@@ -109,7 +109,7 @@ function HeadingStyle({ name, shipCountsArr }) {
   );
 }
 
-const ColumnWaitlistDOM = styled.div`
+export const ColumnWaitlistDOM = styled.div`
   display: flex;
   @media (max-width: 480px) {
     flex-wrap: wrap;
@@ -130,7 +130,8 @@ ColumnWaitlistDOM.Category = styled.div`
   }
 `;
 
-function ColumnWaitlist({ waitlist, onAction, fleetComposition, altCol }) {
+// altcol is unused
+function ColumnWaitlist({ waitlist, onAction, fleetComposition, altCol = false, authContext }) {
   var categories = [];
   var categoryIndex = {};
   _.forEach(waitlist.categories, (category, i) => {
