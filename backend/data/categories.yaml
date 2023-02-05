@@ -9,8 +9,6 @@ categories:
     name: Bastion
   - id: other
     name: Other  
-  - id: offgrid
-    name: Off Grid
 
 rules:
   # Logi
