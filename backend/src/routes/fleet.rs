@@ -132,6 +132,8 @@ async fn fleet_info(
 #[derive(Debug, Serialize)]
 struct FleetCompResponse {
     wings: Vec<FleetCompWing>,
+    id: i64,
+    member: Option<FleetMember>,
 }
 
 #[derive(Debug, Serialize)]
@@ -178,20 +180,34 @@ async fn fleet_composition(
         crate::core::esi::fleet_members::get(&app.esi_client, fleet_id, fleet.boss_id).await?;
     let character_ids: Vec<_> = members.iter().map(|member| member.character_id).collect();
     let mut characters = crate::data::character::lookup(app.get_db(), &character_ids).await?;
-
+    let fleet_commander = members
+        .iter()
+        .find(|member| member.role == "fleet_commander")
+        .map(|member| FleetMember {
+            id: member.character_id,
+            name: characters.remove(&member.character_id).map(|f| f.name),
+            ship: Hull {
+                id: member.ship_type_id,
+                name: TypeDB::name_of(member.ship_type_id).unwrap(),
+            },
+            role: member.role.clone(),
+        });
     let wings = wings_info
         .into_iter()
         .map(|info_wing| FleetCompWing {
             id: info_wing.id,
-            member: members.iter().find(|member| member.wing_id == info_wing.id && member.role == "wing_commander").map(|member| FleetMember {
-                id: member.character_id,
-                name: characters.remove(&member.character_id).map(|f| f.name),
-                ship: Hull {
-                    id: member.ship_type_id,
-                    name: TypeDB::name_of(member.ship_type_id).unwrap(),
-                },
-                role: member.role.clone(),
-            }),
+            member: members
+                .iter()
+                .find(|member| member.wing_id == info_wing.id && member.role == "wing_commander")
+                .map(|member| FleetMember {
+                    id: member.character_id,
+                    name: characters.remove(&member.character_id).map(|f| f.name),
+                    ship: Hull {
+                        id: member.ship_type_id,
+                        name: TypeDB::name_of(member.ship_type_id).unwrap(),
+                    },
+                    role: member.role.clone(),
+                }),
             name: info_wing.name,
 
             squads: info_wing
@@ -219,11 +235,14 @@ async fn fleet_composition(
                     }
                 })
                 .collect(),
-
         })
         .collect();
 
-    Ok(Json(FleetCompResponse { wings }))
+    Ok(Json(FleetCompResponse {
+        wings,
+        id: fleet_id,
+        member: fleet_commander,
+    }))
 }
 
 #[derive(Debug, Serialize)]

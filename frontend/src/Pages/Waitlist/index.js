@@ -3,7 +3,7 @@ import { AuthContext, ToastContext, EventContext } from "../../contexts";
 import { apiCall, errorToaster, useApi } from "../../api";
 import styled from "styled-components";
 import { InputGroup, Button, Buttons, AButton } from "../../Components/Form";
-import FleetMembers from "../FC/FleetStats";
+import { FleetMembers } from "../FC/FleetStats";
 import {
   ColumnWaitlist,
   CompactWaitlist,
@@ -319,7 +319,7 @@ export function Waitlist() {
             <CategoryHeadingDOM>
               <h2>Members</h2>
             </CategoryHeadingDOM>
-            <FleetMembers fleetcomp={false} handleChangeStat={handleChangeStat} />
+            <FleetMembers fleetpage={false} handleChangeStat={handleChangeStat} />
           </ColumnWaitlistDOM.Category>
         )}
       </CenteredWl>

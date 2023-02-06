@@ -81,34 +81,56 @@ function Squad({ members, squadname, warnActive }) {
   );
 }
 
-function FleetComposition({ cats, summary }) {
+function FleetDscan({ characterId, memberlist, showFull = true }) {
+  var cats = {
+    Marauder: 0,
+    Logiarmor: 0,
+    Logishield: 0,
+    Vindicator: 0,
+    Booster: 0,
+  };
+  var summary = {};
+  if (memberlist) {
+    memberlist.forEach((member) => {
+      if (!summary[member.ship.name]) summary[member.ship.name] = 0;
+      summary[member.ship.name]++;
+      if (booster.includes(member.ship.name)) cats["Booster"]++;
+      if (marauders.includes(member.ship.name)) cats["Marauder"]++;
+      if ("Vindicator" === member.ship.name) cats["Vindicator"]++;
+      if ("Loki" === member.ship.name) cats["Logishield"]++;
+      if ("Nestor" === member.ship.name) cats["Logiarmor"]++;
+    });
+  }
+
   return (
-    <div style={{ marginLeft: "4em" }}>
-      <Title>Fleet composition</Title>
+    <div style={showFull ? {} : { display: "flex", justifyContent: "center" }}>
+      {showFull && <Title>Fleet Summary</Title>}
       <InputGroup style={{ marginBottom: "1em" }}>
         <BorderedBox>Marauders: {cats["Marauder"]} </BorderedBox>
         <BorderedBox>
-          Logistics (N/L): {cats["Logiarmor"]}/{cats["Logishield"]}{" "}
+          Logi (N/L): {cats["Logiarmor"]}/{cats["Logishield"]}{" "}
         </BorderedBox>
         <BorderedBox>Vindicators: {cats["Vindicator"]} </BorderedBox>
         <BorderedBox>Boosters: {cats["Booster"]} </BorderedBox>
       </InputGroup>
-      <Table>
-        <TableHead>
-          <Row>
-            <CellHead>Ship</CellHead>
-            <CellHead>#</CellHead>
-          </Row>
-        </TableHead>
-        <TableBody>
-          {_.sortBy(_.entries(summary), [1]).map(([shipName, count]) => (
-            <Row key={shipName}>
-              <Cell>{shipName}</Cell>
-              <Cell>{count}</Cell>
+      {showFull && (
+        <Table>
+          <TableHead>
+            <Row>
+              <CellHead>Ship</CellHead>
+              <CellHead>#</CellHead>
             </Row>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHead>
+          <TableBody>
+            {_.sortBy(_.entries(summary), [1]).map(([shipName, count]) => (
+              <Row key={shipName}>
+                <Cell>{shipName}</Cell>
+                <Cell>{count}</Cell>
+              </Row>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }
@@ -122,26 +144,43 @@ function getWingMembersCount(wing) {
   return totalMembers;
 }
 
-export default function FleetMembers({ fleetcomp = true, handleChangeStat = null }) {
+function getFleetMembers(fleet) {
+  let members = [];
+  if (fleet.member) members.push(fleet.member);
+  fleet.wings.forEach((wing) => {
+    if (wing.member) members.push(wing.member);
+    wing.squads.forEach((squad) => {
+      squad.members.forEach((member) => {
+        members.push(member);
+      });
+    });
+  });
+
+  return members;
+}
+
+export function FleetMembers({ fleetpage = true, handleChangeStat = null }) {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
   const [fleetCompositionInfo, setFleetCompositionInfo] = React.useState(null);
   const [errorCount, setErrorCount] = React.useState(0);
   const characterId = authContext.current.id;
-
-  React.useEffect(() => {
+React.useEffect(() => {
     apiCall("/api/fleet/fleetcomp?character_id=" + characterId, {})
       .then(setFleetCompositionInfo)
       .catch((err) => {
         setFleetCompositionInfo(null);
-        if (!fleetcomp) handleChangeStat();
+        if (!fleetpage) handleChangeStat();
       });
-    if (!fleetcomp) {
+  }, [characterId, fleetpage, handleChangeStat]);
+
+  React.useEffect(() => {
+    if (!fleetpage) {
       const intervalId = setInterval(() => {
         if (errorCount >= 4) {
           addToast(toastContext, {
             title: "Error",
-            message: "Consecutive Error Limit Exceeded, shutting down fleetmembers",
+            message: "Consecutive Error Limit Exceeded, shutting down fleetstats",
             variant: "danger",
           });
           handleChangeStat();
@@ -159,46 +198,30 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat = null
       }, 15000);
       return () => clearInterval(intervalId);
     }
-  }, [characterId, errorCount, fleetcomp, handleChangeStat, toastContext]);
+  }, [characterId, errorCount, fleetpage, handleChangeStat, toastContext]);
 
   if (!fleetCompositionInfo) {
     return null;
   }
-
+  console.log("test");
   if (fleetCompositionInfo) {
     fleetCompositionInfo.wings.forEach((wing) => {
       wing.squads.sort((a, b) => a.id - b.id);
     });
   }
 
-  if (fleetcomp) {
-    var cats = {
-      Marauder: 0,
-      Logiarmor: 0,
-      Logishield: 0,
-      Vindicator: 0,
-      Booster: 0,
-    };
-
-    var summary = {};
-    if (fleetCompositionInfo) {
-      fleetCompositionInfo.members.forEach((member) => {
-        if (!summary[member.ship.name]) summary[member.ship.name] = 0;
-        summary[member.ship.name]++;
-        if (booster.includes(member.ship.name)) cats["Booster"]++;
-        if (marauders.includes(member.ship.name)) cats["Marauder"]++;
-        if ("Vindicator" === member.ship.name) cats["Vindicator"]++;
-        if ("Loki" === member.ship.name) cats["Logishield"]++;
-        if ("Nestor" === member.ship.name) cats["Logiarmor"]++;
-      });
-    }
-  }
-
   return (
     <div style={{ display: "flex", flexWrap: "wrap" }}>
       <div>
-        {fleetcomp && <Title>Members</Title>}
-        <Table style={{ fontSize: "12px" }} fullWidth={fleetcomp ? undefined : true}>
+        {fleetpage && <Title>Members</Title>}
+        {!fleetpage && (
+          <FleetDscan
+            characterId={authContext.current.id}
+            showFull={false}
+            memberlist={getFleetMembers(fleetCompositionInfo)}
+          />
+        )}
+        <Table style={{ fontSize: "12px" }} fullWidth={fleetpage ? undefined : true}>
           <TableBody>
             {fleetCompositionInfo.wings.map((wing, wingIndex) => (
               <React.Fragment key={wing.name}>
@@ -232,8 +255,15 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat = null
           </TableBody>
         </Table>
       </div>
-
-      {fleetcomp && <FleetComposition cats={cats} summary={summary} />}
+      {fleetpage && (
+        <div style={{ marginLeft: "4em" }}>
+          <FleetDscan
+            characterId={authContext.current.id}
+            showFull={true}
+            memberlist={getFleetMembers(fleetCompositionInfo)}
+          />
+        </div>
+      )}
     </div>
   );
 }

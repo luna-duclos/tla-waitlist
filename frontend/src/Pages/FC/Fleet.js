@@ -6,7 +6,7 @@ import { Content } from "../../Components/Page";
 import { apiCall, errorToaster, toaster, useApi } from "../../api";
 import { usePageTitle } from "../../Util/title";
 import fleetcomp from "./fleetcomp.png";
-import FleetMembers from "./FleetStats";
+import { FleetMembers } from "./FleetStats";
 
 async function setWaitlistOpen(waitlistId, isOpen) {
   return await apiCall("/api/waitlist/set_open", {
@@ -90,7 +90,6 @@ export function Fleet() {
           </InputGroup>
         </Buttons>
       )}
-
       <FleetMembers />
       <Confirm
         open={fleetCloseModalOpen}
