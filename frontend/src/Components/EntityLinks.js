@@ -32,7 +32,6 @@ const A = styled.a`
 `;
 
 const ShowInfo = (id, whoami, toastContext) => {
-  console.log(whoami);
   errorToaster(
     toastContext,
     apiCall(`/api/open_window`, {

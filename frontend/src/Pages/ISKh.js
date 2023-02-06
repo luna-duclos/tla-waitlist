@@ -75,7 +75,6 @@ function encodeData(input) {
 function decodeData(encoded) {
   if (encoded[0] === "1") {
     const numbers = decodeString1(encoded.slice(1));
-    console.log(numbers);
     return {
       isk: numbers[0],
       lp: numbers[1],
@@ -337,7 +336,6 @@ function ResultDisplay({ dataStr }) {
   const iskH = Math.round((decoded.isk - decoded.firstSitePayout) / (duration / 3600));
   const url = window.location.origin + `/isk-h?d=${dataStr}`;
 
-  console.log(decoded);
   return (
     <>
       <ResultDOM>
