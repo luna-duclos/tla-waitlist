@@ -164,7 +164,7 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
       .catch((err) => {
         setFleetInfo(null);
       });
-  }, [characterId, toastContext]);
+  }, [characterId]);
 
   if (!fleetMembers || !fleetInfo) {
     return null;
