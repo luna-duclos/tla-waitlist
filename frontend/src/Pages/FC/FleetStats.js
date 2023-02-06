@@ -151,7 +151,6 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
           })
           .catch((err) => {
             setErrorCount(errorCount + 1);
-            console.log(err);
             if (err.toLowerCase().includes("fleet".toLowerCase())) handleChangeStat();
           });
       }, 15000);
