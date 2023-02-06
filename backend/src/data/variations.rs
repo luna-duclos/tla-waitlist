@@ -270,8 +270,8 @@ pub fn drug_handling() -> Result<BTreeMap<TypeID, DrugChanger>, TypeError> {
 #[derive(Deserialize)]
 struct FitVariationRule {
     hull: String,
-    missing: Vec<ModuleString>,
-    extra: Vec<ModuleString>,
+    missing: Option<Vec<ModuleString>>,
+    extra: Option<Vec<ModuleString>>,
 }
 
 #[derive(Deserialize)]
@@ -292,11 +292,17 @@ pub fn fit_module_variations() -> Result<BTreeMap<TypeID, Vec<ModuleVariation>>,
     for rule in &data.fit_variation_rules {
         let mut missing = BTreeMap::<TypeID, i64>::new();
         let mut extra = BTreeMap::<TypeID, i64>::new();
-        for module in &rule.missing {
-            missing.insert(TypeDB::id_of(&module.name)?, module.amount);
+
+        if let Some(item) = &rule.missing {
+            for module in item {
+                missing.insert(TypeDB::id_of(&module.name)?, module.amount);
+            }
         }
-        for module in &rule.extra {
-            extra.insert(TypeDB::id_of(&module.name)?, module.amount);
+
+        if let Some(item) = &rule.extra {
+            for module in item {
+                extra.insert(TypeDB::id_of(&module.name)?, module.amount);
+            }
         }
         let hull_id = TypeDB::id_of(&rule.hull)?;
         if let Some(hull_var) = hull_variations.get_mut(&hull_id) {
