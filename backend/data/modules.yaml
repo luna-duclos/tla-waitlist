@@ -228,28 +228,29 @@ fit_variation_rules:
       - name: Small Tractor Beam I
         amount: 1
     extra:
-      - name: Large Remote Armor Repairer II
+      - name: "Large Remote Armor Repairer II"
         amount: 1
+  - hull: Paladin
+    missing:
+      - name: Small Tractor Beam I
+        amount: 1
+    extra:
+      - name: "'Peace' Large Remote Armor Repairer"
+        amount: 1 
   - hull: Paladin
     missing: 
       - name: Large Trimark Armor Pump II
         amount: 1
     extra:
       - name: Large Hyperspatial Velocity Optimizer II
-        amount: 1
-  - hull: Kronos
-    missing: 
-      - name: Large Trimark Armor Pump II
-        amount: 1
-    extra:
-      - name: Large Hyperspatial Velocity Optimizer II
-        amount: 1
+        amount: 1    
+        
   - hull: Kronos
     missing:
       - name: Auto Targeting System II
         amount: 1
     extra:
-      - name: Large Remote Armor Repairer II
+      - name: "Large Remote Armor Repairer II"
         amount: 1
   - hull: Kronos
     missing:
@@ -257,4 +258,19 @@ fit_variation_rules:
         amount: 1
     extra:
       - name: "'Peace' Large Remote Armor Repairer"
+        amount: 1
+  - hull: Kronos
+    missing: 
+      - name: Large Trimark Armor Pump II
+        amount: 1
+    extra:
+      - name: Large Hyperspatial Velocity Optimizer II
+        amount: 1   
+  - hull: Kronos #keeping it simple
+    missing: 
+      - name: "'Love' Medium Remote Armor Repairer"
+        amount: 1
+  - hull: Kronos #keeping it simple
+    missing: 
+      - name: Medium Remote Armor Repairer II
         amount: 1
