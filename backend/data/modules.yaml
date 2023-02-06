@@ -93,21 +93,6 @@ alternatives:
     - - Large Remote Capacitor Transmitter II
     - - Imperial Navy Large Remote Capacitor Transmitter
       - "'Chivalry' Large Remote Capacitor Transmitter"
-      
-  - - - Gyrostabilizer I
-      - Counterbalanced Compact Gyrostabilizer 
-    - - Gyrostabilizer II
-    - - "'Basic' Gyrostabilizer"    
-      - "'Kindred' Gyrostabilizer"
-      - Vadari's Custom Gyrostabilizer 
-    - - Domination Gyrostabilizer
-      - Republic Fleet Gyrostabilizer
-    - - Mizuro's Modified Gyrostabilizer
-      - Hakim's Modified Gyrostabilizer
-      - Shaqil's Modified Gyrostabilizer
-      - Gotan's Modified Gyrostabilizer
-      - Tobias' Modified Gyrostabilizer 
-      - Abyssal Gyrostabilizer
   
 from_meta:
   # Automagically determine alternatives
@@ -149,6 +134,8 @@ from_meta:
     abyssal: Medium Abyssal Armor Plates
   - base: Damage Control I
     abyssal: Abyssal Damage Control
+  - base: Gyrostabilizer I
+    abyssal: Abyssal Gyrostabilizer
 
 
 from_attribute:
