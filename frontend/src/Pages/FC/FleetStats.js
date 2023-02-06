@@ -5,6 +5,7 @@ import { InputGroup } from "../../Components/Form";
 import { Title } from "../../Components/Page";
 import { apiCall, useApi } from "../../api";
 import { addToast } from "../../Components/Toast";
+import { CategoryHeadingDOM, ColumnWaitlistDOM } from "../Waitlist/displaymodes";
 import {
   CellTight,
   Cell,
@@ -212,59 +213,66 @@ export function FleetMembers({ fleetpage = true, setStatTempActive = null }) {
   }
 
   return (
-    <div style={{ display: "flex", flexWrap: "wrap" }}>
-      <div>
-        {fleetpage && <Title>Members</Title>}
-        {!fleetpage && (
-          <FleetDscan
-            characterId={authContext.current.id}
-            showFull={false}
-            memberlist={getFleetMembers(fleetCompositionInfo)}
-          />
-        )}
-        <Table style={{ fontSize: "12px" }} fullWidth={fleetpage ? undefined : true}>
-          <TableBody>
-            {fleetCompositionInfo.wings.map((wing, wingIndex) => (
-              <React.Fragment key={wing.name}>
-                <Row background noAlternating>
-                  <Cell
-                    style={{
-                      fontWeight: "bold",
-                      width: "40px",
-                      overflow: "visible",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {wing.name.toUpperCase()} ({getWingMembersCount(wing)})
-                  </Cell>
-                  <Cell style={{ width: "80px" }}></Cell>
-                  <Cell></Cell>
-                  <Cell style={{ width: "70px" }}></Cell>
-                  <Cell style={{ width: "75px" }}></Cell>
-                </Row>
-
-                {wing.squads.map((squad, squadIndex) => (
-                  <Squad
-                    key={squad.name}
-                    squadname={squad.name}
-                    members={squad.members}
-                    warnActive={squadIndex > 2 && wingIndex === 0}
-                  />
-                ))}
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      {fleetpage && (
-        <div style={{ marginLeft: "4em" }}>
-          <FleetDscan
-            characterId={authContext.current.id}
-            showFull={true}
-            memberlist={getFleetMembers(fleetCompositionInfo)}
-          />
-        </div>
+    <ColumnWaitlistDOM.Category>
+      {!fleetpage && (
+        <CategoryHeadingDOM>
+          <h2>Members</h2>
+        </CategoryHeadingDOM>
       )}
-    </div>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <div>
+          {fleetpage && <Title>Members</Title>}
+          {!fleetpage && (
+            <FleetDscan
+              characterId={authContext.current.id}
+              showFull={false}
+              memberlist={getFleetMembers(fleetCompositionInfo)}
+            />
+          )}
+          <Table style={{ fontSize: "12px" }} fullWidth={fleetpage ? undefined : true}>
+            <TableBody>
+              {fleetCompositionInfo.wings.map((wing, wingIndex) => (
+                <React.Fragment key={wing.name}>
+                  <Row background noAlternating>
+                    <Cell
+                      style={{
+                        fontWeight: "bold",
+                        width: "40px",
+                        overflow: "visible",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {wing.name.toUpperCase()} ({getWingMembersCount(wing)})
+                    </Cell>
+                    <Cell style={{ width: "80px" }}></Cell>
+                    <Cell></Cell>
+                    <Cell style={{ width: "70px" }}></Cell>
+                    <Cell style={{ width: "75px" }}></Cell>
+                  </Row>
+
+                  {wing.squads.map((squad, squadIndex) => (
+                    <Squad
+                      key={squad.name}
+                      squadname={squad.name}
+                      members={squad.members}
+                      warnActive={squadIndex > 2 && wingIndex === 0}
+                    />
+                  ))}
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        {fleetpage && (
+          <div style={{ marginLeft: "4em" }}>
+            <FleetDscan
+              characterId={authContext.current.id}
+              showFull={true}
+              memberlist={getFleetMembers(fleetCompositionInfo)}
+            />
+          </div>
+        )}
+      </div>
+    </ColumnWaitlistDOM.Category>
   );
 }

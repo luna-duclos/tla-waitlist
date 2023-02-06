@@ -19,7 +19,7 @@ export function Search() {
   const [results] = useApi(
     query && query.length >= 3 ? "/api/search?" + new URLSearchParams({ query }) : null
   );
-
+  console.log(authContext.access);
   usePageTitle("Search");
   return (
     <>
@@ -51,7 +51,7 @@ export function Search() {
                       <NavButton to={"/pilot?character_id=" + character.id}>Information</NavButton>
                     </InputGroup>
                     <InputGroup>
-                      {authContext.access["access-manage"] && (
+                      {authContext.access["commanders-manage"] && (
                         <CommanderModal character={character} isRevokeable />
                       )}
                       {authContext.access["badges-manage"] && (

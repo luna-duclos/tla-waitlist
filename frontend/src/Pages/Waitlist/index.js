@@ -11,8 +11,6 @@ import {
   MatrixWaitlist,
   RowWaitlist,
   NotepadWaitlist,
-  CategoryHeadingDOM,
-  ColumnWaitlistDOM,
 } from "./displaymodes";
 //import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import { faColumns } from "@fortawesome/free-solid-svg-icons";
@@ -32,7 +30,7 @@ const CenteredWl = styled.div`
   width: 100%;
   justify-content: center;
   margin-top: 1em;
-  @media (max-width: 1000px) {
+  @media (max-width: 1100px) {
     flex-wrap: wrap;
   }
 `;
@@ -305,12 +303,7 @@ export function Waitlist() {
           ) : null}
         </WaitlistWrapper>
         {showMembers && statTempActive && authContext.access["waitlist-view"] && (
-          <ColumnWaitlistDOM.Category key={"Members"}>
-            <CategoryHeadingDOM>
-              <h2>Members</h2>
-            </CategoryHeadingDOM>
-            <FleetMembers fleetpage={false} setStatTempActive={setStatTempActive} />
-          </ColumnWaitlistDOM.Category>
+          <FleetMembers fleetpage={false} setStatTempActive={setStatTempActive} />
         )}
       </CenteredWl>
     </>
