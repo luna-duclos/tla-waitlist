@@ -164,12 +164,9 @@ impl Builder {
             if let Some(abyssal) = &entry.abyssal {
                 variations.insert(TypeDB::id_of(abyssal)?, 17);
             }
-            
+
             if let Some(alternative) = &entry.alternative {
-                variations.insert(
-                    TypeDB::id_of(alternative)?,
-                    17,
-                );
+                variations.insert(TypeDB::id_of(alternative)?, 17);
             }
             to_merge.push(variations);
         }

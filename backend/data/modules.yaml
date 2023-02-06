@@ -251,3 +251,10 @@ fit_variation_rules:
     extra:
       - name: Large Remote Armor Repairer II
         amount: 1
+  - hull: Kronos
+    missing:
+      - name: Auto Targeting System II
+        amount: 1
+    extra:
+      - name: "'Peace' Large Remote Armor Repairer"
+        amount: 1
