@@ -37,7 +37,7 @@ export function Home() {
           </CenteredParagraph.Head>
           <CenteredParagraph.Paragraph>
             Please have a read of some of the <NavLink to="/guide">GUIDES</NavLink> and join the{" "}
-            <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> to ask any questioned that
+            <a href="https://discord.com/invite/MR3nA9BD9K">DISCORD</a> to ask any questioned that
             aren&apos;t answered here. Look at our <NavLink to="/fits">FITS</NavLink> and make sure
             your fit looks the same. The associated DPS number is expected after roughly 2 weeks of
             flying with us.

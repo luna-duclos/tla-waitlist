@@ -162,12 +162,13 @@ impl Builder {
             let base_id = TypeDB::id_of(&entry.base)?;
             let mut variations = TypeDB::type_variations(base_id)?;
             if let Some(abyssal) = &entry.abyssal {
-                variations.insert(TypeDB::id_of(abyssal)?, *variations.get(&base_id).unwrap());
+                variations.insert(TypeDB::id_of(abyssal)?, 17);
             }
+            
             if let Some(alternative) = &entry.alternative {
                 variations.insert(
                     TypeDB::id_of(alternative)?,
-                    *variations.get(&base_id).unwrap(),
+                    17,
                 );
             }
             to_merge.push(variations);
