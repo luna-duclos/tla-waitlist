@@ -39,6 +39,9 @@ const CenteredWl = styled.div`
 
 const WaitlistWrapper = styled.div`
   width: 70%;
+  @media (max-width: 970px) {
+    width: 100%;
+  }
 `;
 
 function coalesceCalls(func, wait) {

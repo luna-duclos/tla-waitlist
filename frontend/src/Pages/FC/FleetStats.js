@@ -90,7 +90,7 @@ function FleetComposition({ cats, summary }) {
   return (
     <div style={{ marginLeft: "4em" }}>
       <Title>Fleet composition</Title>
-      <InputGroup>
+      <InputGroup style={{marginBottom: "1em"}}>
         <BorderedBox>Marauders: {cats["Marauder"]} </BorderedBox>
         <BorderedBox>
           Logistics (N/L): {cats["Logiarmor"]}/{cats["Logishield"]}{" "}
@@ -118,7 +118,7 @@ function FleetComposition({ cats, summary }) {
   );
 }
 
-export default function FleetMembers({ fleetcomp = true, handleChangeStat }) {
+export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }) {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
   const [fleetMembers, setFleetMembers] = React.useState(null);
@@ -131,10 +131,11 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat }) {
       .then(setFleetMembers)
       .catch((err) => {
         setFleetMembers(null);
+        if(!fleetcomp) handleChangeStat();
       });
     if (!fleetcomp) {
       const intervalId = setInterval(() => {
-        if (errorCount >= 5) {
+        if (errorCount >= 4) {
           addToast(toastContext, {
             title: "Error",
             message: "Consecutive Error Limit Exceeded, shutting down fleetmembers",
@@ -144,9 +145,14 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat }) {
           return;
         }
         apiCall("/api/fleet/members?character_id=" + characterId, {})
-          .then(setFleetMembers)
+          .then((fleetMembers) => {
+            setFleetMembers(fleetMembers);
+            setErrorCount(0);
+          })
           .catch((err) => {
             setErrorCount(errorCount + 1);
+            console.log(err);
+            if (err.toLowerCase().includes("fleet".toLowerCase())) handleChangeStat();
           });
       }, 15000);
       return () => clearInterval(intervalId);
