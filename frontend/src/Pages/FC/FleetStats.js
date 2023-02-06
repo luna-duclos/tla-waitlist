@@ -28,13 +28,13 @@ function PilotTagsFromId({ characterId }) {
   return <PilotTags tags={basicInfo && basicInfo.tags} height={"14px"} />;
 }
 
-function GetNamesByCategory({ filteredMembers, category, warnActive }) {
-  const nonBoosterShips = filteredMembers
+function SquadMembers({ members, warnActive }) {
+  const nonBoosterShips = members
     .map((object) => object.ship.name)
     .filter((name) => !booster.includes(name));
   return (
     <>
-      {filteredMembers.map((member) => (
+      {members.map((member) => (
         <Row key={member.id} noAlternating>
           <CellTight></CellTight>
           <CellWithLine warn={nonBoosterShips.length > 2 && warnActive && "yellow"}>
@@ -56,32 +56,27 @@ function GetNamesByCategory({ filteredMembers, category, warnActive }) {
 }
 
 function Squad({ members, squadname, warnActive }) {
-  const filteredMembers = React.useMemo(() => {
-    return members
-      .filter((member) => member.category === squadname)
-      .sort((a, b) => {
-        if (a.role === "squad_commander") return -1;
-        if (b.role === "squad_commander") return 1;
-        return 0;
-      });
-  }, [members, squadname]);
+  members.sort((a, b) => {
+    if (a.role === "squad_commander") {
+      return -1;
+    } else if (b.role === "squad_commander") {
+      return 1;
+    }
+    return 0;
+  });
   return (
     <React.Fragment key={squadname}>
       <Row key={squadname} style={{ paddingLeft: "20px" }} noAlternating>
         <CellTight></CellTight>
         <CellTight>
           {squadname}
-          {filteredMembers.length > 0 && ` (${filteredMembers.length})`}
+          {members.length > 0 && ` (${members.length})`}
         </CellTight>
         <CellTight></CellTight>
         <CellTight></CellTight>
         <CellTight></CellTight>
       </Row>
-      <GetNamesByCategory
-        filteredMembers={filteredMembers}
-        category={squadname}
-        warnActive={warnActive}
-      />
+      <SquadMembers members={members} category={squadname} warnActive={warnActive} />
     </React.Fragment>
   );
 }
@@ -90,7 +85,7 @@ function FleetComposition({ cats, summary }) {
   return (
     <div style={{ marginLeft: "4em" }}>
       <Title>Fleet composition</Title>
-      <InputGroup style={{marginBottom: "1em"}}>
+      <InputGroup style={{ marginBottom: "1em" }}>
         <BorderedBox>Marauders: {cats["Marauder"]} </BorderedBox>
         <BorderedBox>
           Logistics (N/L): {cats["Logiarmor"]}/{cats["Logishield"]}{" "}
@@ -118,20 +113,28 @@ function FleetComposition({ cats, summary }) {
   );
 }
 
-export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }) {
+function getWingMembersCount(wing) {
+  let totalMembers = 0;
+  if (wing.member) totalMembers += 1;
+  for (let squad of wing.squads) {
+    totalMembers += squad.members.length;
+  }
+  return totalMembers;
+}
+
+export default function FleetMembers({ fleetcomp = true, handleChangeStat = null }) {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
-  const [fleetMembers, setFleetMembers] = React.useState(null);
-  const [fleetInfo, setFleetInfo] = React.useState(null);
+  const [fleetCompositionInfo, setFleetCompositionInfo] = React.useState(null);
   const [errorCount, setErrorCount] = React.useState(0);
   const characterId = authContext.current.id;
 
   React.useEffect(() => {
-    apiCall("/api/fleet/members?character_id=" + characterId, {})
-      .then(setFleetMembers)
+    apiCall("/api/fleet/fleetcomp?character_id=" + characterId, {})
+      .then(setFleetCompositionInfo)
       .catch((err) => {
-        setFleetMembers(null);
-        if(!fleetcomp) handleChangeStat();
+        setFleetCompositionInfo(null);
+        if (!fleetcomp) handleChangeStat();
       });
     if (!fleetcomp) {
       const intervalId = setInterval(() => {
@@ -144,9 +147,9 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
           handleChangeStat();
           return;
         }
-        apiCall("/api/fleet/members?character_id=" + characterId, {})
-          .then((fleetMembers) => {
-            setFleetMembers(fleetMembers);
+        apiCall("/api/fleet/fleetcomp?character_id=" + characterId, {})
+          .then((fleetCompositionInfo) => {
+            setFleetCompositionInfo(fleetCompositionInfo);
             setErrorCount(0);
           })
           .catch((err) => {
@@ -158,20 +161,12 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
     }
   }, [characterId, errorCount, fleetcomp, handleChangeStat, toastContext]);
 
-  React.useEffect(() => {
-    apiCall("/api/fleet/info?character_id=" + characterId, {})
-      .then(setFleetInfo)
-      .catch((err) => {
-        setFleetInfo(null);
-      });
-  }, [characterId]);
-
-  if (!fleetMembers || !fleetInfo) {
+  if (!fleetCompositionInfo) {
     return null;
   }
 
-  if (fleetInfo) {
-    fleetInfo.wings.forEach((wing) => {
+  if (fleetCompositionInfo) {
+    fleetCompositionInfo.wings.forEach((wing) => {
       wing.squads.sort((a, b) => a.id - b.id);
     });
   }
@@ -186,8 +181,8 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
     };
 
     var summary = {};
-    if (fleetMembers) {
-      fleetMembers.members.forEach((member) => {
+    if (fleetCompositionInfo) {
+      fleetCompositionInfo.members.forEach((member) => {
         if (!summary[member.ship.name]) summary[member.ship.name] = 0;
         summary[member.ship.name]++;
         if (booster.includes(member.ship.name)) cats["Booster"]++;
@@ -205,7 +200,7 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
         {fleetcomp && <Title>Members</Title>}
         <Table style={{ fontSize: "12px" }} fullWidth={fleetcomp ? undefined : true}>
           <TableBody>
-            {fleetInfo.wings.map((wing, wingIndex) => (
+            {fleetCompositionInfo.wings.map((wing, wingIndex) => (
               <React.Fragment key={wing.name}>
                 <Row background noAlternating>
                   <Cell
@@ -216,7 +211,7 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
                       whiteSpace: "nowrap",
                     }}
                   >
-                    {wing.name.toUpperCase()}
+                    {wing.name.toUpperCase()} ({getWingMembersCount(wing)})
                   </Cell>
                   <Cell style={{ width: "80px" }}></Cell>
                   <Cell></Cell>
@@ -228,7 +223,7 @@ export default function FleetMembers({ fleetcomp = true, handleChangeStat=null }
                   <Squad
                     key={squad.name}
                     squadname={squad.name}
-                    members={fleetMembers.members}
+                    members={squad.members}
                     warnActive={squadIndex > 2 && wingIndex === 0}
                   />
                 ))}

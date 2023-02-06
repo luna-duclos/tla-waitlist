@@ -147,6 +147,7 @@ export function Waitlist() {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
   const [query, setQuery] = useQuery();
+
   /*const [altCol /*setAltCol] = React.useState(
     window.localStorage && window.localStorage.getItem("AltColumn")
       ? window.localStorage.getItem("AltColumn") === "true"

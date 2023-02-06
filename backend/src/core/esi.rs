@@ -484,6 +484,7 @@ pub mod fleet_members {
         pub character_id: i64,
         pub ship_type_id: TypeID,
         pub squad_id: i64,
+        pub wing_id: i64,
         pub role: String,
     }
 
