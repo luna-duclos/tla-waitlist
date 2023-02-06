@@ -165,7 +165,7 @@ export function FleetMembers({ fleetpage = true, handleChangeStat = null }) {
   const [fleetCompositionInfo, setFleetCompositionInfo] = React.useState(null);
   const [errorCount, setErrorCount] = React.useState(0);
   const characterId = authContext.current.id;
-React.useEffect(() => {
+  React.useEffect(() => {
     apiCall("/api/fleet/fleetcomp?character_id=" + characterId, {})
       .then(setFleetCompositionInfo)
       .catch((err) => {
@@ -203,7 +203,6 @@ React.useEffect(() => {
   if (!fleetCompositionInfo) {
     return null;
   }
-  console.log("test");
   if (fleetCompositionInfo) {
     fleetCompositionInfo.wings.forEach((wing) => {
       wing.squads.sort((a, b) => a.id - b.id);
