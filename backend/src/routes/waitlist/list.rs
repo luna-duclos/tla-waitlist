@@ -44,7 +44,7 @@ struct WaitlistEntryFit {
     implants: Option<Vec<TypeID>>,
     fit_analysis: Option<Value>,
     is_alt: bool,
-	messagexup: Option<String>,
+    messagexup: Option<String>,
 }
 
 #[get("/api/waitlist?<waitlist_id>")]
@@ -162,7 +162,7 @@ async fn list(
             implants: None,
             fit_analysis: None,
             is_alt: record.wef_is_alt > 0,
-			messagexup: None
+            messagexup: None,
         };
 
         let tags = record
@@ -180,7 +180,7 @@ async fn list(
             });
             this_fit.hours_in_fleet = Some(record.wef_cached_time_in_fleet / 3600);
             this_fit.review_comment = record.wef_review_comment;
-			this_fit.messagexup = record.wef_messagexup;
+            this_fit.messagexup = record.wef_messagexup;
             this_fit.tags = tags.collect();
         } else {
             this_fit.tags = tags

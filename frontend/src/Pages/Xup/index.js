@@ -8,7 +8,7 @@ import { Content, PageTitle } from "../../Components/Page";
 import { FitDisplay, ImplantDisplay } from "../../Components/FitDisplay";
 import _ from "lodash";
 import { Box } from "../../Components/Box";
-
+import styled from "styled-components";
 import { usePageTitle } from "../../Util/title";
 
 const exampleFit = String.raw`
@@ -50,6 +50,13 @@ Tracking Speed Script x2
 const exampleMessage = String.raw`
 bringing 1 alt
 `.trim();
+
+const WaitlistWrap = styled.div`
+  display: flex;
+  @media (max-width: 1100px) {
+    display: block;
+  }
+`;
 
 async function xUp({ character, eft, toastContext, waitlist_id, alt, messagexup }) {
   await apiCall("/api/waitlist/xup", {
@@ -99,7 +106,7 @@ export function Xup({ setXupOpen }) {
       {reviewOpen ? (
         <XupCheck waitlistId={waitlist_id} setOpen={setReviewOpen} setXupOpen={setXupOpen} />
       ) : (
-        <div style={{ display: "flex" }}>
+        <WaitlistWrap>
           <Content style={{ flex: 1 }}>
             <h2>X-up with fit(s)</h2>
             <Textarea
@@ -153,7 +160,7 @@ export function Xup({ setXupOpen }) {
               </Button>
             </InputGroup>
           </Content>
-          <Box style={{ flex: 1 }}>
+          <Box style={{ flex: 1, marginTop: "1em" }}>
             {implants ? (
               <ImplantDisplay
                 implants={implants.implants}
@@ -161,7 +168,7 @@ export function Xup({ setXupOpen }) {
               />
             ) : null}
           </Box>
-        </div>
+        </WaitlistWrap>
       )}
     </>
   );

@@ -173,7 +173,13 @@ async fn assign(
 async fn assignable(account: AuthenticatedAccount) -> Result<Json<Vec<&'static str>>, Madness> {
     account.require_access("commanders-manage")?;
 
-    let role_order = vec!["trainee", "trainee-advanced", "fc", "fc-trainer", "leadership"];
+    let role_order = vec![
+        "trainee",
+        "trainee-advanced",
+        "fc",
+        "fc-trainer",
+        "leadership",
+    ];
 
     let mut options = Vec::new();
     for scope in account.access.into_iter() {

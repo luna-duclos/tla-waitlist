@@ -233,3 +233,34 @@ drugs_approve_override:
     add:
       - name: Agency 'Overclocker' SB5 Dose II
         amount: 2
+        
+
+fit_variation_rules:
+  - hull: Paladin
+    missing:
+      - name: Small Tractor Beam I
+        amount: 1
+    extra:
+      - name: Large Remote Armor Repairer II
+        amount: 1
+  - hull: Paladin
+    missing: 
+      - name: Large Trimark Armor Pump II
+        amount: 1
+    extra:
+      - name: Large Hyperspatial Velocity Optimizer II
+        amount: 1
+  - hull: Kronos
+    missing: 
+      - name: Large Trimark Armor Pump II
+        amount: 1
+    extra:
+      - name: Large Hyperspatial Velocity Optimizer II
+        amount: 1
+  - hull: Kronos
+    missing:
+      - name: Auto Targeting System II
+        amount: 1
+    extra:
+      - name: Large Remote Armor Repairer II
+        amount: 1

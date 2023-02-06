@@ -35,14 +35,14 @@ async fn fleet_status(
     account.require_access("fleet-view")?;
 
     let fleets = sqlx::query!("SELECT fleet.id, boss_id, name FROM fleet JOIN `character` ON fleet.boss_id = `character`.id").fetch_all(app.get_db()).await?.into_iter()
-    .map(|fleet| FleetStatusFleet{
-        id: fleet.id,
-        boss: Character{
-            id: fleet.boss_id,
-            name: fleet.name,
-            corporation_id: None
-        }
-    }).collect();
+        .map(|fleet| FleetStatusFleet {
+            id: fleet.id,
+            boss: Character {
+                id: fleet.boss_id,
+                name: fleet.name,
+                corporation_id: None,
+            },
+        }).collect();
 
     Ok(Json(FleetStatusResponse { fleets }))
 }
@@ -96,7 +96,7 @@ struct FleetInfoSquad {
 async fn fetch_fleet_wings(
     app: &rocket::State<Application>,
     character_id: i64,
-	fleet_id: i64,
+    fleet_id: i64,
 ) -> Result<Vec<FleetInfoWing>, Madness> {
     let wings = app
         .esi_client
@@ -123,10 +123,126 @@ async fn fleet_info(
 ) -> Result<Json<FleetInfoResponse>, Madness> {
     account.require_access("fleet-view")?;
     authorize_character(app.get_db(), &account, character_id, None).await?;
-	let fleet_id = get_current_fleet_id(app, character_id).await?;
+    let fleet_id = get_current_fleet_id(app, character_id).await?;
     let wings = fetch_fleet_wings(app, character_id, fleet_id).await?;
 
     Ok(Json(FleetInfoResponse { fleet_id, wings }))
+}
+
+#[derive(Debug, Serialize)]
+struct FleetCompResponse {
+    wings: Vec<FleetCompWing>,
+    id: i64,
+    member: Option<FleetMember>,
+}
+
+#[derive(Debug, Serialize)]
+struct FleetCompWing {
+    id: i64,
+    name: String,
+    squads: Vec<FleetCompSquadMembers>,
+    member: Option<FleetMember>,
+}
+
+#[derive(Debug, Serialize)]
+struct FleetCompSquadMembers {
+    id: i64,
+    name: String,
+    members: Vec<FleetMember>,
+}
+
+#[derive(Debug, Serialize)]
+struct FleetMember {
+    id: i64,
+    name: Option<String>,
+    ship: Hull,
+    role: String,
+}
+
+#[get("/api/fleet/fleetcomp?<character_id>")]
+async fn fleet_composition(
+    app: &rocket::State<Application>,
+    account: AuthenticatedAccount,
+    character_id: i64,
+) -> Result<Json<FleetCompResponse>, Madness> {
+    account.require_access("fleet-view")?;
+    authorize_character(app.get_db(), &account, character_id, None).await?;
+    let fleet_id = get_current_fleet_id(app, character_id).await?;
+    let fleet = match sqlx::query!("SELECT boss_id FROM fleet WHERE id = ?", fleet_id)
+        .fetch_optional(app.get_db())
+        .await?
+    {
+        Some(fleet) => fleet,
+        None => return Err(Madness::NotFound("Fleet not configured")),
+    };
+    let wings_info = fetch_fleet_wings(app, character_id, fleet_id).await?;
+    let members =
+        crate::core::esi::fleet_members::get(&app.esi_client, fleet_id, fleet.boss_id).await?;
+    let character_ids: Vec<_> = members.iter().map(|member| member.character_id).collect();
+    let mut characters = crate::data::character::lookup(app.get_db(), &character_ids).await?;
+    let fleet_commander = members
+        .iter()
+        .find(|member| member.role == "fleet_commander")
+        .map(|member| FleetMember {
+            id: member.character_id,
+            name: characters.remove(&member.character_id).map(|f| f.name),
+            ship: Hull {
+                id: member.ship_type_id,
+                name: TypeDB::name_of(member.ship_type_id).unwrap(),
+            },
+            role: member.role.clone(),
+        });
+    let wings = wings_info
+        .into_iter()
+        .map(|info_wing| FleetCompWing {
+            id: info_wing.id,
+            member: members
+                .iter()
+                .find(|member| member.wing_id == info_wing.id && member.role == "wing_commander")
+                .map(|member| FleetMember {
+                    id: member.character_id,
+                    name: characters.remove(&member.character_id).map(|f| f.name),
+                    ship: Hull {
+                        id: member.ship_type_id,
+                        name: TypeDB::name_of(member.ship_type_id).unwrap(),
+                    },
+                    role: member.role.clone(),
+                }),
+            name: info_wing.name,
+
+            squads: info_wing
+                .squads
+                .into_iter()
+                .map(|info_squad| {
+                    let squad_members = members
+                        .iter()
+                        .filter(|member| member.squad_id == info_squad.id)
+                        .map(|member| FleetMember {
+                            id: member.character_id,
+                            name: characters.remove(&member.character_id).map(|f| f.name),
+                            ship: Hull {
+                                id: member.ship_type_id,
+                                name: TypeDB::name_of(member.ship_type_id).unwrap(),
+                            },
+                            role: member.role.clone(),
+                        })
+                        .collect();
+
+                    FleetCompSquadMembers {
+                        id: info_squad.id,
+                        name: info_squad.name,
+                        members: squad_members,
+                    }
+                })
+                .collect(),
+        })
+        .collect();
+
+    Ok(Json(FleetCompResponse {
+        wings,
+        id: fleet_id,
+        member: fleet_commander,
+    }))
 }
 
 #[derive(Debug, Serialize)]
@@ -140,9 +256,8 @@ struct FleetMembersMember {
     name: Option<String>,
     ship: Hull,
     wl_category: Option<String>,
-	category: Option<String>,
-	role: String,
-	
+    category: Option<String>,
+    role: String,
 }
 
 #[get("/api/fleet/members?<character_id>")]
@@ -182,10 +297,8 @@ async fn fleet_members(
     .into_iter()
     .map(|squad| (squad.squad_id, squad.category))
     .collect();
-	
-	let wings = fetch_fleet_wings(app, character_id, fleet_id).await?;
-	
-	
+
+    let wings = fetch_fleet_wings(app, character_id, fleet_id).await?;
 
     Ok(Json(FleetMembersResponse {
         members: in_fleet
@@ -201,12 +314,12 @@ async fn fleet_members(
                     .get(&member.squad_id)
                     .and_then(|s| category_lookup.get(s.as_str()))
                     .map(|s| s.to_string()),
-				category: wings
-                .iter()
-                .flat_map(|wing| &wing.squads)
-                .find(|squad| squad.id == member.squad_id)
-                .map(|squad| squad.name.clone()),
-				role: member.role,
+                category: wings
+                    .iter()
+                    .flat_map(|wing| &wing.squads)
+                    .find(|squad| squad.id == member.squad_id)
+                    .map(|squad| squad.name.clone()),
+                role: member.role,
             })
             .collect(),
     }))
@@ -261,6 +374,7 @@ async fn register_fleet(
 struct FleetCloseRequest {
     character_id: i64,
 }
+
 #[post("/api/fleet/close", data = "<input>")]
 async fn close_fleet(
     app: &rocket::State<Application>,
@@ -326,6 +440,7 @@ pub fn routes() -> Vec<rocket::Route> {
         fleet_info,
         close_fleet,
         fleet_members,
-        register_fleet
+        register_fleet,
+        fleet_composition,
     ]
 }

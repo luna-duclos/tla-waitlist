@@ -215,10 +215,7 @@ fn build_access_levels() -> BTreeMap<String, BTreeSet<String>> {
         &mut result,
         "fc+",
         "admin",
-        vec![
-            "commanders-manage:admin",
-            "commanders-manage:fc+",
-        ],
+        vec!["commanders-manage:admin", "commanders-manage:fc+"],
     );
 
     result

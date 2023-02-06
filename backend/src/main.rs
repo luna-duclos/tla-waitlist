@@ -1,5 +1,5 @@
-use std::{env, sync::Arc};
 use rocket::Request;
+use std::{env, sync::Arc};
 
 mod app;
 mod config;
@@ -18,7 +18,6 @@ extern crate eve_data_macros;
 
 extern crate sqlx;
 type DBEngine = sqlx::MySql;
-
 
 pub type DB = sqlx::Pool<DBEngine>;
 pub type DBTX<'c> = sqlx::Transaction<'c, DBEngine>;

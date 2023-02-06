@@ -31,30 +31,27 @@ pub async fn notify_waitlist_update_and_xup(
 ) -> Result<(), SSEError> {
     if let Ok(fleets) = sqlx::query!("SELECT `boss_id` FROM `fleet`")
         .fetch_all(app.get_db())
-        .await {
-            for fleet in fleets {
-                app.sse_client
-                .submit(vec![
-                    Event::new_json(
-                        &format!("account;{}", fleet.boss_id),
-                        "message",
-                        &Message {
-                            message: "New x-up in waitlist"
-                        }
-                    )
-                ])
+        .await
+    {
+        for fleet in fleets {
+            app.sse_client
+                .submit(vec![Event::new_json(
+                    &format!("account;{}", fleet.boss_id),
+                    "message",
+                    &Message {
+                        message: "New x-up in waitlist",
+                    },
+                )])
                 .await?;
-            }
         }
+    }
 
     app.sse_client
-        .submit(vec![
-            Event::new_json(
-                "waitlist",
-                "waitlist_update",
-                &WaitlistUpdate { waitlist_id },
-            )
-        ])
+        .submit(vec![Event::new_json(
+            "waitlist",
+            "waitlist_update",
+            &WaitlistUpdate { waitlist_id },
+        )])
         .await?;
     Ok(())
 }
