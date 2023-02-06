@@ -189,7 +189,8 @@ export const Textarea = styled.textarea`
 
 export const InputGroup = styled.div`
   display: flex;
-  flex-wrap: wrap;
+
+  flex-wrap: nowrap;
   > * {
     z-index: 1;
     margin: 0;
@@ -230,6 +231,7 @@ export const InputGroup = styled.div`
   box-shadow: 3px 3px 1px ${(props) => props.theme.colors.shadow};
   border-radius: 20px;
   width: fit-content;
+  height: fit-content;
 `;
 
 export const InputGroupAlt = styled(InputGroup)`

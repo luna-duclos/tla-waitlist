@@ -21,7 +21,7 @@ export const BorderedBox = styled.div`
   border: solid 1px ${(props) => props.theme.colors.accent2};
   padding: 0.4em;
   border-radius: 20px;
-  font-size: calc(8px + 0.3vw);
+  font-size: min(calc(9px + 0.4vw), 14px);
 `;
 
 export function InfoNote({ variant = "secondary", width = "fit-content", children }) {
