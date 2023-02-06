@@ -159,7 +159,7 @@ function getFleetMembers(fleet) {
   return members;
 }
 
-export function FleetMembers({ fleetpage = true, handleChangeStat = null }) {
+export function FleetMembers({ fleetpage = true, setStatTempActive = null }) {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
   const [fleetCompositionInfo, setFleetCompositionInfo] = React.useState(null);
@@ -170,9 +170,11 @@ export function FleetMembers({ fleetpage = true, handleChangeStat = null }) {
       .then(setFleetCompositionInfo)
       .catch((err) => {
         setFleetCompositionInfo(null);
-        if (!fleetpage) handleChangeStat();
+        if (!fleetpage) {
+          setStatTempActive(false);
+        }
       });
-  }, [characterId, fleetpage, handleChangeStat]);
+  }, [characterId, fleetpage, setStatTempActive]);
 
   React.useEffect(() => {
     if (!fleetpage) {
@@ -183,8 +185,8 @@ export function FleetMembers({ fleetpage = true, handleChangeStat = null }) {
             message: "Consecutive Error Limit Exceeded, shutting down fleetstats",
             variant: "danger",
           });
-          handleChangeStat();
-          return;
+          setStatTempActive(false);
+          return null;
         }
         apiCall("/api/fleet/fleetcomp?character_id=" + characterId, {})
           .then((fleetCompositionInfo) => {
@@ -193,12 +195,12 @@ export function FleetMembers({ fleetpage = true, handleChangeStat = null }) {
           })
           .catch((err) => {
             setErrorCount(errorCount + 1);
-            if (err.toLowerCase().includes("fleet".toLowerCase())) handleChangeStat();
+            if (err.toLowerCase().includes("fleet".toLowerCase())) setStatTempActive(false);
           });
       }, 15000);
       return () => clearInterval(intervalId);
     }
-  }, [characterId, errorCount, fleetpage, handleChangeStat, toastContext]);
+  }, [characterId, errorCount, fleetpage, setStatTempActive, toastContext]);
 
   if (!fleetCompositionInfo) {
     return null;

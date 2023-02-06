@@ -158,6 +158,7 @@ export function Waitlist() {
       ? window.localStorage.getItem("FleetStat") === "true"
       : false
   );
+  const [statTempActive, setStatTempActive] = React.useState(true);
   const [xupOpen, setXupOpen] = React.useState(false);
   const waitlistId = parseInt(query.wl);
   const [waitlistData, refreshWaitlist] = useWaitlist(waitlistId);
@@ -177,6 +178,11 @@ export function Waitlist() {
     }
   }, [waitlistId, setQuery]);
 
+  // rechecking if fleet boss
+  React.useEffect(() => {
+    setStatTempActive(true);
+  }, [authContext.current.id]);
+
   if (!waitlistId) {
     return null; // Should be redirecting
   }
@@ -187,12 +193,6 @@ export function Waitlist() {
   if (!waitlistData.open) {
     return <WaitlistClosed />;
   }
-  /*const handleChange = () => {
-    setAltCol(!altCol);
-    if (window.localStorage) {
-      window.localStorage.setItem("AltColumn", !altCol);
-    }
-  };*/
 
   const handleChangeStat = () => {
     setShowMembers(!showMembers);
@@ -273,16 +273,6 @@ export function Waitlist() {
             )}
           </>
         )}
-        {/*{displayMode === "columns" && (
-          <InputGroup>
-            <Button onClick={handleChange}>
-              <FontAwesomeIcon icon={faColumns} />
-            </Button>
-          </InputGroup>
-        )}
-        {!altCol && (
-          <CategoryHeading name="Alts" fleetComposition={fleetComposition} altCol={altCol} />
-        )}*/}
       </Buttons>
       <CenteredWl>
         <WaitlistWrapper>
@@ -314,12 +304,12 @@ export function Waitlist() {
             <NotepadWaitlist waitlist={waitlistData} onAction={refreshWaitlist} />
           ) : null}
         </WaitlistWrapper>
-        {showMembers && authContext.access["waitlist-view"] && (
+        {showMembers && statTempActive && authContext.access["waitlist-view"] && (
           <ColumnWaitlistDOM.Category key={"Members"}>
             <CategoryHeadingDOM>
               <h2>Members</h2>
             </CategoryHeadingDOM>
-            <FleetMembers fleetpage={false} handleChangeStat={handleChangeStat} />
+            <FleetMembers fleetpage={false} setStatTempActive={setStatTempActive} />
           </ColumnWaitlistDOM.Category>
         )}
       </CenteredWl>
