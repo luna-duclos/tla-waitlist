@@ -202,7 +202,7 @@ impl<'a> FitChecker<'a> {
         }
     */
     fn set_category(&mut self) {
-        let category = categories::categorize(self.fit).unwrap_or_else(|| "offgrid".to_string());
+        let category = categories::categorize(self.fit).unwrap_or_else(|| "other".to_string());
         self.category = Some(category);
     }
 
