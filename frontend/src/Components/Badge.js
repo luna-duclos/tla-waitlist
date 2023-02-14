@@ -28,7 +28,7 @@ export const BadgeDOM = styled.div`
   background-color: ${(props) => props.theme.colors.background};
   font-size: 1em;
   filter: drop-shadow(0px 3px 4px ${(props) => props.theme.colors.shadow});
-  width: 200px;
+  width: 220px;
   height: 2.6em;
   a {
   }
