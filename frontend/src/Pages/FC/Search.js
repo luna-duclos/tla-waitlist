@@ -19,7 +19,6 @@ export function Search() {
   const [results] = useApi(
     query && query.length >= 3 ? "/api/search?" + new URLSearchParams({ query }) : null
   );
-  console.log(authContext.access);
   usePageTitle("Search");
   return (
     <>

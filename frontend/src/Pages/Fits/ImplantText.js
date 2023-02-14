@@ -165,7 +165,7 @@ function HardWires({ toastContext }) {
           <CopyImplantText toast={toastContext} item={"LH-1006"} /> increased hybrid weapon damage.{" "}
           <br />
           <br />
-          <b>Paladin/Nightmare:</b>
+          <b>Paladin:</b>
           <br />
           <CopyImplantText toast={toastContext} item={"LE-1006"} /> increased energy weapon damage.
         </Cell>
@@ -176,7 +176,7 @@ function HardWires({ toastContext }) {
           increased RAW armor HP for
           <b> logi only pilots.</b> <br />
           <br />
-          <b>Paladin/Nightmare:</b>
+          <b>Paladin:</b>
           <br />
           <CopyImplantText toast={toastContext} item={"Pashan's Turret Handling Mindlink"} /> if you
           have too much isk, increased weapon damage.
