@@ -174,7 +174,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                   </>
                 )}
 
-                <InputGroupAlt fixed>
+                <InputGroupAlt>
                   {width < 481 && (
                     <MobileNavButton isOpen={isOpenMobileView} setIsOpen={setOpenMobileView} />
                   )}
@@ -191,7 +191,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                   />
                   {whoami ? (
                     <NavButtonAlt exact to="/auth/logout">
-                      Logout
+                      Log out
                     </NavButtonAlt>
                   ) : (
                     <NavButton exact to="/auth/start" variant="primary">

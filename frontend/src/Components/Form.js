@@ -218,8 +218,8 @@ export const InputGroup = styled.div`
       !props.fixed &&
       `
 	  * {
-		  padding-right: 0.3em;
-		  padding-left: 0.3em;
+		  padding-right: 0.4em;
+		  padding-left: 0.4em;
 		  font-size: 0.85em;
 		  svg {
 			  padding: 0;
