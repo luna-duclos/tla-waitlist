@@ -49,7 +49,7 @@ export function Pilot() {
       <Content>
         <b>Login Required!</b>
         <p>
-          This page will you your own TDF Fleet statistics like x-up&apos;s, fleet times and skill
+          This page will show you your own Fleet statistics like x-up&apos;s, fleet times and skill
           changes.
         </p>
       </Content>
