@@ -191,7 +191,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                   />
                   {whoami ? (
                     <NavButtonAlt exact to="/auth/logout">
-                      Log out
+                      Logout
                     </NavButtonAlt>
                   ) : (
                     <NavButton exact to="/auth/start" variant="primary">
