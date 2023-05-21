@@ -98,7 +98,12 @@ alternatives:
     - - Large Remote Capacitor Transmitter II
     - - Imperial Navy Large Remote Capacitor Transmitter
       - "'Chivalry' Large Remote Capacitor Transmitter"
+
+  - - - Auto Targeting System I
+      - Auto Targeting System II
+
   
+
 from_meta:
   # Automagically determine alternatives
   # Base is the lowest allowed meta level alternative module

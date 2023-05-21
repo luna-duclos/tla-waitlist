@@ -174,7 +174,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                   </>
                 )}
 
-                <InputGroupAlt fixed>
+                <InputGroupAlt>
                   {width < 481 && (
                     <MobileNavButton isOpen={isOpenMobileView} setIsOpen={setOpenMobileView} />
                   )}
