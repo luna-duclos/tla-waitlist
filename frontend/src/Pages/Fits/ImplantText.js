@@ -137,9 +137,6 @@ function HardWires({ toastContext }) {
         <Cell>
           <CopyImplantText toast={toastContext} item={"MR-807"} /> longer webbing range, for
           <b> vindicator only pilots.</b> <br />
-          <CopyImplantText toast={toastContext} item={"Zor's Custom Navigation Hyper-Link"} />{" "}
-          increased MWD speed for
-          <b> DPS only pilots.</b>
         </Cell>
       </Row>
       <Row>
@@ -168,6 +165,9 @@ function HardWires({ toastContext }) {
           <b>Paladin:</b>
           <br />
           <CopyImplantText toast={toastContext} item={"LE-1006"} /> increased energy weapon damage.
+          <b>Vargur:</b>
+          <br />
+          <CopyImplantText toast={toastContext} item={"LP-1006"} />{" "} increased projectile weapon damage.
         </Cell>
         <Cell>
           <CopyImplantText toast={toastContext} item={"HG-1006"} /> or
