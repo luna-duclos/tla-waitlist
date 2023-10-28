@@ -1,81 +1,92 @@
-# Lunne’s Guide on How to Not Die in your Marauder
+# How to Not Die in your Marauder
 
 ---
 
-## Synopsis:
+## Synopsis
 
-Through this document whether or not you have flown High Sec incursions, we will work with you from the ground up on a few ways to maximize your DPS and time in bastion as that is the goal of flying a marauder as that literally doubles your gun dps.
+This guide will give you the basics of how to not to die and be effective, it is a baseline not a goal, you pilot your ship and you are responsible for it, you should always try to improve. **IF IN DOUBT ASK THE FC**, we dont bite to much, but we do expect you to apply what you have learned. Whether or not you have flown High Sec incursions before, we will work with you from the ground up on a few ways to maximize your DPS and time in bastion as that is the goal of flying a marauder.
 
-You may feel scared to bastion initially, however read this guide and it will explain not only dangerous situations, but also tell you the safest ways to bastion and maximize your DPS output.
+You may feel scared to bastion initially, however read this guide and it will explain dangerous situations, and also tell you the safest ways to bastion and maximize your DPS output.
 
 The biggest part of this is to ask your FC for help if you are not sure about something and don’t feel safe, they will clarify and help you feel safer in those situations so you can click the sexy button :D
 
 ![](bastionmodule.png)← Sexy Button <3
 
-How to Fly your Marauder Safely and Effectively
+## How to fly your marauder safely and effectively
 
-### Step 1: Space your guns for contest heat damage
+### Step 1: Space your guns for contests
 
-This means they want your guns to look something like this:
-![](modules.png)
+This will spread heat damage from Gun → Utility → Gun → etc… and in a contest you will be able to heat longer. You want your highslots to look something like this:
 
-This means that when you overheat modules heat will spread from
-Gun → Utility → Gun → etc…
-This means that in a contest you will be able to heat longer and maximize your DPS further.
+![](gunlayout.png)
 
-### Step 2: What does the Blue Pill Do?
+### Step 2: Use drugs
 
-Synth Blue Pill is an amazing drug to carry in your marauder for multiple reasons including:
-● It’s a flat 6% bonus to your shield booster.
-● There is no chance of there being a negative side effect meaning no capacitor penalties or shield hit point penalty like the other variants of blue pill, which can heavily affect your ability to tank.
+There are many types of different drugs, when possible we ask you to use the bare minimum to be effective. Use what works well with your chosen ship.
 
-This means that you are getting free tank out of your marauder, and this is a requirement for you to fly your Kronos in a WTM fleet, however other marauder can choose to use different drugs such as MJD paladins using Mindflood due to their guns using a large amount of cap. So ensure that you have enough drugs in your cargo for the duration that you are going to be flying in fleet, whether they be DPS drugs, Application Drugs, or Tank/Cap Drugs.
+- Pyrolancea gives turret DPS for all weapons (Always run DB3 as a minimum)
 
-Along the lines of drugs:
-Some recommended drugs are already in the cargo hold listed in the fitting website, these include:
-
-- Pyrolancea Dose 2 (Higher levels up to Dose 4 are nice to have for contests, however casually running Dose 2 is good to have as well)
-
-- Synth Blue Pill - good for marauders with shield Booster (Kronos, Vargur, Golem) as you can tank more and use less cap overall and these ships don't really have anything overly important to use in this drug slot.
-
-- Synth Mindflood - Good for Paladins to use as it makes you more cap stable with your guns (You will notice this will become an issue)
-
-\*Synth Drop/Frentix - Can be used interchangeably depending on your playstyle. For these it is best to experiment but ensure that you are only using the synth variation.
-
-### Step 3: How to Bastion (When to and How to Tank)
-
-When you activate bastion on your marauder you are no longer able to receive remote reps from the fleet. This means that if you pull aggro while in bastion you have to be able to tank long enough yourself in bastion to exit bastion to receive reps. However, in saying this we want you to be in bastion as much as possible to maximize your DPS as that is the main reason to fly a marauder.
-
-After aggro has switched/established and it's not split or on you, you are safe to bastion for 2 cycles (1 minute for a switch, Bastion cycle is 30 seconds). However the only time you do not bastion for 2 cycles is when you're not sure how far into the 1 minute timer the aggro is, and just do 1 cycle. If you are flaying a pally, listen to the FC and pay attention if there are low kronos numbers in fleet as you may pull switches so at that point pay attention to your cycles.
-
-The only other times that it is required that they be out of bastion is for wave spawns and especially Outuni Messen Spawns, for obvious reasons. (For those that are new to incursions, the Outuni is a BS that has a capital size neut that applies perfectly to subcaps, this means that your shield booster becomes ineffective along with your shield hardeners due to not having cap to activate them).
-
-If you pull aggro in bastion, you will need to understand how to survive and most of this is determined by yourself but the backseat needs to be able to inform you of what to do if you aren't sure.
-
-If you are flying a MJD Pally, and you pull the aggro, no matter how much time is left in bastion, it is highly recommended that you overheat, with the combined resistance bonus of bastion and your heated hardeners you gain a decent chunk more EHP which means you can come out of bastion in shield rather than Armor. However, you can refit the Microwarp Drive in TCRC’s and NRF’s for a shield booster increasing your tank as these sites don’t need you to burn and having a shield booster is nice to have however we like you to have the MJD more :D.
-
-If it is a large wave spawn and you get the aggro:
-
-TPPH Room 3, Wave 2 Initial
-NRF 4th Wave Initial or Switch
-TCRC Switches at any point.
-
-In all of these situations, you will have to overheat both hardeners and the Shield Booster to give you the best chance of survival. There is nothing to worry about if you get a switch in bastion, however if there is a substantial amount of DPS remaining on grid you may have to heat until you leave bastion. You will easily survive, if you do not overbastion with aggro.
-
-### Step 5: TCRC Refitting
-
-When going to a TCRC it is important for a pilot to refit to a MJD (This is even important for non-marauder pilots).
-
-You do not need to click on the nestor as long as you are within 5KM of the nestor you can refit by clicking and dragging from the fitting window to your cargo or clicking and dragging from next to the capacitor wheel if you have display modules on.
+![](pyrolancea.png)
 
 ---
 
-_If you have any questions about this guide, please contact me on discord either in the WTM discord by pinging “@Thedizzman101#8008” in general channel._
+- Halcyon drugs or the "login" drugs give multiple bonuses but as a marauder you should prioritise DPS when you can. But best of all, they are **free** and will expire unless used.
 
-_OR_
+![](halcyon.png)
 
-_DM Me on discord: Thedizzman101#8008_
+---
 
-_All of this is done for the benefit of making the process easier for command core members and more streamlined experience for the line pilots._
+- Drop gives tracking bonuses for turrets which will give you "applied DPS" but can come with drawbacks using the stonger versions. The stronger versions should only really be used with **ARMOR** tanked ships. **CHECK BEFORE USE!**
 
-_Thank you for reading my TED Talk <3_
+![](drop.png)
+
+---
+
+- Synth Frentix gives optimal range bonuses for turrets which will give you "applied DPS" but can come with drawbacks using the stonger versions, therefore you should **ONLY USE THE SYNTH** version of this drug.
+
+![](frentix.png)
+
+---
+
+- Synth Blue Pill gives increased shield boost amount thus improving your shield tank, this is great for any shield tanked ships as it has no drawbacks. We do not recommend stronger versions due to drawbacks.
+
+![](bluepill.png)
+
+---
+
+- Synth Mindflood gives cap recharge, great if you have poor capacitor skills and keeps you firing those guns.
+
+![](mindflood.png)
+
+---
+
+### Step 3: How to bastion (when to and how to tank)
+
+When you activate bastion on your marauder you are no longer able to receive remote reps from the fleet. This means that if you pull aggro while in bastion you have to be able to tank long enough to exit bastion and receive reps. However, this directly contradicts our ethos of "we want you to be in bastion as much as possible" so understanding when to bastion is key. One of the main things to listen for in fleet is the word **"switch"** as detailed below.
+
+Aggro will **switch** every minute or 60 seconds. Once aggro has switched/established and it's not split or on you, you are safe to bastion for 1 cycle. If for any reason you are not sure when a switch has happened or you missed it, do not bastion until you know when the next switch has happened, if your not sure ASK! If you are flaying a paladin, listen to the FC and pay attention as low kronos numbers in fleet may lead to you pulling aggro so pay attention to your cycles. For shield tanked ships its important to broadcast cap if you need it, if your tank turns off you will explode very quickly, you cannot recieve cap during bastion but broadcasting for it will ensure everyone knows you will need it when you come out of bastion.
+
+There will always be odd scenarios or mistakes in fleet, the FC will be doing their best to ensure this is kept to a minimum but you can yourself pay attention and ensure your own safety by being aware of whats going on. If the FCs booster is not correctly positioned to pull aggro then it is advised to not be in bastion when new waves spawn incase you get the initial aggro.
+
+If you pull aggro in bastion:
+- The first thing you should do is broadcast your tank type.
+
+- Secondly give the FC a voice over of how long until your bastion cycle is going to end. Counting down the final 10s or so will aid the logi in applying reps the moment you come out of bastion if its a close call.
+
+- Thirdly overheat any active tank modules your ship might be fitted with
+
+Giving this information is key to the FC as they cannot make decisions to aid in your survival without it. **DONT DIE IN SILENCE!**.
+
+There are other small things you can do to make life easier for everyone, such as broadcasting your tank type again when you come out of bastion, not broadcasting for troll aggro directly after a switch. Using your battle reps on other marauders when logi are not on grid/in range, it could be you that needs them so use them for others when its neccessary and others will return the favor when you need it.
+
+### Step 5: TCRC entry & NRF entry.
+
+Entrances to TCRCs are usually very structured, but there are occasions things dont go to plan. It may seem obvious, but if you are in doubt, dont bastion and ask if its safe to do so. Once aggro is established if you dont have any specific roles you bastion for one cycle on the beacon and shoot:
+
+- Deltole
+- Outuni
+- UNTAGGED Ostingele
+
+Once the above NPCs are dead you will MJD to the tower and proceed to do your second bastion cycle, the fleet will always have a "lightning rod" pilot who will effectively be pre-determining where the aggro will go, but again, pay attention to when switches happen and bastion timely to ensure your own safety.
+
+Entrance to NRFs are only dangerous should you not pay attention and MJD blindly into your anchor spot. So when you enter an NRF after checking for phenomena, assess the grid, if the final wave is about to spawn, burn into the site, if you have any doubt as to your safety, **burn into site rather than MJD**.
