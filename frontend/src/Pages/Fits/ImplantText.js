@@ -152,6 +152,8 @@ function HardWires({ toastContext }) {
         </Cell>
 
         <Cell>
+          <CopyImplantText toast={toastContext} item={"SS-906"} /> +6% damage for all turrets
+          <br />
           <CopyImplantText toast={toastContext} item={"Pashan's Turret Customization Mindlink"} /> +7% rate of fire for all turrets
         </Cell>
       </Row>
