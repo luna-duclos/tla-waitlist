@@ -1,192 +1,62 @@
-# How to not get screamed at as DDD
+# How to DDD
 
 ---
 
 This Guide will have a series of general tips on how to effectively apply your DPS to frigates, along with a detailed breakdown of each site.
 
-Videos here if you don’t want to read the whole thing:
+Videos below if you don’t want to read.
 
-https://youtu.be/BpQfs9uv0ts (TPPH)
+[TPPH](https://youtu.be/BpQfs9uv0ts)
 
-https://youtu.be/CDHpySHGf3E (NRF - contest tagging 1st wave)
+[NRF](https://youtu.be/CDHpySHGf3E)
 
-https://youtu.be/1uNtFzhf834 (TCRC - no MJD)
+[TCRC - MJD](https://youtu.be/1uNtFzhf834)
 
-https://youtu.be/oejwt9h1tEA (TCRC - MJD)
+[TCRC - MWD](https://youtu.be/oejwt9h1tEA)
 
 ## General Tips:
 
-- DDD’ing is best done with a 3 or 4 web Vindicator
-- You should have 4 damage mods and Tracking Enhancers/Computers fit
-- Splitting guns 4-4 is best.
+- DDD is best done with a 3 or 4 web Vindicator.
+- You should have 4 damage mods and follow the website fit.
+- Splitting guns 4-4 is best when you have good skills.
 - Your effective range is roughly between 6km and your heated web range.
 - Make sure your speed is as close to 0m/s as possible to maximise tracking when shooting.
 - If you are burning or if the frigates aren’t webbed, it is still worthwhile to shoot and hope for a lucky shot.
-- Use Faction Antimatter if targets are close, use Null if targets are further away.
-- Heating webs is incredibly effective as it gives them an extra few kilometers of range.
+- Use Void if targets are close, use Null if targets are further away.
+- Heating webs is incredibly important & effective as it gives them an extra few kilometers of range.
 - Train up Minmatar and Gallente Battleship skills. Aim for Minmatar Battleship 4 at a minimum.
 - Abyssal webs are strongly recommended. Try to aim for 15km range at 60% strength.
-- I would recommend learning the anchor spots yourself - try not to rely on someone else.
-- Drop booster gives you a tracking bonus - use synth if you don’t want side effects.
-- We recommend NOT having an MJD unless it’s a TCRC, in which case you should be able to refit on the in-gate.
-- More about MJDs in the TCRC section.
+- You will need to learn your anchor positioning yourself but ask if unsure.
+- Drop booster gives you a tracking bonus and is pretty much mandatory to be effective.
+- Always run Pyrolancea to give yourself extra DPS.
 
-## Applying your DPS to frigates in the initial spawn:
+Try to sit still as much as possible, hitting frigates with large guns is not easy and requires you to be webbing targets and keeping your transversal velocity as low as possible (you can add transversal to your overview in the columns section). Burning around with your MWD on will result in continually missed hits and no dead frigates. Ship placement during waves will help you significantly, so be in position before wave spawns, if aggro switches move to a place where you can be effective!
 
-This applies to the TPPH 1st and 2nd rooms, 3rd room 1st wave, NRF 1st wave.
+There is a priority order to frigates, but remember to always shoot the frigates closest to optimal, and with the lowest transversal, you will kill them much faster this way so keep checking your overview, and memorise your optimal ranges with each ammo type.
 
-Have faction antimatter loaded.
+You may have light drones as support but they are NOT your main source of damage, so make sure to keep shooting. Splitting your gun groupings can be beneficial to kill multiple frigates at once and helps to keep drones shooting. If you are struggling for damage however keep your guns grouped together.
 
-Burn one or two cycles of prop mod towards the sansha blob (one or two depends on how far the sansha are).
+If the frigate spawn is pulled away from you switch to Null! Do not be idle, you can still kill frigates with Null. If frigates are out of web range, overheat your webs, it costs very little in paste to repair webs so make good use of it. Use both groups of guns to kill single targets if needed. You are not a marauder, you are free to burn to do your job whenever it is neccesary.
 
-You should ctrl+space (or q-click approach behind you) to slow yourself down when you are around 25-30km away from the frigates.
-
-As you slow down, apply your 3 webs to the 3 closest frigates. I prefer to go for a single target with all my guns.
-
-Once your speed drops below 130m/s, ctrl+space and start shooting.
-
-Once the first frigate dies, move your guns onto another frigate you have webbed, and move your web to another frigate in range.
-
-Repeat that last step until the frigates are all dead or out of your (heated) web range.
-
-Use your own judgement on when to start burning towards your anchor. Keep in mind you can slowboat and still track with your guns.
-
-## Applying your DPS once you are anchored:
-
-(NRF 2nd, 3rd, 4th waves, TPPH 3rd room 2nd, 3rd waves)
-
-You SHOULD have resebos. If not, ask in fleet chat or on comms.
-
-Have faction antimatter loaded (or void if you’re confident in yourself and/or have 25 tracking with void).
-
-Lock up all frigates, and apply your 3 webs to three different frigates.
-
-Once they slow down to roughly 100m/s or less, start firing. Personally, I kill one frigate at a time with all 8 guns.
-
-Once that frigate is dead, move your web to an unwebbed frigate, and your guns to another frigate you have webbed.
-
-Repeat this process until the frigates are dead. Again, use your judgement and listen to FC when you’re anchoring.
+The meatshield or MS is usually tagged with the letter Z, use this to aid you in finding where to anchor during waves as the meatshield often acts as initial aggro for most sites & waves and you want to be nearby to this ship. This is where all the sansha frigates will be going.
 
 ## Contests:
 
-You are just a normal vindicator in contests, apart from in the TCRC
-
-Always listen to your FC
-
-TCRC:
-If we are the first fleet on grid, kill the first two Niarja. If not, let it live.
-
-If we get the aggro swap, kill the respawning Niarja, otherwise let it live.
+Your role doesnt really change in contests, so shoot frigates as best as you can. The waves will die really fast so make sure you burn straight to your anchors and do as much DPS as you can. During TCRC contests you should be focused on shooting the tower with the rest of the fleet and locking up Niarjas incase they jam any of our marauders, if they do you need to kill them ASAP.
 
 ## Site Breakdowns:
 
-### TPPH:
+### TPPH
 
-Video: https://youtu.be/BpQfs9uv0ts
+- 1st room burn forward one or two propmod cycles, prioritise Schmaeels, then Tama. At the beginning of the room have Null loaded to try to kill one or two as they burn in close, switch to Void and work through remaining frigates.
+- 2nd room burn forward or MJD if the aggro target jumps depending on your preffered fit. Kill the four frigates as fast as you can and prioritise the Schmaeels first.
+- 3rd room burn directly to your anchor, you want to be between the 2nd wave spawn and the MS, but on the closer side to the MS. When the 2nd wave spawns and the MS pulls aggro you should be well within web range of the frigates. Start with Schmaeels first then on to Tamas. From here on its a case of working through all the frigates, the wave will almost always be pushed meaning more frigates will spawn on the final wave. If you are shooting frigates when the final wave spawns you are very likely to get aggro so broadcast for CAP if you got neuted so that you can continue to do your job of webbing frigates. Marauders will help you clean up at this point.
 
-**First room:**
-Enter the room with faction antimatter loaded
+### NRF
 
-Burn one or two cycles of prop mod towards the sansha blob (one or two depends on how far the sansha are).
+- 1st wave you want to burn in two propmod cycles towards the wave. Depending on the size of the spawn you may need to start anchoring before the wave dies, the switch will usually happen about a minute after entering the site and the frigates will change their target and try to burn away, this is your best time to hit them if you have them webbed. Be in position for next wave!
+- 2nd, 3rd & 4th wave your anchor will be above the MS and between them and the wave spawns, this way the frigates should come to you. Start with Schmaeels, then onto Tamas. Remember to burn in to the 4th wave to help shoot everything else once frigates are dead. Webbing Romi's can help alot.
 
-Ctrl+space (or q-click approach behind you) to slow yourself down when you are around 25-30km away from the frigates.
+### TCRC
 
-As you slow down, apply your 3 webs to the 3 closest frigates, usually Schmaeels.
-
-Once your speed drops below 130m/s, ctrl+space and start shooting.
-
-Once the first frigate dies, move your guns onto another frigate you have webbed, and move your web to another frigate in range.
-
-If you are at 0 m/s while repeating the previous step for as long as you can.
-
-If a frigate gets out of range, you can load null and keep shooting, or start burning and have the rest of the fleet clean up the remaining frigates.
-
-**Second room:**
-Enter the room with faction antimatter loaded
-
-Much of the same principles as the first room, except there are only 4 frigates. Prioritize killing Schmaeels.
-
-You can start slowboating to the outgate once you kill the first two Schmaeels.
-
-**Third room:**
-Enter the room with faction antimatter loaded
-
-The Tamas will get deleted by the vargurs/paladins
-
-Lock the 3 Eysturs and all the Tamas
-
-Burn 1 or 2 cycles towards the sansha blob OR the anchor point, either or.
-
-The principle of killing frigates remains the same. Slow down, web the frigates, shoot them once they are slowed down.
-
-After the first wave, it is a matter of applying your dps once you are anchored. Position yourself between where the wave spawns and the meatshield. Web 3 frigates, shoot one. Once it is dead, move your web to another frigate and shoot a webbed frigate.
-
-Make sure your locks are always full with frigates, especially in the second wave.
-
-Shoot the last tagged osti once the frigates are all dead.
-
-If the frigates run away, load null and shoot the frigates in range.
-
-Third wave only has 3 Schmaeels, so once they are dead you can shoot the Vylade.
-
-### NRF:
-
-Video: https://youtu.be/CDHpySHGf3E (first wave was done contest style)
-
-Enter with faction antimatter loaded
-
-The first wave is done with the same principle as initial spawns in TPPHs
-
-Second wave is much of the same as the TPPH 3rd room 2nd wave. Use your own judgement on when to burn to the next anchor point.
-
-You may be asked to shoot the Mara(s) first. Use your spare webs not on the Mara(s) on the Tamas. If the Tamas run away from you, load null once your webbed targets are dead and start shooting.
-
-Final wave make sure you web and shoot the Eysturs first before they run, then shoot the Romis.
-
-### TCRC:
-
-You only shoot Niarjas and UNTAGGED Schmaeels
-
-**No MJD:**
-
-Video: https://youtu.be/1uNtFzhf834
-
-Enter with NULL loaded
-
-Once you enter, lock up the Niarjas. There will be one around 20-30km away from you.
-
-Shoot it after you have a web on it
-
-Start making your way towards the DDD anchor spot (next to the shield transfer array basically the spheres next to the tower)
-
-Once you are roughly 50km or so away from the second Niarja (the respawner), shoot it. Get a heated web on it if need be
-
-Keep burning towards the anchor spot while shooting untagged Schmaeels.
-
-If the Niarja has respawned, decycle your guns and shoot the Niarja.
-
-Once you are at the spot, keep shooting the untagged Schmaeels. Try to get a web on them if you can. Heat your web if you need to.
-
-Repeat the last two steps until the tower is dead (in which case you align out while killing the rest of the Schmaeels) or you kill the untagged Schmaeels (and then you should shoot the tower).
-
-**With MJD:**
-
-Video: https://youtu.be/oejwt9h1tEA
-
-Enter with faction antimatter loaded
-
-Shoot the Niarja closest to you (should be about 20-30km, burn slightly forwards if you need to).
-
-Shoot untagged Schmaeels in your heated web range - heat your web if you need to.
-
-Once the second Niarja burns into range (about 20-30km from you), get a web on it and kill it.
-
-Once the aggro switches from the meatshield to a ship that jumped to the tower, jump towards the DDD anchor - aim slightly to the left of the tower.
-
-Kill any remaining untagged Schmaeels.
-
-Load void and shoot the tower once they are all dead.
-
----
-
-_Huge shoutout to Victoria Tadaruwa for putting in the work here <3_
+- Niarjas are your TOP priority in this site, this is because they jam & neut, they will also respawn. When you land on the beacon sit still, using null, quickly kill the closest Niarja. While this is happening spread your webs for nearby Schmaeels but dont bother with the tag X's. Try to kill off as many Schmaeels as you can before the aggro switchs. When aggro switches the remaining Schmaeels will burn toward the tower so align and MJD to the left of it or burn depending on your fit. When you are anchored kill the remaining Niarja & between Niarja respawns kill off untagged Schmaeels. Remember the Niarja is priority number one so kill it the moment it respawns. When there are no untagged Schmaeels left web the x's and help shoot the tower. The X tag Schmaeels will respawn after a set amount of time if killed, but they will never respawn once the tower is dead, so when the tower is around 20% structure you can kill off the remaining X tags so that the fleet can make quick work of the Auga and exit site promptly.
