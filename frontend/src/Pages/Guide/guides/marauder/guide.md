@@ -1,4 +1,4 @@
-# How to Not Die in your Marauder
+# How to not die in your marauder
 
 ---
 
