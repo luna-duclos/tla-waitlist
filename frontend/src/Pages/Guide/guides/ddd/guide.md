@@ -4,16 +4,6 @@
 
 This Guide will have a series of general tips on how to effectively apply your DPS to frigates, along with a detailed breakdown of each site.
 
-Videos below if you don’t want to read.
-
-[TPPH](https://youtu.be/BpQfs9uv0ts)
-
-[NRF](https://youtu.be/CDHpySHGf3E)
-
-[TCRC - MJD](https://youtu.be/1uNtFzhf834)
-
-[TCRC - MWD](https://youtu.be/oejwt9h1tEA)
-
 ## General Tips:
 
 - DDD is best done with a 3 or 4 web Vindicator.
