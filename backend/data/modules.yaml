@@ -58,9 +58,9 @@ alternatives:
       - Sanshas Xray L
       - Sanshas Radio L
       - Blood Radio L
-    - - Imperial Navy Xray L
+      - Imperial Navy Xray L
       - Imperial Navy Radio L
-    - - True Sanshas Xray L
+      - True Sanshas Xray L
       - Dark Blood Xray L
       - True Sanshas Radio L
       - Dark Blood Radio L
@@ -146,6 +146,8 @@ from_meta:
     abyssal: Abyssal Damage Control
   - base: Gyrostabilizer I
     abyssal: Abyssal Gyrostabilizer
+  - base: Corelum C-Type 50MN Microwarpdrive
+    abyssal: 50MN Abyssal Microwarpdrive 
 
 
 from_attribute:

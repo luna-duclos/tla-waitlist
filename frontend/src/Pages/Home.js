@@ -33,19 +33,15 @@ export function Home() {
       <Content>
         <CenteredParagraph>
           <CenteredParagraph.Head style={{ marginBottom: "1em" }}>
-            Are you new to TLA or incursions in general?
+            Welcome to TLA
           </CenteredParagraph.Head>
           <CenteredParagraph.Paragraph>
-            Please have a read of some of the <NavLink to="/guide">GUIDES</NavLink> and join the{" "}
-            <a href="https://discord.com/invite/MR3nA9BD9K">DISCORD</a> to ask any questioned that
-            aren&apos;t answered here. Look at our <NavLink to="/fits">FITS</NavLink> and make sure
-            your fit looks the same. The associated DPS number is expected after roughly 2 weeks of
-            flying with us.
-          </CenteredParagraph.Paragraph>
-          <CenteredParagraph.Paragraph>
-            Please join the in-game channel <b>TLA Incursions</b> to X Up for our fleets For any
-            questions that aren&apos;t answered below, feel free to drop by and ask! We are more
-            than happy to help!
+            Please have a read of the <NavLink to="/guide">GUIDES</NavLink>, join the{" "}
+            <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> & in game channel TLA Incursions
+            to ask any questions that aren&apos;t answered here, were more than happy to help.
+            Look at our <NavLink to="/fits">FITS</NavLink> and make sure your fit matches ours.
+            The associated DPS number is expected after roughly 2 weeks of flying with us,
+            DPS requirements must be met <b>WITHOUT DRUGS & DRONES, GUN DAMAGE ONLY</b>.
           </CenteredParagraph.Paragraph>
         </CenteredParagraph>
 
@@ -53,10 +49,9 @@ export function Home() {
           <CenteredParagraph>
             <CenteredParagraph.Head>What Is TLA?</CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
-              We are a HQ Incursion Community that specialises in multi-boxing Marauders (Suggested
+              We are an HQ Incursion Community that specialises in multi-boxing Marauders (Suggested
               fits can be found above). Marauder pilots are guaranteed an additional paid spot in
-              fleet for an alt. Your alt is preferred to be in a marauder but can come in anything
-              to get payout until its a marauder.
+              fleet for an alt once both T and A badge requirements are met.
             </CenteredParagraph.ParagraphALT>
           </CenteredParagraph>
           <CenteredParagraph>
@@ -64,24 +59,26 @@ export function Home() {
               Why are there both Armor and Shield Fits?
             </CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
-              We accommodate both tank types to allow anyone to fly their marauder with us.
+              We accommodate both tank types to allow anyone to fly their marauder with us and fly mixed logi to compliment this.
             </CenteredParagraph.ParagraphALT>
           </CenteredParagraph>
           <CenteredParagraph>
             <CenteredParagraph.Head>FAQ&apos;S</CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
-              <b>My fit is different to the one on the website. Can I bring it? </b>
-              Hybrid Implant sets with the appropriate fits are accepted. Fits differing from the
-              ones listed on the website may be welcome in fleet. Ask in-game, in Discord or the
-              active FC for clarification.
+              <b>My fit is different to the one on the website. Can I bring it?</b>
+              Amulet Implant sets with the appropriate rigs are accepted. You <b>MUST</b> use T2 Hyperspatial
+              rig in replacement of trimark. Fits differing from the ones listed on the website may be welcome in fleet,
+              however it is always upto active FC discretion.
               <b>What is the DPS requirement?</b>
               The DPS requirement is the amount of DPS each pilot is expected to in their respective
               hulls (guns only, no heat, no drugs, no drones) after roughly 2 weeks of flying. A
               combination of Skills, Abyssals, and Implants are needed to achieve these numbers.
-              <b>Can I bring my Vindicator? </b>
+              <b>I dont have the L badge, can I still fly logi?</b>
+              Yes, you can fly any ship at any point, our logi fits require you to be 8 rep stable on loki and 5 rep + MWD stable on Nestor.
+              <b>Can I bring my Vindicator?</b>
               Yes! Our Vindicator spots are limited so it is recommend to train into a Marauder. You
               will be expected to DDD so please read the{" "}
-              <NavLink to="/guide/ddd">DDD GUIDE</NavLink>
+              <NavLink to="/guide/ddd">DDD GUIDE</NavLink>.
             </CenteredParagraph.ParagraphALT>
           </CenteredParagraph>
         </ThreeColumn>
