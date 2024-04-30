@@ -79,7 +79,7 @@ export function BadgeData() {
         <h1>Badges</h1>
         <p>
           {" "}
-          To get the T or A badge, DM an FC on Discord with a screenshot for proof.
+          To get the T or A badge, DM an FC on Discord with a screenshot for proof. Make sure your screenshot shows the highlighted areas as per the
           <AButton onClick={(evt) => setExampleOpen(true)} style={{ marginLeft: "0.5em" }}>
             Example
           </AButton>
@@ -87,23 +87,23 @@ export function BadgeData() {
         <Title>Pilot Badge</Title>
         <BadgeDisplay>
           <BadgeButton name="DPS" icon={"DPS"}>
-            The DPS Badge is given to a pilot that has met the DPS Values on the fitting page.
+            The DPS Badge is given to a pilot that has met the main DPS Values on the fitting page. You must have implant slots 9 & 10 to get this badge.
           </BadgeButton>
           <BadgeButton name="Logi" icon={"LOGI"}>
-            The Logi Badge is given out by an FC that has vouched for your logi performance.
+            The Logi Badge is given out by an FC that has vouched for your logi performance. It is not required to fly Logi.
           </BadgeButton>
           <BadgeButton name="Alt Approved" icon={"ALT"}>
-            The Alt Approved Badge is given to a pilot that has met the DPS Values for alts on the
-            fitting page.
+            The Alt Approved Badge is given to a pilot that has met the DPS Values for alts on the fitting page.
+            Your main or T badge must have a <b>full</b> implant set before you can apply for this badge and recieve your garanteed alt spot.
           </BadgeButton>
         </BadgeDisplay>
         <Title>Commander Badges</Title>
         <BadgeDisplay>
           <BadgeButton name="Training FC" icon={"TRAINEE"}>
-            Training Fleet Commander
+            Trainee isk bringers
           </BadgeButton>
           <BadgeButton name="Fleet Commander" icon={"HQ-FC"}>
-            Isk Bringers
+            Isk bringers
           </BadgeButton>
         </BadgeDisplay>
       </Content>
