@@ -18,6 +18,23 @@ alternatives:
       - SoCT Turret Booster III
       - SoCT Turret Booster IV
 
+  - - - SoCT Agility Booster I
+    - - SoCT Agility Booster II
+      - SoCT Agility Booster III
+
+  - - - SoCT Armor Booster I
+    - - SoCT Armor Booster II
+      - SoCT Armor Booster III
+
+
+  - - - SoCT Capacitor Booster I
+    - - SoCT Capacitor Booster II
+      - SoCT Capacitor Booster III
+
+  - - - SoCT Repairer Booster I
+    - - SoCT Repairer Booster II
+      - SoCT Repairer Booster III
+
   - - - Agency 'Overclocker' SB3 Dose I
     - - Agency 'Overclocker' SB5 Dose II
       - Agency 'Overclocker' SB7 Dose III
