@@ -249,6 +249,10 @@ drugs_approve_override:
         amount: 2
       - name: Agency 'Pyrolancea' DB5 Dose II
         amount: 1
+      - name: SoCT Turret Booster I
+        amount: 2
+      - name: SoCT Turret Booster II
+        amount: 1
   - detect: Agency 'Overclocker' SB7 Dose III
     remove:
       - Agency 'Overclocker' SB3 Dose I
@@ -257,7 +261,7 @@ drugs_approve_override:
     add:
       - name: Agency 'Overclocker' SB5 Dose II
         amount: 2
-        
+       
 
 fit_variation_rules:
   - hull: Paladin
