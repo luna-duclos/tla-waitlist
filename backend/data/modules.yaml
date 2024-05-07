@@ -13,6 +13,11 @@ alternatives:
       - Agency 'Pyrolancea' DB7 Dose III
       - Agency 'Pyrolancea' DB9 Dose IV
 
+  - - - SoCT Turret Booster I
+    - - SoCT Turret Booster II
+      - SoCT Turret Booster III
+      - SoCT Turret Booster IV
+
   - - - Agency 'Overclocker' SB3 Dose I
     - - Agency 'Overclocker' SB5 Dose II
       - Agency 'Overclocker' SB7 Dose III
