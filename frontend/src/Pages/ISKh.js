@@ -101,7 +101,7 @@ function createPayoutTable() {
     ["AS (HS)", 18200000, 3500, 20],
     ["AS (LS/NS)", 26000000, 5000, 30],
     ["VG (HS)", 10395000, 1400, 10],
-    ["VG (LS/NS)", 15000000, 2000, 20],
+    ["VG (LS/NS)", 15000000, 2000, 15],
   ]) {
     for (var overgrid = 0; overgrid < 11; overgrid++) {
       const payoutFactor = 1 - 0.0725 * overgrid - 0.0025 * overgrid ** 2;
