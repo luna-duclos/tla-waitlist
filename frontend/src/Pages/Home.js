@@ -49,8 +49,8 @@ export function Home() {
           <CenteredParagraph>
             <CenteredParagraph.Head>What Is TLA?</CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
-              We are an HQ Incursion Community that specialises in multi-boxing Marauders (Suggested
-              fits can be found above). Marauder pilots are guaranteed an additional paid spot in
+              We are an HQ Incursion Community that specialises in multi-boxing Marauders (Suggested fits can be found in the fits
+              section of the waitlist). Marauder pilots are guaranteed an additional paid spot in
               fleet for an alt once both T and A badge requirements are met.
             </CenteredParagraph.ParagraphALT>
           </CenteredParagraph>
@@ -59,19 +59,19 @@ export function Home() {
               Why are there both Armor and Shield Fits?
             </CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
-              We accommodate both tank types to allow anyone to fly their marauder with us and fly mixed logi to compliment this.
+             We accommodate both tank types to allow anyone to fly their marauder with us and fly mixed logi to complement this.
             </CenteredParagraph.ParagraphALT>
           </CenteredParagraph>
           <CenteredParagraph>
             <CenteredParagraph.Head>FAQ&apos;S</CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
               <b>My fit is different to the one on the website. Can I bring it?</b>
-              Amulet Implant sets with the appropriate rigs are accepted. You <b>MUST</b> use T2 Hyperspatial
-              rig in replacement of trimark. Fits differing from the ones listed on the website may be welcome in fleet,
+              Amulet Implant sets with the appropriate rigs are accepted (You <b>MUST</b> use T2 Hyperspatial
+              rig in replacement of the trimark rig). Fits differing from the ones listed on the website may be welcomed in fleet,
               however it is always upto active FC discretion.
               <b>What is the DPS requirement?</b>
               The DPS requirement is the amount of DPS each pilot is expected to in their respective
-              hulls (guns only, no heat, no drugs, no drones) after roughly 2 weeks of flying. A
+              hulls (guns only, no heat, no drugs, no drones) after 24 in fleet hours. A
               combination of Skills, Abyssals, and Implants are needed to achieve these numbers.
               <b>I dont have the L badge, can I still fly logi?</b>
               Yes, you can fly any ship at any point, our logi fits require you to be 8 rep stable on loki and 5 rep + MWD stable on Nestor.
