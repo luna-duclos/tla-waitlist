@@ -49,7 +49,7 @@ export function Home() {
           <CenteredParagraph>
             <CenteredParagraph.Head>What Is TLA?</CenteredParagraph.Head>
             <CenteredParagraph.ParagraphALT>
-              We are an HQ Incursion Community that specialises in multi-boxing Marauders (Suggested fits can be found in the fits
+              We are an HQ Incursion Community that specializes in multi-boxing Marauders (Suggested fits can be found in the fits
               section of the waitlist). Marauder pilots are guaranteed an additional paid spot in
               fleet for an alt once both T and A badge requirements are met.
             </CenteredParagraph.ParagraphALT>
@@ -70,7 +70,7 @@ export function Home() {
               rig in replacement of the trimark rig). Fits differing from the ones listed on the website may be welcomed in fleet,
               however it is always upto active FC discretion.
               <b>What is the DPS requirement?</b>
-              The DPS requirement is the amount of DPS each pilot is expected to in their respective
+              The DPS requirement is the amount of DPS each pilot is expected to reach in their respective
               hulls (guns only, no heat, no drugs, no drones) after 24 in fleet hours. A
               combination of Skills, Abyssals, and Implants are needed to achieve these numbers.
               <b>I dont have the L badge, can I still fly logi?</b>
