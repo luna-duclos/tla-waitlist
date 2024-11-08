@@ -147,6 +147,7 @@ from_meta:
   - base: Corelum C-Type 50MN Microwarpdrive
     abyssal: 50MN Abyssal Microwarpdrive
   - base: Small Tractor Beam II
+    alternative: Consortium Small Tractor Beam
 
 
 from_attribute:
