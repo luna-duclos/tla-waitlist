@@ -37,7 +37,7 @@ export function Home() {
           </CenteredParagraph.Head>
           <CenteredParagraph.Paragraph>
             Please have a read of the <NavLink to="/guide">GUIDES</NavLink>, join the{" "}
-            <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> & in game channel TLA Incursions
+            <a href="https://discord.gg/MR3nA9BD9K">DISCORD</a> & in game channel TLA Incursions
             to ask any questions that aren&apos;t answered here, were more than happy to help.
             Look at our <NavLink to="/fits">FITS</NavLink> and make sure your fit matches ours.
             The associated DPS number is expected after roughly 2 weeks of flying with us,

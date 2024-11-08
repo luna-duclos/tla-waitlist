@@ -26,6 +26,7 @@ importAll(require.context("./badges", true, /\.(jpg|png)$/));
 function BadgeButton({ name, icon, children }) {
 const [modalOpen, setModalOpen] = React.useState(false);
 return (
+
 <>
 {modalOpen ? (
 <Modal open={true} setOpen={setModalOpen}>
@@ -77,16 +78,22 @@ export function BadgeData() {
       <Content style={{ marginBottom: "2em" }}>
         <h1>Badges</h1>
         <p>
-          {" "}
           To get the T or A badge, use the
-          [ticket](https://discord.com/channels/930000021083005028/930014112635826196/1287232984495423570)
-          system on Discord. Make sure your screenshot is saved on a image
+          <a
+            href="https://discord.com/channels/930000021083005028/930014112635826196/1287232984495423570"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ marginLeft: "0.5em" }}
+          >
+            ticket
+          </a>
+          system on Discord. Make sure your screenshot is saved on an image
           hosting website & shows the highlighted areas as per the
           <AButton
             onClick={(evt) => setExampleOpen(true)}
             style={{ marginLeft: "0.5em" }}
           >
-            Example
+            example
           </AButton>
         </p>
         <Title>Pilot Badge</Title>
