@@ -86,8 +86,7 @@ export function BadgeData() {
             style={{ marginLeft: "0.5em" }}
           >
             ticket
-          </a>
-          system on Discord. Make sure your screenshot is saved on an image
+          </a> system on Discord. Make sure your screenshot is saved on an image
           hosting website & shows the highlighted areas as per the
           <AButton
             onClick={(evt) => setExampleOpen(true)}
