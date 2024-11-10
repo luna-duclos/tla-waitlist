@@ -64,29 +64,60 @@ There are many types of different drugs, when possible we ask you to use the bar
 
 When you activate bastion on your marauder you are no longer able to receive remote reps from the fleet. This means that if you pull aggro while in bastion you have to be able to tank long enough to exit bastion and receive reps. However, this directly contradicts our ethos of "we want you to be in bastion as much as possible" so understanding when to bastion is key. One of the main things to listen for in fleet is the word **"switch"** as detailed below.
 
-Aggro will **switch** every minute or 60 seconds. Once aggro has switched/established and it's not split or on you, you are safe to bastion for 1 cycle. If for any reason you are not sure when a switch has happened or you missed it, do not bastion until you know when the next switch has happened, if your not sure ASK! If you are flying a paladin, listen to the FC and pay attention as low kronos numbers in fleet may lead to you pulling aggro so pay attention to your cycles. For shield tanked ships its important to broadcast cap if you need it, if your tank turns off you will explode very quickly, you cannot recieve cap during bastion but broadcasting for it will ensure everyone knows you will need it when you come out of bastion.
+Aggro will **switch** every minute or 60 seconds. Once aggro has switched/established and it's not split or on you, you are safe to bastion for 1 cycle. If for any reason you are not sure when a switch has happened or you missed it, do not bastion until you know when the next switch has happened, if you are not sure ASK! When flying a Paladin, listen to the FC and pay attention as low Kronos numbers in fleet may lead to you pulling aggro so pay attention to your cycles. For shield tanked ships its important to broadcast cap if you need it, if your tank turns off you will explode very quickly, you cannot recieve cap during bastion but broadcasting for it will ensure everyone knows you will need it when you come out of bastion.
 
-There will always be odd scenarios or mistakes in fleet, the FC will be doing their best to ensure this is kept to a minimum but you can yourself pay attention and ensure your own safety by being aware of whats going on. If the FCs booster is not correctly positioned to pull aggro then it is advised to not be in bastion when new waves spawn incase you get the initial aggro.
+There will always be odd scenarios or mistakes in fleet, the FC will be doing their best to ensure this is kept to a minimum but you can pay attention and ensure your own safety by being aware of whats going on. If the FCs booster is not correctly positioned to pull aggro then it is advised to not be in bastion when new waves spawn incase you get the initial aggro.
 
 If you pull aggro in bastion:
-- The first thing you should do is broadcast your tank type.
 
-- Secondly give the FC a voice over of how long until your bastion cycle is going to end. Counting down the final 10s or so will aid the logi in applying reps the moment you come out of bastion if its a close call.
+- The first thing you should do is broadcast your tank type. We do not use "troll" broadcasts as we have dual logi.
+
+- Secondly give the FC a voice over of how long until your bastion cycle is going to end. Counting down the final 10 seconds or so will aid the logi in applying reps the moment you come out of bastion if its a close call.
 
 - Thirdly overheat any active tank modules your ship might be fitted with
 
-Giving this information is key to the FC as they cannot make decisions to aid in your survival without it. **DONT DIE IN SILENCE!**.
+Giving this information is key to the FC as they cannot make decisions to aid in your survival without it. **DO NoT DIE IN SILENCE!**.
 
-There are other small things you can do to make life easier for everyone, such as broadcasting your tank type again when you come out of bastion, not broadcasting for troll aggro directly after a switch. Using your battle reps on other marauders when logi are not on grid/in range, it could be you that needs them so use them for others when its neccessary and others will return the favor when you need it.
+There are other small things you can do to make life easier for everyone, such as broadcasting again when you come out of bastion, not broadcasting for troll aggro directly after a switch etc. Using your battle reps on other marauders when logi are not on grid/in range is a must, it could be you that needs them so use them for others when its neccessary and others will return the favor when you need it.
 
-### Step 5: TCRC entry & NRF entry.
+### Step 4: TCRC entry & NRF entry.
 
-Entrances to TCRCs are usually very structured, but there are occasions things dont go to plan. It may seem obvious, but if you are in doubt, dont bastion and ask if its safe to do so. Once aggro is established if you dont have any specific roles you bastion for one cycle on the beacon and shoot:
+Entrances to TCRCs are usually very structured, but there are occasions things dont go to plan. It may seem obvious, but if you are in doubt, dont bastion and ask if its safe to do so. Our normal running procedure once aggro is established is you bastion for one cycle on the beacon and shoot:
 
 - Deltole
 - Outuni
 - UNTAGGED Ostingele
 
+_NEVER SHOOT TAG X UNLESS GIVEN SPECIFIC INSTRUCTION FROM FC_
+
 Once the above NPCs are dead you will MJD to the tower and proceed to do your second bastion cycle, the fleet will always have a "lightning rod" pilot who will effectively be pre-determining where the aggro will go, but again, pay attention to when switches happen and bastion timely to ensure your own safety.
 
-Entrance to NRFs are only dangerous should you not pay attention and MJD blindly into your anchor spot. So when you enter an NRF after checking for phenomena, assess the grid, if the final wave is about to spawn, burn into the site, if you have any doubt as to your safety, **burn into site rather than MJD**.
+Entrances to NRFs are only dangerous should you not pay attention and micro jump drive blindly into your anchor spot. So when you enter an NRF after checking for phenomena, assess the grid, if the final wave is about to spawn, burn into the site, if you have any doubt as to your safety, **use your micro warp drive to burn into site the rather than micro jump drive**.
+
+### Step 5: Roles & whats expected of them.
+
+There are several roles in TLA fleets each with specific jobs or tasks, they are listed below with a brief summary. Roles are always required, so if someone is not listed for a role in the fleet MOTD, x-up for the role, your FC will appreciate not having to ask. Newer pilots are expected to help out with these roles while working towards their T badge DPS number.
+
+- DDD
+
+  The Vindicator(s) in fleet, responsible for killing frigates in all sites, and primarily Niarjas in TCRC's. Specific guidance can be found [here](guide/ddd).
+
+- Meatshield
+
+  Usually occupied by a command ship: Damnation, Claymore, Eos etc. Provides consistent aggro management due to its placement and provides secondary boosts and links to the fleet.
+
+- LR (Lightning rod)
+
+  Is usually made up of two Kronos from different pilots (in case of DC) and its job is to obtain aggro during TCRCs by jumping directly to the tower & shooting it at the entry to the site. Care must be taken not to be slow as mistimed bastions can lead to switches happening during a long cycle of your bastion, if in doubt, ask. The idea with LR is to "tag team" the aggro by bouncing it between the two listed pilots.
+
+- MTAC
+
+  Is held by either Vargur or Paladin equipped with a Tractor Beam, this pilot will jump directly to the MTAC factory in TCRC's and prevent the tower from repping by placing the MTAC into the Shield Transfer Array by means of a cargo container, this process is repeated until site completion. MTAC pilots always have permission to exit a TCRC site once the tower dies without the need for FC approval.
+
+- PS (Pally squad)
+
+  Is held by a dual boxer Paladin or Vargur and shoots 2 to 5 Yulais during TCRCs, this is done by jumping to the right of the TCRC tower at the start of the site and shooting the two Yulais above the tower and the three to the right of it. This pilot does not need to bastion on the beacon like the rest of the fleet.
+
+- Scout
+
+  The unsung hero of the fleet, provides information on other fleets in system by tagging sites, DSCANs of fleet compositions & also provides pre-loads of TCRC's.

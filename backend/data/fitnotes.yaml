@@ -23,6 +23,7 @@ notes:
   - name: TLA_SHIELD_VARGUR
     description: >
       DPS **MAIN:** 3350 **ALT:** 3115
+      Offline tractor beam when not in use
   - name: TLA_ARMOR_KRONOS
     description: >
       DPS **MAIN:** 4100 **ALT:** 3813
@@ -35,3 +36,12 @@ notes:
   - name: TLA_ARMOR_VINDI
     description: >
       Few allowed in fleet
+  - name: TLA_ARMOR_NESTOR
+    description: >
+      Needs to be cap stable with 5 reps running & MWD on
+  - name: TLA_ARMOR_LOKI_MWD
+    description: >
+      Needs to be cap stable with 8 reps running only
+  - name: TLA_ARMOR_LOKI
+    description: >
+      Needs to be cap stable with 8 reps running & AB on

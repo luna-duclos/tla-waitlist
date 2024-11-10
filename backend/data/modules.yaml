@@ -28,9 +28,7 @@ alternatives:
     - - Improved Mindflood Booster
     - - Strong Mindflood Booster
 
-  - - - Centum A-Type Medium Remote Armor Repairer
-    - - Large Remote Armor Repairer II
-    - - "'Peace' Large Remote Armor Repairer"
+  - - - Large Remote Armor Repairer II
       - Large Ancillary Remote Armor Repairer
 
   - - - Tachyon Modulated Energy Beam I
@@ -147,7 +145,9 @@ from_meta:
   - base: Gyrostabilizer I
     abyssal: Abyssal Gyrostabilizer
   - base: Corelum C-Type 50MN Microwarpdrive
-    abyssal: 50MN Abyssal Microwarpdrive 
+    abyssal: 50MN Abyssal Microwarpdrive
+  - base: Small Tractor Beam II
+    alternative: Consortium Small Tractor Beam
 
 
 from_attribute:
@@ -187,7 +187,6 @@ accept_t1: # Meta information missing, but luckily we can just match it naively
   - Light Shield Maintenance Bot II
   - Light Armor Maintenance Bot II
   - Light Hull Maintenance Bot II
-  - Small Tractor Beam II
   
 identification: # Modules/groups we use to look at to figure out what we're flying
   - Damage Control II
@@ -251,14 +250,14 @@ fit_variation_rules:
         amount: 1
     extra:
       - name: "'Peace' Large Remote Armor Repairer"
-        amount: 1 
+        amount: 1
   - hull: Paladin
     missing: 
       - name: Large Trimark Armor Pump II
         amount: 1
     extra:
       - name: Large Hyperspatial Velocity Optimizer II
-        amount: 1    
+        amount: 1
         
 
   - hull: Kronos
@@ -267,7 +266,7 @@ fit_variation_rules:
         amount: 1
     extra:
       - name: Large Hyperspatial Velocity Optimizer II
-        amount: 1   
+        amount: 1
   - hull: Kronos #keeping it simple
     missing: 
       - name: "'Love' Medium Remote Armor Repairer"

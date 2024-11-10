@@ -14,15 +14,14 @@ const BannerImage = styled.div`
   border-radius: 50px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
   margin-bottom: 2em;
-`;*/
+`;
+*/
 
-const ThreeColumn = styled.div`
-  display: flex;
-  justify-conent: space-between;
+const ThreeColumn = styled.div`  display: flex;
+  justify-content: space-between;
   @media (max-width: 1100px) {
     flex-wrap: wrap;
-  }
-`;
+  }`;
 
 export function Home() {
   return (
@@ -37,7 +36,7 @@ export function Home() {
           </CenteredParagraph.Head>
           <CenteredParagraph.Paragraph>
             Please have a read of the <NavLink to="/guide">GUIDES</NavLink>, join the{" "}
-            <a href="https://discord.com/invite/D8pkZhE8DD">DISCORD</a> & in game channel TLA Incursions
+            <a href="https://discord.gg/MR3nA9BD9K">DISCORD</a> & in game channel TLA Incursions
             to ask any questions that aren&apos;t answered here, were more than happy to help.
             Look at our <NavLink to="/fits">FITS</NavLink> and make sure your fit matches ours.
             The associated DPS number is expected after roughly 2 weeks of flying with us,
@@ -76,7 +75,7 @@ export function Home() {
               <b>I dont have the L badge, can I still fly logi?</b>
               Yes, you can fly any ship at any point, our logi fits require you to be 8 rep stable on loki and 5 rep + MWD stable on Nestor.
               <b>Can I bring my Vindicator?</b>
-              Yes! Our Vindicator spots are limited so it is recommend to train into a Marauder. You
+              Yes! Our Vindicator spots are limited. You
               will be expected to DDD so please read the{" "}
               <NavLink to="/guide/ddd">DDD GUIDE</NavLink>.
             </CenteredParagraph.ParagraphALT>
@@ -84,5 +83,6 @@ export function Home() {
         </ThreeColumn>
       </Content>
     </>
-  );
+
+);
 }
