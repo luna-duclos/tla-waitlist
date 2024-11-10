@@ -4,25 +4,21 @@ import { Content } from "../Components/Page";
 
 import styled from "styled-components";
 
-/*
-const BannerImage = styled.div`
-  background-image: url("https://i.imgur.com/8NXTXqj.png");
+/_
+const BannerImage = styled.div`  background-image: url("https://i.imgur.com/8NXTXqj.png");
   width: 100%;
   height: 400px;
   background-size: 100% auto;
   background-repeat: no-repeat;
   border-radius: 50px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-  margin-bottom: 2em;
-`;*/
+  margin-bottom: 2em;`;_/
 
-const ThreeColumn = styled.div`
-  display: flex;
+const ThreeColumn = styled.div`  display: flex;
   justify-conent: space-between;
   @media (max-width: 1100px) {
     flex-wrap: wrap;
-  }
-`;
+  }`;
 
 export function Home() {
   return (
@@ -76,7 +72,7 @@ export function Home() {
               <b>I dont have the L badge, can I still fly logi?</b>
               Yes, you can fly any ship at any point, our logi fits require you to be 8 rep stable on loki and 5 rep + MWD stable on Nestor.
               <b>Can I bring my Vindicator?</b>
-              Yes! Our Vindicator spots are limited so it is recommend to train into a Marauder. You
+              Yes! Our Vindicator spots are limited. You
               will be expected to DDD so please read the{" "}
               <NavLink to="/guide/ddd">DDD GUIDE</NavLink>.
             </CenteredParagraph.ParagraphALT>
@@ -84,5 +80,6 @@ export function Home() {
         </ThreeColumn>
       </Content>
     </>
-  );
+
+);
 }
