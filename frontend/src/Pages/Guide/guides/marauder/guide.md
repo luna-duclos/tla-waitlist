@@ -100,15 +100,15 @@ There are several roles in TLA fleets each with specific jobs or tasks, they are
 
 - DDD
 
-  The singular Vindicator in fleet, responsible for killing frigates in all sites, and primarily Niarjas in TCRC's. Specific guidance can be found [here](guide/ddd).
+  The Vindicator(s) in fleet, responsible for killing frigates in all sites, and primarily Niarjas in TCRC's. Specific guidance can be found [here](guide/ddd).
 
 - Meatshield
 
-  Usually occupied by a command ship, Damnation, Claymore, Eos etc. Provides consistent aggro management due to its placement and provides secondary boosts and links to the fleet.
+  Usually occupied by a command ship: Damnation, Claymore, Eos etc. Provides consistent aggro management due to its placement and provides secondary boosts and links to the fleet.
 
 - LR (Lightning rod)
 
-  Is usually made up of two Kronos from different pilots (in case of DC) and its job is to obtain aggro during TCRCs by jumping directly to the tower & shooting it at the entry to the site. Care must be taken not to be slow as mis-timed bastions can lead to switches happening during a long cycle of your bastion, if in doubt, ask. The idea with LR is to "tag team" the aggro by bouncing it between the two listed pilots.
+  Is usually made up of two Kronos from different pilots (in case of DC) and its job is to obtain aggro during TCRCs by jumping directly to the tower & shooting it at the entry to the site. Care must be taken not to be slow as mistimed bastions can lead to switches happening during a long cycle of your bastion, if in doubt, ask. The idea with LR is to "tag team" the aggro by bouncing it between the two listed pilots.
 
 - MTAC
 
@@ -120,4 +120,4 @@ There are several roles in TLA fleets each with specific jobs or tasks, they are
 
 - Scout
 
-  The hero we all need but never get, provides information on other fleets in system by tagging sites, DSCANs of fleet compositions & also provides pre-loads of TCRC's.
+  The unsung hero of the fleet, provides information on other fleets in system by tagging sites, DSCANs of fleet compositions & also provides pre-loads of TCRC's.
