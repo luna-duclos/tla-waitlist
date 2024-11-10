@@ -4,18 +4,21 @@ import { Content } from "../Components/Page";
 
 import styled from "styled-components";
 
-/_
-const BannerImage = styled.div`  background-image: url("https://i.imgur.com/8NXTXqj.png");
+/*
+const BannerImage = styled.div`
+  background-image: url("https://i.imgur.com/8NXTXqj.png");
   width: 100%;
   height: 400px;
   background-size: 100% auto;
   background-repeat: no-repeat;
   border-radius: 50px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-  margin-bottom: 2em;`;_/
+  margin-bottom: 2em;
+`;
+*/
 
 const ThreeColumn = styled.div`  display: flex;
-  justify-conent: space-between;
+  justify-content: space-between;
   @media (max-width: 1100px) {
     flex-wrap: wrap;
   }`;
