@@ -23,6 +23,7 @@ notes:
   - name: TLA_SHIELD_VARGUR
     description: >
       DPS **MAIN:** 3350 **ALT:** 3115
+      Offline tractor beam when not in use
   - name: TLA_ARMOR_KRONOS
     description: >
       DPS **MAIN:** 4100 **ALT:** 3813
