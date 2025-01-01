@@ -86,7 +86,7 @@ The Waitlist has three services (see below). Before starting the front end, both
 8. Run the server
 9. Run the frontend (see section below)
 10. Click on login and complete the SSO workflow with at least one character
-11. Insert a record in the `admin` table to give yourself `council` permissions
+11. Insert a record in the `admin` table to give yourself `admin` permissions
 12. Navigate to the Fleet page and "ESI re-auth as FC"
 
 <details>
@@ -120,7 +120,7 @@ The Waitlist has three services (see below). Before starting the front end, both
    INSERT INTO admin (character_id, role, granted_at, granted_by_id)
    SELECT
        id AS character_id,
-       'council' AS role,
+       'admin' AS role,
        CURRENT_TIMESTAMP() AS granted_at,
        id AS granted_by_id
    FROM `character` WHERE name = 'YOUR CHARACTER NAME';

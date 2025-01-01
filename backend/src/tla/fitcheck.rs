@@ -109,6 +109,12 @@ impl<'a> FitChecker<'a> {
     }
 
     fn check_fit(&mut self) {
+        // Auto-approve Vindicator if pilot has VINDI badge
+        if self.fit.hull == type_id!("Vindicator") && self.badges.contains(&String::from("VINDI")) {
+            self.approved = true;
+            return;
+        }
+
         if let Some((doctrine_fit, diff)) = fitmatch::find_fit(self.fit) {
             self.doctrine_fit = Some(doctrine_fit);
             let fit_ok = diff.module_downgraded.is_empty() && diff.module_missing.is_empty();
