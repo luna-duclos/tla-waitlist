@@ -85,6 +85,7 @@ export const badgeOrder = [
   "DPS",
   "LOGI",
   "ALT",
+  "VINDI",
   "AMULET",
   "WARPSPEED",
   "HYBRID",
@@ -103,6 +104,7 @@ export const icons = {
   DPS: { type: "shield", color: "yellow", letter: "T", name: "DPS" },
   LOGI: { type: "shield", color: "red", letter: "L", name: "Logi Specialist" },
   ALT: { type: "shield", color: "green", letter: "A", name: "Alt approved" },
+  VINDI: { type: "shield", color: "blue", letter: "!", name: "Vindication" },
   // Other
 
   UNKNOWN: { type: "shield", color: "neutral", letter: "?", name: null },

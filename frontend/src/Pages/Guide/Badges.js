@@ -78,7 +78,7 @@ export function BadgeData() {
       <Content style={{ marginBottom: "2em" }}>
         <h1>Badges</h1>
         <p>
-          To get the T or A badge, use the
+          To get the T, A, or ! badge, use the
           <a
             href="https://discord.com/channels/930000021083005028/930014112635826196/1287232984495423570"
             target="_blank"
@@ -111,6 +111,9 @@ export function BadgeData() {
             Values for alts on the fitting page. Your main or T badge must have
             a <b>full</b> implant set before you can apply for this badge and
             recieve your guaranteed alt spot.
+          </BadgeButton>
+          <BadgeButton name="VINDICATION!" icon={"VINDI"}>
+            The VINDICATION badge is given to a pilot that has met the DPS and Web values on the fitting page.
           </BadgeButton>
         </BadgeDisplay>
         <Title>Commander Badges</Title>

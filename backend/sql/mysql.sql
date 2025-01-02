@@ -109,7 +109,7 @@ CREATE TABLE `badge_assignment` (
 );
 
 -- Seed the database with some starting badges
-INSERT INTO badge (name) VALUES ('DPS'), ('ALT'), ('LOGI');;
+INSERT INTO badge (name) VALUES ('DPS'), ('ALT'), ('LOGI');
 
 
 
