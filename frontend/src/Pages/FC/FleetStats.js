@@ -21,7 +21,7 @@ import _ from "lodash";
 
 import { PilotTags } from "../../Components/Badge";
 const marauders = ["Paladin", "Kronos", "Golem", "Vargur"];
-const booster = ["Eos", "Damnation", "Claymore", "Vulture", "Sleipnir", "Astarte"];
+const booster = ["Eos", "Damnation", "Claymore", "Vulture", "Sleipnir", "Astarte", "Absolution", "Nighthawk", ];
 
 function PilotTagsFromId({ characterId }) {
   const [basicInfo] = useApi(`/api/pilot/info?character_id=${characterId}`);
