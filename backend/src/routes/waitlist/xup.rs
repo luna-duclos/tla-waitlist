@@ -149,21 +149,7 @@ async fn xup_multi(
 
         let time_in_fleet = get_time_in_fleet(app.get_db(), character_id).await?;
         
-        // HARDCODED IMPLANTS FOR TESTING - replace the ESI call below
-        // let implants = implants::get_implants(app, character_id).await?;
-        
-        // Test with HYBRID implant set
-        let implants = vec![
-            type_id!("High-grade Amulet Alpha"),
-            type_id!("High-grade Amulet Beta"),
-            type_id!("High-grade Amulet Delta"),
-            type_id!("High-grade Amulet Epsilon"),
-            type_id!("High-grade Amulet Gamma"),
-            // type_id!("% WS-618"), // Uncomment to test full HYBRID set
-        ];
-        
-        // Test with empty implants (no HYBRID set)
-        // let implants = vec![];
+        let implants = implants::get_implants(app, character_id).await?;
         
         let skills = skills::load_skills(&app.esi_client, app.get_db(), character_id).await?;
 
