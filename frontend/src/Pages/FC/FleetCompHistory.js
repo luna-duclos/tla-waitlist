@@ -8,6 +8,7 @@ import { formatDatetime, formatDuration } from "../../Util/time";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { usePageTitle } from "../../Util/title";
+import { NavLink } from "react-router-dom";
 
 export function FleetCompHistory() {
   const [date, setDate] = React.useState("");
@@ -21,7 +22,7 @@ export function FleetCompHistory() {
   usePageTitle("Fleet History");
   return (
     <Content>
-      <h2>Fleet history lookup</h2>
+      <h2>Fleet history lookup in Eve Time (GMT)</h2>
       <InputGroup>
         <Input type="date" value={date} onChange={(evt) => setDate(evt.target.value)} />
         <Input type="time" value={time} onChange={(evt) => setTime(evt.target.value)} />
@@ -46,10 +47,12 @@ export function FleetCompHistory() {
                 </Row>
               </TableHead>
               <TableBody>
-                {comp.map((entry) => (
+                {_.orderBy(comp, ['logged_at'], ['asc']).map((entry) => (
                   <Row key={entry.character.id}>
                     <Cell>
-                      {entry.character.name}
+                      <NavLink to={`/fc/search?query=${encodeURIComponent(entry.character.name)}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                        {entry.character.name}
+                      </NavLink>
                       {entry.is_boss && (
                         <>
                           {" "}

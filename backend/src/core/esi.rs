@@ -1,6 +1,61 @@
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeSet, sync::Arc};
 
+#[derive(Debug, Deserialize)]
+pub struct Incursion {
+    pub constellation_id: i64,
+    pub faction_id: i64,
+    pub has_boss: bool,
+    pub infested_solar_systems: Vec<i64>,
+    pub influence: f64,
+    pub staging_solar_system_id: i64,
+    pub state: String,
+    #[serde(rename = "type")]
+    pub type_: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ConstellationInfo {
+    pub constellation_id: i64,
+    pub name: String,
+    pub region_id: i64,
+    pub systems: Vec<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SolarSystemInfo {
+    pub constellation_id: i64,
+    pub name: String,
+    pub planets: Vec<Planet>,
+    pub position: Position,
+    pub security_class: Option<String>,
+    pub security_status: f64,
+    pub star_id: Option<i64>,
+    pub stargates: Option<Vec<i64>>,
+    pub stations: Option<Vec<i64>>,
+    pub system_id: i64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Planet {
+    pub planet_id: i64,
+    pub asteroid_belts: Option<Vec<i64>>,
+    pub moons: Option<Vec<i64>>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Position {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+#[derive(Debug)]
+pub struct ESIResponse<T> {
+    pub data: T,
+    pub etag: Option<String>,
+}
+
 struct ESIRawClient {
     http: reqwest::Client,
     client_id: String,
@@ -88,6 +143,7 @@ pub enum ESIScope {
     Skills_ReadSkills_v1,
     Clones_ReadImplants_v1,
     Search_v1,
+    Wallet_ReadCorporationWallets_v1,
 }
 
 impl ESIScope {
@@ -101,6 +157,7 @@ impl ESIScope {
             Skills_ReadSkills_v1 => "esi-skills.read_skills.v1",
             Clones_ReadImplants_v1 => "esi-clones.read_implants.v1",
             Search_v1 => "esi-search.search_structures.v1",
+            Wallet_ReadCorporationWallets_v1 => "esi-wallet.read_corporation_wallets.v1",
         }
     }
 }
@@ -209,13 +266,43 @@ impl ESIRawClient {
     }
 
     pub async fn get(&self, url: &str, access_token: &str) -> Result<reqwest::Response, ESIError> {
-        Ok(self
+        let response = self
             .http
             .get(url)
             .bearer_auth(access_token)
             .send()
-            .await?
-            .error_for_status()?)
+            .await?;
+
+        if let Err(err) = response.error_for_status_ref() {
+            let status = err.status().unwrap().as_u16();
+            let response_body = response.text().await.unwrap_or_else(|_| "No response body".to_string());
+            return Err(ESIError::WithMessage(status, response_body));
+        };
+
+        Ok(response)
+    }
+
+    pub async fn get_with_etag(&self, url: &str, access_token: &str, etag: Option<&str>) -> Result<reqwest::Response, ESIError> {
+        let mut request = self.http.get(url).bearer_auth(access_token);
+        
+        if let Some(etag) = etag {
+            request = request.header("If-None-Match", format!("\"{}\"", etag));
+        }
+        
+        let response = request.send().await?;
+
+        // Don't treat 304 Not Modified as an error
+        if response.status() == 304 {
+            return Ok(response);
+        }
+
+        if let Err(err) = response.error_for_status_ref() {
+            let status = err.status().unwrap().as_u16();
+            let response_body = response.text().await.unwrap_or_else(|_| "No response body".to_string());
+            return Err(ESIError::WithMessage(status, response_body));
+        };
+
+        Ok(response)
     }
 
     pub async fn get_unauthenticated(&self, url: &str) -> Result<reqwest::Response, ESIError> {
@@ -437,12 +524,59 @@ impl ESIClient {
         Ok(self.raw.get(&url, &access_token).await?.json().await?)
     }
 
+    pub async fn get_with_etag<D: serde::de::DeserializeOwned>(
+        &self,
+        path: &str,
+        character_id: i64,
+        scope: ESIScope,
+        etag: Option<&str>,
+    ) -> Result<ESIResponse<D>, ESIError> {
+        let access_token = self.access_token(character_id, scope).await?;
+        let url = format!("https://esi.evetech.net{}", path);
+        let response = self.raw.get_with_etag(&url, &access_token, etag).await?;
+        
+        let etag = response.headers()
+            .get("etag")
+            .and_then(|h| h.to_str().ok())
+            .map(|s| s.trim_matches('"').to_string());
+        
+        // Handle 304 Not Modified response
+        if response.status() == 304 {
+            // Return empty data for 304 responses
+            let empty_data: D = serde_json::from_str("[]").unwrap_or_else(|_| {
+                // If we can't parse "[]", try to create a default value
+                // This is a fallback for non-array types
+                serde_json::from_str("{}").unwrap_or_else(|_| {
+                    // If all else fails, this will panic, but it shouldn't happen
+                    // for the types we're using (Vec<WalletJournalEntry>)
+                    panic!("Cannot create empty value for type")
+                })
+            });
+            return Ok(ESIResponse { data: empty_data, etag });
+        }
+        
+        let data = response.json().await?;
+        Ok(ESIResponse { data, etag })
+    }
+
     pub async fn get_unauthenticated<D: serde::de::DeserializeOwned>(
         &self,
         path: &str,
     ) -> Result<D, ESIError> {
         let url = format!("https://esi.evetech.net{}", path);
         Ok(self.raw.get_unauthenticated(&url).await?.json().await?)
+    }
+
+    pub async fn get_incursions(&self) -> Result<Vec<Incursion>, ESIError> {
+        self.get_unauthenticated("/v1/incursions/").await
+    }
+
+    pub async fn get_constellation_info(&self, constellation_id: i64) -> Result<ConstellationInfo, ESIError> {
+        self.get_unauthenticated(&format!("/v1/universe/constellations/{}/", constellation_id)).await
+    }
+
+    pub async fn get_solar_system_info(&self, system_id: i64) -> Result<SolarSystemInfo, ESIError> {
+        self.get_unauthenticated(&format!("/v4/universe/systems/{}/", system_id)).await
     }
 
     pub async fn delete(

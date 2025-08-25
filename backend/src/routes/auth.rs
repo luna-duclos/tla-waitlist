@@ -191,6 +191,79 @@ async fn callback(
     Ok(crate::core::auth::create_cookie(app, logged_in_account))
 }
 
+// GET version of auth callback for OAuth redirects (used by SRP setup)
+#[get("/api/auth/cb?<code>&<state>")]
+async fn callback_get(
+    app: &rocket::State<app::Application>,
+    code: String,
+    state: Option<String>,
+) -> Result<rocket::response::Redirect, Madness> {
+    let character_id = app
+        .esi_client
+        .process_authorization_code(&code)
+        .await?;
+
+    // Update the character's corporation and alliance information
+    app.affiliation_service
+        .update_character_affiliation(character_id)
+        .await?;
+
+    // Check if this is an SRP setup
+    if state.as_deref() == Some("srp_setup") {
+        // Handle SRP service account setup
+        let character = sqlx::query!("SELECT name FROM `character` WHERE id = ?", character_id)
+            .fetch_one(app.get_db())
+            .await?;
+
+        // Get corporation info from the character
+        let character_corp = sqlx::query!("SELECT corporation_id FROM `character` WHERE id = ?", character_id)
+            .fetch_one(app.get_db())
+            .await?;
+        
+        let corporation_id = character_corp.corporation_id.ok_or_else(|| {
+            Madness::BadRequest("Character has no corporation ID".to_string())
+        })?;
+        let wallet_id = 1; // Main wallet (corporation wallets start from 1, not 1000)
+
+        // Get the refresh token from the database
+        let refresh_token_record = sqlx::query!(
+            "SELECT refresh_token FROM refresh_token WHERE character_id = ?",
+            character_id
+        )
+        .fetch_one(app.get_db())
+        .await?;
+
+        // Get the access token from the database
+        let access_token_record = sqlx::query!(
+            "SELECT access_token FROM access_token WHERE character_id = ?",
+            character_id
+        )
+        .fetch_one(app.get_db())
+        .await?;
+
+        let scopes = vec!["esi-publicdata.v1", "esi-wallet.read_corporation_wallets.v1"];
+        let scopes_str = scopes.join(" ");
+        
+        crate::data::srp::store_service_account_tokens(
+            app,
+            character_id,
+            &character.name,
+            corporation_id,
+            wallet_id,
+            &access_token_record.access_token,
+            &refresh_token_record.refresh_token,
+            chrono::Utc::now().timestamp() + 1200, // 20 minutes from now
+            &scopes_str,
+        ).await?;
+
+        // Redirect to SRP page
+        return Ok(rocket::response::Redirect::to("/fc/srp"));
+    }
+
+    // Regular auth flow - redirect to frontend
+    Ok(rocket::response::Redirect::to("http://localhost:3000"))
+}
+
 pub fn routes() -> Vec<rocket::Route> {
-    routes![whoami, logout, login_url, callback]
+    routes![whoami, logout, login_url, callback, callback_get]
 }

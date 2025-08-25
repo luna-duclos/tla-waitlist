@@ -15,6 +15,7 @@ import {
   faUserShield,
   faBullhorn,
   faBan,
+  faCreditCard,
 } from "@fortawesome/free-solid-svg-icons";
 import { replaceTitle, parseMarkdownTitle, usePageTitle } from "../../Util/title";
 
@@ -122,6 +123,9 @@ export function FCMenu() {
         )}
         {authContext && authContext.access["commanders-view"] && (
           <GuideCard slug="commanders" name="Commanders" icon={faUserShield} />
+        )}
+        {authContext && authContext.access["commanders-manage:admin"] && (
+          <GuideCard slug="srp" name="SRP Admin" icon={faCreditCard} />
         )}
         {/*{authContext &&
           authContext.access["fleet-view"] && ( //fleet view should be any fc

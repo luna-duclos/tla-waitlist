@@ -42,7 +42,6 @@ const SkillHeader = styled.div`
 const categoryOrder = [
   "Tank",
   "Engineering",
-  "Drones",
   "Navigation",
   "Gunnery",
   "Targeting",
@@ -177,6 +176,9 @@ export function SkillDisplay({ characterId, ship, setShip = null, filterMin = fa
             </Button>
             <Button active={ship === "Kronos"} onClick={(evt) => setShip("Kronos")}>
               Kronos
+            </Button>
+            <Button active={ship === "Shield Kronos"} onClick={(evt) => setShip("Shield Kronos")}>
+              Shield Kronos
             </Button>
             <Button active={ship === "Nightmare"} onClick={(evt) => setShip("Nightmare")}>
               Nightmare

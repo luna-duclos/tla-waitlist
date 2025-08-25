@@ -69,6 +69,16 @@ async fn main() {
         skill_updater.start();
     }
 
+    if config.srp_updater.enable {
+        let srp_updater = core::srp_updater::SRPUpdater::new(database.clone(), config.clone());
+        srp_updater.start();
+    }
+
+    if config.incursion_updater.enable {
+        let incursion_updater = core::incursion_updater::IncursionUpdater::new(database.clone(), config.clone());
+        incursion_updater.start();
+    }
+
     let application = app::new(database, config);
     rocket::build()
         .register("/", catchers![not_authorized, forbidden, not_found])

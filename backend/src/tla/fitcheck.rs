@@ -115,6 +115,9 @@ impl<'a> FitChecker<'a> {
             return;
         }
 
+        // Check for HYBRID implant set + rig combinations
+        self.check_hybrid_rig_combinations();
+
         if let Some((doctrine_fit, diff)) = fitmatch::find_fit(self.fit) {
             self.doctrine_fit = Some(doctrine_fit);
             let fit_ok = diff.module_downgraded.is_empty() && diff.module_missing.is_empty();
@@ -131,6 +134,37 @@ impl<'a> FitChecker<'a> {
         } else {
             self.approved = false;
         }
+    }
+
+    fn check_hybrid_rig_combinations(&mut self) {
+        let has_hybrid_set = self.has_hybrid_implant_set();
+        
+        let has_trimark = self.fit.modules.contains_key(&type_id!("Large Trimark Armor Pump II"));
+        let has_hyperspatial = self.fit.modules.contains_key(&type_id!("Large Hyperspatial Velocity Optimizer II"));
+        
+        // Flag combinations with tags and prevent auto-approval
+        if has_hybrid_set && has_trimark {
+            self.tags.insert("HYBRID-TRIMARK");
+            self.approved = false;
+        }
+        
+        if !has_hybrid_set && has_hyperspatial {
+            self.tags.insert("NON-HYBRID-HYPERSPATIAL");
+            self.approved = false;
+        }
+    }
+    
+    fn has_hybrid_implant_set(&self) -> bool {
+        // HYBRID set: Amulet Alpha, Beta, Delta, Epsilon, Gamma + WS-618
+        let hybrid_implants = [
+            type_id!("High-grade Amulet Alpha"),
+            type_id!("High-grade Amulet Beta"),
+            type_id!("High-grade Amulet Delta"),
+            type_id!("High-grade Amulet Epsilon"),
+            type_id!("High-grade Amulet Gamma"),
+        ];
+        
+        hybrid_implants.iter().all(|&implant| self.pilot.implants.contains(&implant))
     }
 
     fn check_time_in_fleet(&mut self) {
