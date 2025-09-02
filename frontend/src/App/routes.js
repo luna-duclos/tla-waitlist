@@ -15,7 +15,7 @@ import { NoteAdd } from "../Pages/FC/NoteAdd";
 import { Pilot } from "../Pages/Pilot";
 import { Plans } from "../Pages/Skills/Plans";
 import { Search } from "../Pages/FC/Search";
-import { Skills } from "../Pages/Skills/Skills";
+//import { Skills } from "../Pages/Skills/Skills";
 import { Statistics } from "../Pages/FC/Statistics";
 import { Waitlist } from "../Pages/Waitlist";
 import { Xup } from "../Pages/Xup";
@@ -26,6 +26,8 @@ import BadgesPage from "../Pages/FC/Badges";
 import BansPage from "../Pages/FC/Bans";
 import CommandersPage from "../Pages/FC/Commanders";
 import { SRP } from "../Pages/FC/SRP";
+import { SRPSubmit } from "../Pages/FC/SRPSubmit";
+import { SRPReportDetail } from "../Pages/FC/SRPReportDetail";
 
 import { E401, E403, E404 } from "../Pages/Errors";
 
@@ -66,9 +68,9 @@ export function Routes() {
       <Route exact path="/pilot">
         <Pilot />
       </Route>
-      <Route exact path="/skills">
+      {/*<Route exact path="/skills">
         <Skills />
-      </Route>
+      </Route>*/}
       <Route exact path="/skills/plans">
         <Plans />
       </Route>
@@ -110,8 +112,17 @@ export function Routes() {
       <Route exact path="/fc/commanders">
         <AuthenticatedRoute component={<CommandersPage />} access="commanders-view" />
       </Route>
-      <Route exact path="/fc/srp">
+      <Route exact path="/srp-admin">
         <AuthenticatedRoute component={<SRP />} access="commanders-manage:admin" />
+      </Route>
+      <Route exact path="/fc/srp">
+        <AuthenticatedRoute component={<SRP />} access="fleet-view" />
+      </Route>
+      <Route exact path="/fc/srp/submit">
+        <AuthenticatedRoute component={<SRPSubmit />} access="fleet-view" />
+      </Route>
+      <Route exact path="/srp-report-detail">
+        <AuthenticatedRoute component={<SRPReportDetail />} access="commanders-manage:admin" />
       </Route>
       <Route exact path="/fc/documentation">
         <AuthenticatedRoute component={<GuideFC />} access="waitlist-tag:HQ-FC" />
@@ -143,6 +154,9 @@ export function Routes() {
       </Route>
       <Route exact path="/auth/start/fc">
         <AuthStart fc={true} alt={true} />
+      </Route>
+      <Route exact path="/auth/start/srp-admin">
+        <AuthStart srp_admin={true} />
       </Route>
       <Route exact path="/auth/start/alt">
         <AuthStart alt={true} />

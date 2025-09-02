@@ -2,11 +2,11 @@ import React from "react";
 import { useQuery } from "../Util/query";
 import { AccountBannedPage } from "./FC/bans/AccountBanned";
 
-export function AuthStart({ fc = false, alt = false }) {
+export function AuthStart({ fc = false, alt = false, srp_admin = false }) {
   const [message, setMessage] = React.useState("Redirecting to EVE login");
 
   React.useEffect(() => {
-    fetch("/api/auth/login_url?" + (fc ? "fc=true&" : "") + (alt ? "alt=true&" : ""))
+    fetch("/api/auth/login_url?" + (fc ? "fc=true&" : "") + (alt ? "alt=true&" : "") + (srp_admin ? "srp_admin=true&" : ""))
       .then((response) => {
         if (response.status === 200) {
           return response.text();

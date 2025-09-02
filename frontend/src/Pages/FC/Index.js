@@ -124,8 +124,22 @@ export function FCMenu() {
         {authContext && authContext.access["commanders-view"] && (
           <GuideCard slug="commanders" name="Commanders" icon={faUserShield} />
         )}
+        {authContext && authContext.access["fleet-view"] && (
+          <GuideCard slug="srp" name="SRP" icon={faCreditCard} />
+        )}
         {authContext && authContext.access["commanders-manage:admin"] && (
-          <GuideCard slug="srp" name="SRP Admin" icon={faCreditCard} />
+          <CardMargin>
+            <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to="/srp-admin">
+              <Card
+                title={
+                  <>
+                    <FontAwesomeIcon fixedWidth icon={faCreditCard} /> SRP Admin
+                  </>
+                }
+              >
+              </Card>
+            </NavLink>
+          </CardMargin>
         )}
         {/*{authContext &&
           authContext.access["fleet-view"] && ( //fleet view should be any fc

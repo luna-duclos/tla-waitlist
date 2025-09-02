@@ -52,6 +52,11 @@ pub struct IncursionUpdaterConfig {
 }
 
 #[derive(Deserialize, Clone)]
+pub struct JaniceConfig {
+    pub api_key: String,
+}
+
+#[derive(Deserialize, Clone)]
 pub struct Config {
     pub database: DatabaseConfig,
     pub app: AppConfig,
@@ -61,4 +66,5 @@ pub struct Config {
     pub skill_updater: SkillUpdaterConfig,
     pub srp_updater: SRPUpdaterConfig,
     pub incursion_updater: IncursionUpdaterConfig,
+    pub janice: JaniceConfig,
 }

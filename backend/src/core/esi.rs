@@ -43,11 +43,61 @@ pub struct Planet {
     pub moons: Option<Vec<i64>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Position {
     pub x: f64,
     pub y: f64,
     pub z: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UniverseName {
+    pub id: i64,
+    pub name: String,
+    pub category: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailItem {
+    pub flag: i32,
+    pub item_type_id: i64,
+    pub quantity_destroyed: Option<i64>,
+    pub quantity_dropped: Option<i64>,
+    pub singleton: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailAttacker {
+    pub alliance_id: Option<i64>,
+    pub character_id: Option<i64>,
+    pub corporation_id: Option<i64>,
+    pub damage_done: i64,
+    pub final_blow: bool,
+    pub security_status: f64,
+    pub ship_type_id: Option<i64>,
+    pub weapon_type_id: Option<i64>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailVictim {
+    pub alliance_id: Option<i64>,
+    pub character_id: Option<i64>,
+    pub corporation_id: Option<i64>,
+    pub damage_taken: i64,
+    pub items: Vec<KillmailItem>,
+    pub position: Position,
+    pub ship_type_id: i64,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailData {
+    pub attackers: Vec<KillmailAttacker>,
+    pub killmail_id: i64,
+    pub killmail_time: String,
+    pub moon_id: Option<i64>,
+    pub solar_system_id: i64,
+    pub victim: KillmailVictim,
+    pub war_id: Option<i64>,
 }
 
 #[derive(Debug)]
@@ -348,6 +398,30 @@ impl ESIRawClient {
 
         Ok(response)
     }
+
+    pub async fn post_unauthenticated<E: Serialize + ?Sized>(
+        &self,
+        url: &str,
+        input: &E,
+    ) -> Result<reqwest::Response, ESIError> {
+        let response = self
+            .http
+            .post(url)
+            .json(input)
+            .send()
+            .await?;
+
+        if let Err(err) = response.error_for_status_ref() {
+            let response_body = response.text().await?;
+            let payload: EsiErrorReason = EsiErrorReason::new(response_body);
+            return Err(ESIError::WithMessage(
+                err.status().unwrap().as_u16(),
+                payload.error,
+            ));
+        };
+
+        Ok(response)
+    }
 }
 
 impl ESIClient {
@@ -579,6 +653,65 @@ impl ESIClient {
         self.get_unauthenticated(&format!("/v4/universe/systems/{}/", system_id)).await
     }
 
+    pub async fn get_killmail(&self, killmail_id: i64, hash: &str) -> Result<KillmailData, ESIError> {
+        self.get_unauthenticated(&format!("/v1/killmails/{}/{}/", killmail_id, hash)).await
+    }
+
+    pub async fn get_character_name(&self, character_id: i64) -> Result<String, ESIError> {
+        let character: serde_json::Value = self.get_unauthenticated(&format!("/v4/characters/{}/", character_id)).await?;
+        Ok(character["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_corporation_name(&self, corporation_id: i64) -> Result<String, ESIError> {
+        let corporation: serde_json::Value = self.get_unauthenticated(&format!("/v4/corporations/{}/", corporation_id)).await?;
+        Ok(corporation["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_alliance_name(&self, alliance_id: i64) -> Result<String, ESIError> {
+        let alliance: serde_json::Value = self.get_unauthenticated(&format!("/v3/alliances/{}/", alliance_id)).await?;
+        Ok(alliance["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_type_name(&self, type_id: i64) -> Result<String, ESIError> {
+        let type_info: serde_json::Value = self.get_unauthenticated(&format!("/v3/universe/types/{}/", type_id)).await?;
+        Ok(type_info["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_bulk_names(&self, ids: &[i64]) -> Result<std::collections::HashMap<i64, String>, ESIError> {
+        if ids.is_empty() {
+            return Ok(std::collections::HashMap::new());
+        }
+
+        let url = format!("https://esi.evetech.net/v2/universe/names/");
+        
+        match self.raw.post_unauthenticated(&url, ids).await {
+            Ok(response) => {
+                match response.text().await {
+                    Ok(response_text) => {
+                        match serde_json::from_str::<Vec<UniverseName>>(&response_text) {
+                            Ok(names) => {
+                                let mut result = std::collections::HashMap::new();
+                                for name in names {
+                                    result.insert(name.id, name.name);
+                                }
+                                Ok(result)
+                            }
+                            Err(e) => {
+                                Err(ESIError::WithMessage(500, format!("Failed to parse bulk names response: {}", e)))
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        Err(ESIError::WithMessage(500, format!("Failed to get response text: {}", e)))
+                    }
+                }
+            }
+            Err(e) => {
+                Err(e)
+            }
+        }
+    }
+
     pub async fn delete(
         &self,
         path: &str,
@@ -647,4 +780,20 @@ fn split_scopes(input: &str) -> BTreeSet<String> {
 
 fn join_scopes(input: &BTreeSet<String>) -> String {
     input.iter().fold(String::new(), |a, b| a + b + " ")
+}
+
+pub fn extract_killmail_id_and_hash(killmail_url: &str) -> Result<(i64, String), ESIError> {
+    // Parse URL like: https://esi.evetech.net/latest/killmails/128982873/d138ee545ca1058190cf15233190f326c3aeda0d/
+    let parts: Vec<&str> = killmail_url.split('/').collect();
+    
+    if parts.len() < 7 {
+        return Err(ESIError::WithMessage(400, "Invalid killmail URL format".to_string()));
+    }
+    
+    let killmail_id = parts[parts.len() - 3].parse::<i64>()
+        .map_err(|_| ESIError::WithMessage(400, "Invalid killmail ID".to_string()))?;
+    
+    let hash = parts[parts.len() - 2].to_string();
+    
+    Ok((killmail_id, hash))
 }

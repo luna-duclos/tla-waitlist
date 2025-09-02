@@ -16,6 +16,7 @@ lazy_static::lazy_static! {
 pub struct AuthenticatedAccount {
     pub id: i64,
     pub access: &'static std::collections::BTreeSet<String>,
+    pub window_character_id: Option<i64>,
 }
 
 #[derive(Debug)]
@@ -35,6 +36,7 @@ pub enum AuthorizationError {
 struct AuthToken {
     version: i32,
     account_id: i64,
+    window_character_id: Option<i64>,
 }
 
 pub struct CookieSetter(pub String, pub bool);
@@ -73,12 +75,13 @@ fn decode_token(token: &str, secret: &[u8]) -> Result<AuthToken, AuthenticationE
     Ok(decoded)
 }
 
-pub fn create_cookie(app: &crate::app::Application, account_id: i64) -> CookieSetter {
+pub fn create_cookie(app: &crate::app::Application, account_id: i64, window_character_id: Option<i64>) -> CookieSetter {
     let mut branca = Branca::new(&app.token_secret).unwrap();
 
     let token = AuthToken {
         version: 1,
         account_id,
+        window_character_id,
     };
 
     let payload = rmp_serde::to_vec_named(&token).unwrap();
@@ -131,6 +134,7 @@ impl<'r> FromRequest<'r> for AuthenticatedAccount {
         Outcome::Success(AuthenticatedAccount {
             id: token.account_id,
             access: access_keys,
+            window_character_id: token.window_character_id,
         })
     }
 }

@@ -75,11 +75,15 @@ async fn logout<'r>(
     ))
 }
 
-#[get("/api/auth/login_url?<alt>&<fc>")]
-fn login_url(alt: bool, fc: bool, app: &rocket::State<app::Application>) -> String {
-    let state = match alt {
-        true => "alt",
-        false => "normal",
+#[get("/api/auth/login_url?<alt>&<fc>&<srp_admin>")]
+fn login_url(alt: bool, fc: bool, srp_admin: bool, app: &rocket::State<app::Application>) -> String {
+    let state = if srp_admin {
+        "srp_admin"
+    } else {
+        match alt {
+            true => "alt",
+            false => "normal",
+        }
     };
 
     let mut scopes = vec![
@@ -94,6 +98,9 @@ fn login_url(alt: bool, fc: bool, app: &rocket::State<app::Application>) -> Stri
             ESIScope::UI_OpenWindow_v1,
             ESIScope::Search_v1,
         ])
+    }
+    if srp_admin {
+        scopes.push(ESIScope::UI_OpenWindow_v1);
     }
 
     format!(
@@ -158,37 +165,51 @@ async fn callback(
         )));
     }
 
-    let logged_in_account =
-        if input.state.is_some() && input.state.unwrap() == "alt" && account.is_some() {
-            let account = account.unwrap();
-            if account.id != character_id {
-                let is_admin = sqlx::query!(
-                    "SELECT character_id FROM admin WHERE character_id = ?",
-                    character_id
-                )
-                .fetch_optional(app.get_db())
-                .await?;
+    let (logged_in_account, window_character_id) = if let Some(state) = input.state {
+        match state {
+            "alt" if account.is_some() => {
+                let account = account.unwrap();
+                if account.id != character_id {
+                    let is_admin = sqlx::query!(
+                        "SELECT character_id FROM admin WHERE character_id = ?",
+                        character_id
+                    )
+                    .fetch_optional(app.get_db())
+                    .await?;
 
-                if is_admin.is_some() {
-                    return Err(Madness::BadRequest(
-                        "Character is flagged as a main and cannot be added as an alt".to_string(),
-                    ));
+                    if is_admin.is_some() {
+                        return Err(Madness::BadRequest(
+                            "Character is flagged as a main and cannot be added as an alt".to_string(),
+                        ));
+                    }
+
+                    sqlx::query!(
+                        "REPLACE INTO alt_character (account_id, alt_id) VALUES (?, ?)",
+                        account.id,
+                        character_id
+                    )
+                    .execute(app.get_db())
+                    .await?;
                 }
-
-                sqlx::query!(
-                    "REPLACE INTO alt_character (account_id, alt_id) VALUES (?, ?)",
-                    account.id,
-                    character_id
-                )
-                .execute(app.get_db())
-                .await?;
+                (account.id, None)
             }
-            account.id
-        } else {
-            character_id
-        };
+            "srp_admin" => {
+                // For SRP admin re-auth, keep the current session but store the window character ID
+                if let Some(current_account) = account {
+                    // Keep the current session, but store the window character ID for window opening
+                    (current_account.id, Some(character_id))
+                } else {
+                    // If no current session, use the new character ID
+                    (character_id, None)
+                }
+            }
+            _ => (character_id, None)
+        }
+    } else {
+        (character_id, None)
+    };
 
-    Ok(crate::core::auth::create_cookie(app, logged_in_account))
+    Ok(crate::core::auth::create_cookie(app, logged_in_account, window_character_id))
 }
 
 // GET version of auth callback for OAuth redirects (used by SRP setup)

@@ -1,6 +1,10 @@
 use rocket::serde::json::Json;
 use serde::{Deserialize, Serialize};
 
+#[derive(Deserialize, Serialize, Debug)]
+struct Empty {}
+use chrono;
+
 use crate::{
     app::Application,
     core::auth::AuthenticatedAccount,
@@ -78,6 +82,16 @@ struct IncursionFocusResponse {
 struct FocusEndTimestampResponse {
     focus_end_timestamp: Option<i64>,
     formatted_date: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+struct SRPReportsResponse {
+    reports: Vec<srp::SRPReport>,
+}
+
+#[derive(Debug, Serialize)]
+struct SRPReportResponse {
+    report: srp::SRPReport,
 }
 
 // GET /api/admin/srp/setup - Get setup status and login URL
@@ -515,6 +529,608 @@ async fn get_focus_end_timestamp(
     }))
 }
 
+// GET /api/admin/srp/reports - Get all SRP reports for admin processing
+#[get("/api/admin/srp/reports")]
+async fn get_srp_reports(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+) -> Result<Json<SRPReportsResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let reports = srp::get_all_srp_reports(app).await?;
+
+    Ok(Json(SRPReportsResponse { reports }))
+}
+
+// GET /api/admin/srp/reports/{id} - Get specific SRP report details
+#[get("/api/admin/srp/reports/<killmail_id>")]
+async fn get_srp_report(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+) -> Result<Json<SRPReportResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
+    
+    if let Some(report) = report {
+        Ok(Json(SRPReportResponse { report }))
+    } else {
+        Err(Madness::NotFound("SRP report not found"))
+    }
+}
+
+// GET /api/admin/srp/reports/{killmail_id}/killmail - Get killmail data for an SRP report
+#[get("/api/admin/srp/reports/<killmail_id>/killmail")]
+async fn get_srp_report_killmail(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+) -> Result<Json<esi::KillmailData>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
+    
+    if let Some(report) = report {
+        let killmail_data = srp::get_killmail_data(app, &report.killmail_link).await?;
+        Ok(Json(killmail_data))
+    } else {
+        Err(Madness::NotFound("SRP report not found"))
+    }
+}
+
+// GET /api/admin/srp/reports/{killmail_id}/killmail/enriched - Get enriched killmail data with names
+#[get("/api/admin/srp/reports/<killmail_id>/killmail/enriched")]
+async fn get_srp_report_killmail_enriched(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+) -> Result<Json<srp::EnrichedKillmailData>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
+    
+    if let Some(report) = report {
+        let enriched_killmail_data = srp::get_enriched_killmail_data(app, &report.killmail_link).await?;
+        Ok(Json(enriched_killmail_data))
+    } else {
+        Err(Madness::NotFound("SRP report not found"))
+    }
+}
+
+#[derive(Debug, Serialize)]
+struct FleetValidationResponse {
+    was_in_fleet: bool,
+}
+
+#[derive(Debug, Serialize)]
+struct SRPStatusAtTimeResponse {
+    had_srp_coverage: bool,
+    alt_needs_linking: Option<bool>,
+    payment_date: Option<String>,
+    payment_amount: Option<f64>,
+    expires_at: Option<String>,
+    coverage_character: Option<String>,
+    coverage_type: Option<String>,
+}
+
+// GET /api/admin/srp/reports/{killmail_id}/fleet-validation - Check if pilot was in fleet at death time
+#[get("/api/admin/srp/reports/<killmail_id>/fleet-validation")]
+async fn get_srp_report_fleet_validation(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+) -> Result<Json<FleetValidationResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
+    
+    if let Some(report) = report {
+        // Get killmail data with better error handling
+        let killmail_data = match srp::get_killmail_data(app, &report.killmail_link).await {
+            Ok(data) => data,
+            Err(e) => {
+                eprintln!("Failed to get killmail data: {:?}", e);
+                return Err(Madness::BadRequest(format!("Failed to fetch killmail data: {}", e)));
+            }
+        };
+        
+        // Parse the killmail time to get timestamp with better error handling
+        let timestamp = match chrono::DateTime::parse_from_rfc3339(&killmail_data.killmail_time) {
+            Ok(time) => time.timestamp(),
+            Err(e) => {
+                eprintln!("Failed to parse killmail time '{}': {:?}", killmail_data.killmail_time, e);
+                return Err(Madness::BadRequest(format!("Invalid killmail time format: {}", e)));
+            }
+        };
+        
+        eprintln!("Checking fleet membership for character {} at timestamp {}", 
+                 killmail_data.victim.character_id.unwrap_or(0), timestamp);
+        
+        // Check if victim was in a fleet at death time
+        let was_in_fleet = if let Some(character_id) = killmail_data.victim.character_id {
+            match srp::check_fleet_membership_at_time(app, character_id, timestamp).await {
+                Ok(result) => result,
+                Err(e) => {
+                    eprintln!("Failed to check fleet membership: {:?}", e);
+                    return Err(Madness::BadRequest(format!("Failed to check fleet membership: {}", e)));
+                }
+            }
+        } else {
+            eprintln!("No character ID found in killmail victim data");
+            false
+        };
+
+        eprintln!("Fleet membership result: {}", was_in_fleet);
+        Ok(Json(FleetValidationResponse { was_in_fleet }))
+    } else {
+        Err(Madness::NotFound("SRP report not found"))
+    }
+}
+
+// GET /api/admin/srp/reports/{killmail_id}/srp-validation - Check if pilot had SRP coverage at death time
+#[get("/api/admin/srp/reports/<killmail_id>/srp-validation")]
+async fn get_srp_report_srp_validation(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+) -> Result<Json<SRPStatusAtTimeResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
+    
+    if let Some(report) = report {
+        let killmail_data = srp::get_killmail_data(app, &report.killmail_link).await?;
+        
+        // Parse the killmail time to get timestamp
+        let timestamp = match chrono::DateTime::parse_from_rfc3339(&killmail_data.killmail_time) {
+            Ok(time) => time.timestamp(),
+            Err(e) => {
+                eprintln!("Failed to parse killmail time '{}': {:?}", killmail_data.killmail_time, e);
+                return Err(Madness::BadRequest(format!("Invalid killmail time format: {}", e)));
+            }
+        };
+        
+        // Check if victim had SRP coverage at death time using comprehensive three-step approach
+        let (had_srp_coverage, payment_date, payment_amount, expires_at, coverage_character, coverage_type) = if let Some(character_id) = killmail_data.victim.character_id {
+            // Get character name from character ID
+            let character_name = match sqlx::query!(
+                "SELECT name FROM `character` WHERE id = ?",
+                character_id
+            )
+            .fetch_optional(app.get_db())
+            .await? {
+                Some(character) => character.name,
+                None => {
+                    eprintln!("No character found for ID: {} - alt needs to be linked", character_id);
+                    // Return special value to indicate alt needs linking
+                    return Ok(Json(SRPStatusAtTimeResponse { 
+                        had_srp_coverage: false,
+                        alt_needs_linking: Some(true),
+                        payment_date: None,
+                        payment_amount: None,
+                        expires_at: None,
+                        coverage_character: None,
+                        coverage_type: None
+                    }));
+                }
+            };
+
+            // Helper function to check SRP coverage for a character
+            async fn check_srp_for_character(app: &crate::app::Application, character_name: &str, timestamp: i64) -> Result<Option<(String, f64, String, String)>, Madness> {
+                let result = sqlx::query!(
+                    "SELECT payment_amount, payment_date, expires_at FROM srp_payments 
+                     WHERE character_name = ? 
+                     AND payment_date <= ? 
+                     AND expires_at >= ?
+                     ORDER BY payment_date DESC 
+                     LIMIT 1",
+                    character_name,
+                    timestamp,
+                    timestamp
+                )
+                .fetch_optional(app.get_db())
+                .await?;
+
+                if let Some(payment) = result {
+                    // Format dates for display
+                    let payment_date = chrono::DateTime::<chrono::Utc>::from_utc(
+                        chrono::NaiveDateTime::from_timestamp_opt(payment.payment_date, 0).unwrap(),
+                        chrono::Utc
+                    ).format("%Y-%m-%d %H:%M UTC").to_string();
+                    
+                    let expires_at = chrono::DateTime::<chrono::Utc>::from_utc(
+                        chrono::NaiveDateTime::from_timestamp_opt(payment.expires_at, 0).unwrap(),
+                        chrono::Utc
+                    ).format("%Y-%m-%d %H:%M UTC").to_string();
+                    
+                    Ok(Some((payment_date, payment.payment_amount.to_string().parse::<f64>().unwrap_or(0.0), expires_at, character_name.to_string())))
+                } else {
+                    Ok(None)
+                }
+            }
+
+            // Step 1: Direct character check
+            if let Some((pd, pa, ea, cc)) = check_srp_for_character(app, &character_name, timestamp).await? {
+                (true, Some(pd), Some(pa), Some(ea), Some(cc), Some("direct".to_string()))
+            } else {
+                // Step 2: Check if victim is an alt and check main character
+                let main_character = sqlx::query!(
+                    "SELECT c1.name as main_name FROM alt_character ac 
+                     JOIN `character` c1 ON ac.account_id = c1.id 
+                     JOIN `character` c2 ON ac.alt_id = c2.id 
+                     WHERE c2.id = ?",
+                    character_id
+                )
+                .fetch_optional(app.get_db())
+                .await?;
+
+                if let Some(main) = main_character {
+                    // Victim is an alt, check main character
+                    if let Some((pd, pa, ea, cc)) = check_srp_for_character(app, &main.main_name, timestamp).await? {
+                        (true, Some(pd), Some(pa), Some(ea), Some(cc), Some("main".to_string()))
+                    } else {
+                        // Step 3: Check all other alts of the main character
+                        let alt_characters = sqlx::query!(
+                            "SELECT c2.name as alt_name FROM alt_character ac 
+                             JOIN `character` c1 ON ac.account_id = c1.id 
+                             JOIN `character` c2 ON ac.alt_id = c2.id 
+                             WHERE c1.id = ? AND c2.id != ?",
+                            sqlx::query!("SELECT account_id FROM alt_character WHERE alt_id = ?", character_id)
+                                .fetch_optional(app.get_db())
+                                .await?
+                                .map(|r| r.account_id)
+                                .unwrap_or(0),
+                            character_id
+                        )
+                        .fetch_all(app.get_db())
+                        .await?;
+
+                        // Check each alt character
+                        for alt in alt_characters {
+                            if let Some((pd, pa, ea, cc)) = check_srp_for_character(app, &alt.alt_name, timestamp).await? {
+                                return Ok(Json(SRPStatusAtTimeResponse { 
+                                    had_srp_coverage: true,
+                                    alt_needs_linking: None,
+                                    payment_date: Some(pd),
+                                    payment_amount: Some(pa),
+                                    expires_at: Some(ea),
+                                    coverage_character: Some(cc),
+                                    coverage_type: Some("alt".to_string())
+                                }));
+                            }
+                        }
+                        (false, None, None, None, None, None)
+                    }
+                } else {
+                    // Victim is main character, check all alts
+                    let alt_characters = sqlx::query!(
+                        "SELECT c2.name as alt_name FROM alt_character ac 
+                         JOIN `character` c1 ON ac.account_id = c1.id 
+                         JOIN `character` c2 ON ac.alt_id = c2.id 
+                         WHERE c1.id = ?",
+                        character_id
+                    )
+                    .fetch_all(app.get_db())
+                    .await?;
+
+                    // Check each alt character
+                    for alt in alt_characters {
+                        if let Some((pd, pa, ea, cc)) = check_srp_for_character(app, &alt.alt_name, timestamp).await? {
+                            return Ok(Json(SRPStatusAtTimeResponse { 
+                                had_srp_coverage: true,
+                                alt_needs_linking: None,
+                                payment_date: Some(pd),
+                                payment_amount: Some(pa),
+                                expires_at: Some(ea),
+                                coverage_character: Some(cc),
+                                coverage_type: Some("alt".to_string())
+                            }));
+                        }
+                    }
+                    (false, None, None, None, None, None)
+                }
+            }
+        } else {
+            eprintln!("No character ID found in killmail victim data");
+            (false, None, None, None, None, None)
+        };
+
+        eprintln!("SRP coverage result for character ID {} at {}: {} (coverage: {:?}, type: {:?})", 
+                 killmail_data.victim.character_id.unwrap_or(0), 
+                 timestamp, had_srp_coverage, coverage_character, coverage_type);
+        Ok(Json(SRPStatusAtTimeResponse { 
+            had_srp_coverage,
+            alt_needs_linking: None,
+            payment_date,
+            payment_amount,
+            expires_at,
+            coverage_character,
+            coverage_type
+        }))
+    } else {
+        Err(Madness::NotFound("SRP report not found"))
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct AppraisalRequest {
+    destroyed_items: Vec<String>,
+}
+
+#[derive(Debug, Serialize)]
+struct AppraisalResponse {
+    total_value: f64,
+    item_count: usize,
+    items: Vec<serde_json::Value>,
+}
+
+#[derive(Debug, Deserialize)]
+struct DenySRPRequest {
+    reason: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct ApproveSRPRequest {
+    payout_amount: f64,
+}
+
+#[derive(Debug, Deserialize)]
+struct SubmitSRPRequest {
+    killmail_link: String,
+    description: String,
+    loot_returned: bool,
+}
+
+#[derive(Debug, Deserialize)]
+struct UpdateSRPRequest {
+    description: String,
+    loot_returned: bool,
+}
+
+#[derive(Debug, Serialize)]
+struct SRPResponse {
+    success: bool,
+    message: String,
+}
+
+// POST /api/admin/srp/appraisal - Calculate appraisal for destroyed items
+#[post("/api/admin/srp/appraisal", data = "<input>")]
+async fn calculate_srp_appraisal(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    input: Json<AppraisalRequest>,
+) -> Result<Json<AppraisalResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let (total_value, items) = srp::calculate_srp_appraisal(app, &input.destroyed_items).await?;
+
+    Ok(Json(AppraisalResponse {
+        total_value,
+        item_count: input.destroyed_items.len(),
+        items,
+    }))
+}
+
+// POST /api/admin/srp/reports/{killmail_id}/approve - Approve an SRP report
+#[post("/api/admin/srp/reports/<killmail_id>/approve", data = "<input>")]
+async fn approve_srp_report(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+    input: Json<ApproveSRPRequest>,
+) -> Result<Json<SRPResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    let result = srp::approve_srp_report(app, killmail_id, account.id, account.window_character_id, input.payout_amount).await?;
+
+    Ok(Json(SRPResponse {
+        success: true,
+        message: "SRP report approved successfully".to_string(),
+    }))
+}
+
+// POST /api/admin/srp/reports/{killmail_id}/deny - Deny an SRP report
+#[post("/api/admin/srp/reports/<killmail_id>/deny", data = "<input>")]
+async fn deny_srp_report(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+    input: Json<DenySRPRequest>,
+) -> Result<Json<SRPResponse>, Madness> {
+    eprintln!("Deny SRP report called for killmail_id: {}, reason: {}", killmail_id, input.reason);
+    account.require_access("commanders-manage:admin")?;
+
+    let result = srp::deny_srp_report(app, killmail_id, &input.reason).await?;
+    eprintln!("Deny SRP report result: {:?}", result);
+
+    Ok(Json(SRPResponse {
+        success: true,
+        message: "SRP report denied successfully".to_string(),
+    }))
+}
+
+// POST /api/admin/srp/test-character-window - Test opening a character window
+#[post("/api/admin/srp/test-character-window")]
+async fn test_character_window(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+) -> Result<Json<SRPResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    // Use a well-known character ID (CCP's character)
+    let test_character_id = 2112625428; // CCP Falcon's character ID
+
+    // Use window character ID if available, otherwise use account ID
+    let esi_character_id = account.window_character_id.unwrap_or(account.id);
+
+    // Open the character info window in-game
+    app.esi_client
+        .post(
+            &format!(
+                "/v1/ui/openwindow/information/?target_id={}",
+                test_character_id
+            ),
+            &Empty {},
+            esi_character_id,
+            esi::ESIScope::UI_OpenWindow_v1,
+        )
+        .await
+        .map_err(|e| {
+            eprintln!("Failed to open test character window: {}", e);
+            Madness::BadRequest(format!("Failed to open character window: {}", e))
+        })?;
+
+    Ok(Json(SRPResponse {
+        success: true,
+        message: format!("Character window opened for character ID: {} using ESI character: {}", test_character_id, esi_character_id),
+    }))
+}
+
+// POST /api/admin/srp/reports/{killmail_id}/open-victim-window - Open victim's character window
+#[post("/api/admin/srp/reports/<killmail_id>/open-victim-window")]
+async fn open_victim_window(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+) -> Result<Json<SRPResponse>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+
+    // Get the SRP report to get the killmail link
+    let report = sqlx::query!(
+        "SELECT killmail_link FROM srp_reports WHERE killmail_id = ?",
+        killmail_id
+    )
+    .fetch_optional(app.get_db())
+    .await?;
+
+    let report = report.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
+
+    // Get the killmail data to find the victim's character ID
+    let killmail_data = srp::get_killmail_data(app, &report.killmail_link).await?;
+    
+    // Only open character window if the victim has a character ID (not an NPC)
+    if let Some(victim_character_id) = killmail_data.victim.character_id {
+        // Use window character ID if available, otherwise use admin character ID
+        let esi_character_id = account.window_character_id.unwrap_or(account.id);
+        
+        // Open the character info window in-game
+        app.esi_client
+            .post(
+                &format!(
+                    "/v1/ui/openwindow/information/?target_id={}",
+                    victim_character_id
+                ),
+                &serde_json::json!({}),
+                esi_character_id,
+                esi::ESIScope::UI_OpenWindow_v1,
+            )
+            .await
+            .map_err(|e| {
+                eprintln!("Failed to open victim character window: {}", e);
+                Madness::BadRequest(format!("Failed to open character window: {}", e))
+            })?;
+
+        Ok(Json(SRPResponse {
+            success: true,
+            message: format!("Character window opened for victim ID: {}", victim_character_id),
+        }))
+    } else {
+        Ok(Json(SRPResponse {
+            success: true,
+            message: "Victim is an NPC, no character window to open".to_string(),
+        }))
+    }
+}
+
+#[post("/api/fc/srp/submit", data = "<input>")]
+async fn submit_srp_report(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    input: Json<SubmitSRPRequest>,
+) -> Result<Json<SRPResponse>, Madness> {
+    account.require_access("fleet-view")?;
+
+    srp::submit_srp_report(
+        app,
+        &input.killmail_link,
+        &input.description,
+        input.loot_returned,
+        account.id,
+    ).await?;
+
+    Ok(Json(SRPResponse {
+        success: true,
+        message: "SRP report submitted successfully".to_string(),
+    }))
+}
+
+#[post("/api/fc/srp/update/<killmail_id>", data = "<input>")]
+async fn update_srp_report(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+    input: Json<UpdateSRPRequest>,
+) -> Result<Json<SRPResponse>, Madness> {
+    account.require_access("fleet-view")?;
+
+    srp::update_srp_report(
+        app,
+        killmail_id,
+        &input.description,
+        input.loot_returned,
+    ).await?;
+
+    Ok(Json(SRPResponse {
+        success: true,
+        message: "SRP report updated successfully".to_string(),
+    }))
+}
+
+#[get("/api/fc/srp/report/<killmail_id>")]
+async fn get_srp_report_for_edit(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    killmail_id: i64,
+) -> Result<Json<serde_json::Value>, Madness> {
+    account.require_access("fleet-view")?;
+
+    let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
+    
+    if let Some(report) = report {
+        Ok(Json(serde_json::json!({
+            "success": true,
+            "report": {
+                "killmail_id": report.killmail_id,
+                "killmail_link": report.killmail_link,
+                "description": report.description,
+                "loot_returned": report.loot_returned
+            }
+        })))
+    } else {
+        Err(Madness::NotFound("SRP report not found"))
+    }
+}
+
+#[get("/api/pilot/srp-reports/<character_id>")]
+async fn get_pilot_srp_reports(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+    character_id: i64,
+) -> Result<Json<serde_json::Value>, Madness> {
+    // Check if user has access to view this pilot's data
+    if account.id != character_id && !account.access.contains("waitlist-manage") {
+        return Err(Madness::Forbidden("Access denied".to_string()));
+    }
+
+    let reports = srp::get_srp_reports_for_pilot(app, character_id).await?;
+    
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "reports": reports
+    })))
+}
+
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         get_srp_setup,
@@ -529,6 +1145,21 @@ pub fn routes() -> Vec<rocket::Route> {
         update_srp_config,
         get_all_srp_statuses,
         get_incursion_focus_status,
-        get_focus_end_timestamp
+        get_focus_end_timestamp,
+        get_srp_reports,
+        get_srp_report,
+        get_srp_report_killmail,
+        get_srp_report_killmail_enriched,
+        get_srp_report_fleet_validation,
+        get_srp_report_srp_validation,
+        calculate_srp_appraisal,
+        approve_srp_report,
+        deny_srp_report,
+        test_character_window,
+        open_victim_window,
+        submit_srp_report,
+        update_srp_report,
+        get_srp_report_for_edit,
+        get_pilot_srp_reports
     ]
 }

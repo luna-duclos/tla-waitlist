@@ -100,11 +100,7 @@ export function NavLinks({ whoami }) {
       <Links exact to="/fits">
         Fits
       </Links>
-      {whoami && (
-        <Links exact to="/skills">
-          Skills
-        </Links>
-      )}
+
       <Links exact to="/isk-h/calc">
         ISK/h
       </Links>
