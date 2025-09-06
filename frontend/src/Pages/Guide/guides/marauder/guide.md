@@ -121,3 +121,12 @@ There are several roles in TLA fleets each with specific jobs or tasks, they are
 - Scout
 
   The unsung hero of the fleet, provides information on other fleets in system by tagging sites, DSCANs of fleet compositions & also provides pre-loads of TCRC's.
+
+###  How to "Bastion trick"
+Bastion tricking is essentially doing the cloak+mwd trick but with your bastion module instead. How the game works is if you are at 0 velocity, you are essentially not pointing towards anything and can instantly align to anywhere you want to warp. Timing the mwd cycle to run and then end just as you're about to exit bastion immediately gives you the required velocity to enter warp, giving you the ability to enter warp as soon as you exit.
+
+- Make sure you're aligning to somewhere WHILE in bastion. You're not going to be able to move but pre-align anyways.
+- Make sure your bastioned is turned red. Check how much time you have left on your bastion cycle.
+- When it says you have 8 seconds left, turn on the MWD and then immediately turn it off again.
+- If done right, you'll exit bastion at 100m/s+
+- Warp when site finishes or when prompted (TCRC exit)
