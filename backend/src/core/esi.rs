@@ -1,6 +1,111 @@
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeSet, sync::Arc};
 
+#[derive(Debug, Deserialize)]
+pub struct Incursion {
+    pub constellation_id: i64,
+    pub faction_id: i64,
+    pub has_boss: bool,
+    pub infested_solar_systems: Vec<i64>,
+    pub influence: f64,
+    pub staging_solar_system_id: i64,
+    pub state: String,
+    #[serde(rename = "type")]
+    pub type_: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ConstellationInfo {
+    pub constellation_id: i64,
+    pub name: String,
+    pub region_id: i64,
+    pub systems: Vec<i64>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SolarSystemInfo {
+    pub constellation_id: i64,
+    pub name: String,
+    pub planets: Vec<Planet>,
+    pub position: Position,
+    pub security_class: Option<String>,
+    pub security_status: f64,
+    pub star_id: Option<i64>,
+    pub stargates: Option<Vec<i64>>,
+    pub stations: Option<Vec<i64>>,
+    pub system_id: i64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Planet {
+    pub planet_id: i64,
+    pub asteroid_belts: Option<Vec<i64>>,
+    pub moons: Option<Vec<i64>>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Position {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UniverseName {
+    pub id: i64,
+    pub name: String,
+    pub category: String,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailItem {
+    pub flag: i32,
+    pub item_type_id: i64,
+    pub quantity_destroyed: Option<i64>,
+    pub quantity_dropped: Option<i64>,
+    pub singleton: i32,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailAttacker {
+    pub alliance_id: Option<i64>,
+    pub character_id: Option<i64>,
+    pub corporation_id: Option<i64>,
+    pub damage_done: i64,
+    pub final_blow: bool,
+    pub security_status: f64,
+    pub ship_type_id: Option<i64>,
+    pub weapon_type_id: Option<i64>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailVictim {
+    pub alliance_id: Option<i64>,
+    pub character_id: Option<i64>,
+    pub corporation_id: Option<i64>,
+    pub damage_taken: i64,
+    pub items: Vec<KillmailItem>,
+    pub position: Position,
+    pub ship_type_id: i64,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct KillmailData {
+    pub attackers: Vec<KillmailAttacker>,
+    pub killmail_id: i64,
+    pub killmail_time: String,
+    pub moon_id: Option<i64>,
+    pub solar_system_id: i64,
+    pub victim: KillmailVictim,
+    pub war_id: Option<i64>,
+}
+
+#[derive(Debug)]
+pub struct ESIResponse<T> {
+    pub data: T,
+    pub etag: Option<String>,
+}
+
 struct ESIRawClient {
     http: reqwest::Client,
     client_id: String,
@@ -88,6 +193,7 @@ pub enum ESIScope {
     Skills_ReadSkills_v1,
     Clones_ReadImplants_v1,
     Search_v1,
+    Wallet_ReadCorporationWallets_v1,
 }
 
 impl ESIScope {
@@ -101,6 +207,7 @@ impl ESIScope {
             Skills_ReadSkills_v1 => "esi-skills.read_skills.v1",
             Clones_ReadImplants_v1 => "esi-clones.read_implants.v1",
             Search_v1 => "esi-search.search_structures.v1",
+            Wallet_ReadCorporationWallets_v1 => "esi-wallet.read_corporation_wallets.v1",
         }
     }
 }
@@ -209,13 +316,43 @@ impl ESIRawClient {
     }
 
     pub async fn get(&self, url: &str, access_token: &str) -> Result<reqwest::Response, ESIError> {
-        Ok(self
+        let response = self
             .http
             .get(url)
             .bearer_auth(access_token)
             .send()
-            .await?
-            .error_for_status()?)
+            .await?;
+
+        if let Err(err) = response.error_for_status_ref() {
+            let status = err.status().unwrap().as_u16();
+            let response_body = response.text().await.unwrap_or_else(|_| "No response body".to_string());
+            return Err(ESIError::WithMessage(status, response_body));
+        };
+
+        Ok(response)
+    }
+
+    pub async fn get_with_etag(&self, url: &str, access_token: &str, etag: Option<&str>) -> Result<reqwest::Response, ESIError> {
+        let mut request = self.http.get(url).bearer_auth(access_token);
+        
+        if let Some(etag) = etag {
+            request = request.header("If-None-Match", format!("\"{}\"", etag));
+        }
+        
+        let response = request.send().await?;
+
+        // Don't treat 304 Not Modified as an error
+        if response.status() == 304 {
+            return Ok(response);
+        }
+
+        if let Err(err) = response.error_for_status_ref() {
+            let status = err.status().unwrap().as_u16();
+            let response_body = response.text().await.unwrap_or_else(|_| "No response body".to_string());
+            return Err(ESIError::WithMessage(status, response_body));
+        };
+
+        Ok(response)
     }
 
     pub async fn get_unauthenticated(&self, url: &str) -> Result<reqwest::Response, ESIError> {
@@ -246,6 +383,30 @@ impl ESIRawClient {
             .http
             .post(url)
             .bearer_auth(access_token)
+            .json(input)
+            .send()
+            .await?;
+
+        if let Err(err) = response.error_for_status_ref() {
+            let response_body = response.text().await?;
+            let payload: EsiErrorReason = EsiErrorReason::new(response_body);
+            return Err(ESIError::WithMessage(
+                err.status().unwrap().as_u16(),
+                payload.error,
+            ));
+        };
+
+        Ok(response)
+    }
+
+    pub async fn post_unauthenticated<E: Serialize + ?Sized>(
+        &self,
+        url: &str,
+        input: &E,
+    ) -> Result<reqwest::Response, ESIError> {
+        let response = self
+            .http
+            .post(url)
             .json(input)
             .send()
             .await?;
@@ -437,12 +598,118 @@ impl ESIClient {
         Ok(self.raw.get(&url, &access_token).await?.json().await?)
     }
 
+    pub async fn get_with_etag<D: serde::de::DeserializeOwned>(
+        &self,
+        path: &str,
+        character_id: i64,
+        scope: ESIScope,
+        etag: Option<&str>,
+    ) -> Result<ESIResponse<D>, ESIError> {
+        let access_token = self.access_token(character_id, scope).await?;
+        let url = format!("https://esi.evetech.net{}", path);
+        let response = self.raw.get_with_etag(&url, &access_token, etag).await?;
+        
+        let etag = response.headers()
+            .get("etag")
+            .and_then(|h| h.to_str().ok())
+            .map(|s| s.trim_matches('"').to_string());
+        
+        // Handle 304 Not Modified response
+        if response.status() == 304 {
+            // Return empty data for 304 responses
+            let empty_data: D = serde_json::from_str("[]").unwrap_or_else(|_| {
+                // If we can't parse "[]", try to create a default value
+                // This is a fallback for non-array types
+                serde_json::from_str("{}").unwrap_or_else(|_| {
+                    // If all else fails, this will panic, but it shouldn't happen
+                    // for the types we're using (Vec<WalletJournalEntry>)
+                    panic!("Cannot create empty value for type")
+                })
+            });
+            return Ok(ESIResponse { data: empty_data, etag });
+        }
+        
+        let data = response.json().await?;
+        Ok(ESIResponse { data, etag })
+    }
+
     pub async fn get_unauthenticated<D: serde::de::DeserializeOwned>(
         &self,
         path: &str,
     ) -> Result<D, ESIError> {
         let url = format!("https://esi.evetech.net{}", path);
         Ok(self.raw.get_unauthenticated(&url).await?.json().await?)
+    }
+
+    pub async fn get_incursions(&self) -> Result<Vec<Incursion>, ESIError> {
+        self.get_unauthenticated("/v1/incursions/").await
+    }
+
+    pub async fn get_constellation_info(&self, constellation_id: i64) -> Result<ConstellationInfo, ESIError> {
+        self.get_unauthenticated(&format!("/v1/universe/constellations/{}/", constellation_id)).await
+    }
+
+    pub async fn get_solar_system_info(&self, system_id: i64) -> Result<SolarSystemInfo, ESIError> {
+        self.get_unauthenticated(&format!("/v4/universe/systems/{}/", system_id)).await
+    }
+
+    pub async fn get_killmail(&self, killmail_id: i64, hash: &str) -> Result<KillmailData, ESIError> {
+        self.get_unauthenticated(&format!("/v1/killmails/{}/{}/", killmail_id, hash)).await
+    }
+
+    pub async fn get_character_name(&self, character_id: i64) -> Result<String, ESIError> {
+        let character: serde_json::Value = self.get_unauthenticated(&format!("/v4/characters/{}/", character_id)).await?;
+        Ok(character["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_corporation_name(&self, corporation_id: i64) -> Result<String, ESIError> {
+        let corporation: serde_json::Value = self.get_unauthenticated(&format!("/v4/corporations/{}/", corporation_id)).await?;
+        Ok(corporation["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_alliance_name(&self, alliance_id: i64) -> Result<String, ESIError> {
+        let alliance: serde_json::Value = self.get_unauthenticated(&format!("/v3/alliances/{}/", alliance_id)).await?;
+        Ok(alliance["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_type_name(&self, type_id: i64) -> Result<String, ESIError> {
+        let type_info: serde_json::Value = self.get_unauthenticated(&format!("/v3/universe/types/{}/", type_id)).await?;
+        Ok(type_info["name"].as_str().unwrap_or("Unknown").to_string())
+    }
+
+    pub async fn get_bulk_names(&self, ids: &[i64]) -> Result<std::collections::HashMap<i64, String>, ESIError> {
+        if ids.is_empty() {
+            return Ok(std::collections::HashMap::new());
+        }
+
+        let url = format!("https://esi.evetech.net/v2/universe/names/");
+        
+        match self.raw.post_unauthenticated(&url, ids).await {
+            Ok(response) => {
+                match response.text().await {
+                    Ok(response_text) => {
+                        match serde_json::from_str::<Vec<UniverseName>>(&response_text) {
+                            Ok(names) => {
+                                let mut result = std::collections::HashMap::new();
+                                for name in names {
+                                    result.insert(name.id, name.name);
+                                }
+                                Ok(result)
+                            }
+                            Err(e) => {
+                                Err(ESIError::WithMessage(500, format!("Failed to parse bulk names response: {}", e)))
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        Err(ESIError::WithMessage(500, format!("Failed to get response text: {}", e)))
+                    }
+                }
+            }
+            Err(e) => {
+                Err(e)
+            }
+        }
     }
 
     pub async fn delete(
@@ -513,4 +780,20 @@ fn split_scopes(input: &str) -> BTreeSet<String> {
 
 fn join_scopes(input: &BTreeSet<String>) -> String {
     input.iter().fold(String::new(), |a, b| a + b + " ")
+}
+
+pub fn extract_killmail_id_and_hash(killmail_url: &str) -> Result<(i64, String), ESIError> {
+    // Parse URL like: https://esi.evetech.net/latest/killmails/128982873/d138ee545ca1058190cf15233190f326c3aeda0d/
+    let parts: Vec<&str> = killmail_url.split('/').collect();
+    
+    if parts.len() < 7 {
+        return Err(ESIError::WithMessage(400, "Invalid killmail URL format".to_string()));
+    }
+    
+    let killmail_id = parts[parts.len() - 3].parse::<i64>()
+        .map_err(|_| ESIError::WithMessage(400, "Invalid killmail ID".to_string()))?;
+    
+    let hash = parts[parts.len() - 2].to_string();
+    
+    Ok((killmail_id, hash))
 }

@@ -24,3 +24,14 @@ min_in_fleet = 8
 [skill_updater]
 enable = true
 runtime = 86400
+
+[srp_updater]
+enable = true
+interval_seconds = 300
+
+[incursion_updater]
+enable = true
+interval_seconds = 3600
+
+[janice]
+api_key = "YOUR_JANICE_API_KEY"

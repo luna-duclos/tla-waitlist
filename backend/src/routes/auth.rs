@@ -75,11 +75,15 @@ async fn logout<'r>(
     ))
 }
 
-#[get("/api/auth/login_url?<alt>&<fc>")]
-fn login_url(alt: bool, fc: bool, app: &rocket::State<app::Application>) -> String {
-    let state = match alt {
-        true => "alt",
-        false => "normal",
+#[get("/api/auth/login_url?<alt>&<fc>&<srp_admin>")]
+fn login_url(alt: bool, fc: bool, srp_admin: bool, app: &rocket::State<app::Application>) -> String {
+    let state = if srp_admin {
+        "srp_admin"
+    } else {
+        match alt {
+            true => "alt",
+            false => "normal",
+        }
     };
 
     let mut scopes = vec![
@@ -94,6 +98,9 @@ fn login_url(alt: bool, fc: bool, app: &rocket::State<app::Application>) -> Stri
             ESIScope::UI_OpenWindow_v1,
             ESIScope::Search_v1,
         ])
+    }
+    if srp_admin {
+        scopes.push(ESIScope::UI_OpenWindow_v1);
     }
 
     format!(
@@ -158,39 +165,126 @@ async fn callback(
         )));
     }
 
-    let logged_in_account =
-        if input.state.is_some() && input.state.unwrap() == "alt" && account.is_some() {
-            let account = account.unwrap();
-            if account.id != character_id {
-                let is_admin = sqlx::query!(
-                    "SELECT character_id FROM admin WHERE character_id = ?",
-                    character_id
-                )
-                .fetch_optional(app.get_db())
-                .await?;
+    let (logged_in_account, window_character_id) = if let Some(state) = input.state {
+        match state {
+            "alt" if account.is_some() => {
+                let account = account.unwrap();
+                if account.id != character_id {
+                    let is_admin = sqlx::query!(
+                        "SELECT character_id FROM admin WHERE character_id = ?",
+                        character_id
+                    )
+                    .fetch_optional(app.get_db())
+                    .await?;
 
-                if is_admin.is_some() {
-                    return Err(Madness::BadRequest(
-                        "Character is flagged as a main and cannot be added as an alt".to_string(),
-                    ));
+                    if is_admin.is_some() {
+                        return Err(Madness::BadRequest(
+                            "Character is flagged as a main and cannot be added as an alt".to_string(),
+                        ));
+                    }
+
+                    sqlx::query!(
+                        "REPLACE INTO alt_character (account_id, alt_id) VALUES (?, ?)",
+                        account.id,
+                        character_id
+                    )
+                    .execute(app.get_db())
+                    .await?;
                 }
-
-                sqlx::query!(
-                    "REPLACE INTO alt_character (account_id, alt_id) VALUES (?, ?)",
-                    account.id,
-                    character_id
-                )
-                .execute(app.get_db())
-                .await?;
+                (account.id, None)
             }
-            account.id
-        } else {
-            character_id
-        };
+            "srp_admin" => {
+                // For SRP admin re-auth, keep the current session but store the window character ID
+                if let Some(current_account) = account {
+                    // Keep the current session, but store the window character ID for window opening
+                    (current_account.id, Some(character_id))
+                } else {
+                    // If no current session, use the new character ID
+                    (character_id, None)
+                }
+            }
+            _ => (character_id, None)
+        }
+    } else {
+        (character_id, None)
+    };
 
-    Ok(crate::core::auth::create_cookie(app, logged_in_account))
+    Ok(crate::core::auth::create_cookie(app, logged_in_account, window_character_id))
+}
+
+// GET version of auth callback for OAuth redirects (used by SRP setup)
+#[get("/api/auth/cb?<code>&<state>")]
+async fn callback_get(
+    app: &rocket::State<app::Application>,
+    code: String,
+    state: Option<String>,
+) -> Result<rocket::response::Redirect, Madness> {
+    let character_id = app
+        .esi_client
+        .process_authorization_code(&code)
+        .await?;
+
+    // Update the character's corporation and alliance information
+    app.affiliation_service
+        .update_character_affiliation(character_id)
+        .await?;
+
+    // Check if this is an SRP setup
+    if state.as_deref() == Some("srp_setup") {
+        // Handle SRP service account setup
+        let character = sqlx::query!("SELECT name FROM `character` WHERE id = ?", character_id)
+            .fetch_one(app.get_db())
+            .await?;
+
+        // Get corporation info from the character
+        let character_corp = sqlx::query!("SELECT corporation_id FROM `character` WHERE id = ?", character_id)
+            .fetch_one(app.get_db())
+            .await?;
+        
+        let corporation_id = character_corp.corporation_id.ok_or_else(|| {
+            Madness::BadRequest("Character has no corporation ID".to_string())
+        })?;
+        let wallet_id = 1; // Main wallet (corporation wallets start from 1, not 1000)
+
+        // Get the refresh token from the database
+        let refresh_token_record = sqlx::query!(
+            "SELECT refresh_token FROM refresh_token WHERE character_id = ?",
+            character_id
+        )
+        .fetch_one(app.get_db())
+        .await?;
+
+        // Get the access token from the database
+        let access_token_record = sqlx::query!(
+            "SELECT access_token FROM access_token WHERE character_id = ?",
+            character_id
+        )
+        .fetch_one(app.get_db())
+        .await?;
+
+        let scopes = vec!["esi-publicdata.v1", "esi-wallet.read_corporation_wallets.v1"];
+        let scopes_str = scopes.join(" ");
+        
+        crate::data::srp::store_service_account_tokens(
+            app,
+            character_id,
+            &character.name,
+            corporation_id,
+            wallet_id,
+            &access_token_record.access_token,
+            &refresh_token_record.refresh_token,
+            chrono::Utc::now().timestamp() + 1200, // 20 minutes from now
+            &scopes_str,
+        ).await?;
+
+        // Redirect to SRP page
+        return Ok(rocket::response::Redirect::to("/fc/srp"));
+    }
+
+    // Regular auth flow - redirect to frontend
+    Ok(rocket::response::Redirect::to("http://localhost:3000"))
 }
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![whoami, logout, login_url, callback]
+    routes![whoami, logout, login_url, callback, callback_get]
 }

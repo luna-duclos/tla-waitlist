@@ -100,6 +100,7 @@ export function NavLinks({ whoami }) {
       <Links exact to="/fits">
         Fits
       </Links>
+
       <Links exact to="/isk-h/calc">
         ISK/h
       </Links>

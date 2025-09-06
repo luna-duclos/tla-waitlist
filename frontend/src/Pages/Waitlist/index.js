@@ -162,6 +162,7 @@ export function Waitlist() {
   const [waitlistData, refreshWaitlist] = useWaitlist(waitlistId);
   const fleetComposition = useFleetComposition();
   const displayMode = query.mode || "columns";
+  const [srpStatus] = useApi(`/api/srp/status?character_id=${authContext.current.id}`);
 
   usePageTitle("Waitlist");
 
@@ -229,6 +230,29 @@ export function Waitlist() {
             Leave waitlist
           </Button>
         </InputGroup>
+        
+        {/* SRP Status for logged-in user */}
+        {srpStatus && srpStatus.status && (
+          <InputGroup>
+            <div 
+              onClick={srpStatus.status === "Unpaid" ? () => alert("CCP's endpoint only updates once an hour, so don't worry if it still says unpaid after making a payment") : undefined}
+              style={{ 
+                padding: "0.5em 1em",
+                backgroundColor: srpStatus.status !== "Unpaid" ? "#28a745" : "#dc3545",
+                color: "white",
+                borderRadius: "20px",
+                fontSize: "0.9em",
+                border: "1px solid",
+                borderColor: srpStatus.status !== "Unpaid" ? "#28a745" : "#dc3545",
+                display: "inline-flex",
+                alignItems: "center",
+                fontWeight: "500",
+                cursor: srpStatus.status === "Unpaid" ? "pointer" : "default"
+              }}>
+              SRP: {srpStatus.status}
+            </div>
+          </InputGroup>
+        )}
         {authContext.access["waitlist-view"] && (
           <>
             <InputGroup>
@@ -272,6 +296,7 @@ export function Waitlist() {
           </>
         )}
       </Buttons>
+      
       <CenteredWl>
         <WaitlistWrapper>
           {displayMode === "columns" ? (

@@ -26,6 +26,7 @@ import { AccountBannedBanner } from "../FC/bans/AccountBanned";
 import AltCharacters from "./AltCharacters";
 import { usePageTitle } from "../../Util/title";
 
+
 const FilterButtons = styled.span`
   font-size: 0.75em;
   margin-left: 2em;
@@ -216,6 +217,7 @@ function PilotDisplay({ authContext }) {
           <ActivitySummary summary={fleetHistory && fleetHistory.summary} />
 
           <AltCharacters character={basicInfo?.id} />
+          
         </Col>
       </Row>
     </>

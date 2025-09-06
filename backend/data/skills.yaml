@@ -10,6 +10,8 @@ categories:
     - Mechanics
     - Shield Management
     - Shield Operation
+    - Shield Compensation
+    - Tactical Shield Manipulation
   Gunnery:
     - Controlled Bursts
     - Motion Prediction
@@ -34,20 +36,7 @@ categories:
     - Armor Rigging
     - Armor Layering
     - Astronautics Rigging
-  Drones:
-    - Drones
-    - Gallente Drone Specialization
-    - Drone Durability
-    - Drone Navigation
-    - Drone Avionics
-    - Advanced Drone Avionics
-    - Drone Interfacing
-    - Drone Sharpshooting
-    - Electronic Warfare
-    - Light Drone Operation
-    - Medium Drone Operation
-    - Heavy Drone Operation
-    - Repair Drone Operation
+
   Engineering:
     - Thermodynamics
     - Capacitor Management
@@ -142,27 +131,6 @@ requirements:
     Navigation:
       min: 4
       elite: 5
-    Drones:
-      min: 5
-    Gallente Drone Specialization:
-      elite: 4
-    Drone Durability:
-      min: 3
-      elite: 4
-    Drone Navigation:
-      min: 3
-      elite: 4
-    Drone Avionics:
-      min: 3
-      elite: 4
-    Advanced Drone Avionics:
-      elite: 4
-    Drone Interfacing:
-      min: 3
-      elite: 4
-    Drone Sharpshooting:
-      min: 3
-      elite: 4
     Electronic Warfare:
       elite: 4
       gold: 4
@@ -206,6 +174,12 @@ requirements:
       elite: 4
     Shield Operation:
       elite: 4
+    Shield Compensation:
+      min: 4
+      elite: 5
+    Tactical Shield Manipulation:
+      min: 4
+      elite: 5
 
   _booster: &booster # Booster skills: Only boosters need these
     EM Armor Compensation:
@@ -346,23 +320,6 @@ requirements:
     Navigation:
       min: 4
       elite: 5
-    Drones:
-      min: 3
-      elite: 5
-    Gallente Drone Specialization:
-      elite: 4
-    Drone Durability:
-      elite: 4
-    Drone Navigation:
-      elite: 4
-    Drone Avionics:
-      elite: 4
-    Advanced Drone Avionics:
-      elite: 4
-    Drone Interfacing:
-      elite: 4
-    Drone Sharpshooting:
-      elite: 4
     Electronic Warfare:
       elite: 4
       gold: 4
@@ -442,15 +399,6 @@ requirements:
     Micro Jump Drive Operation:
       min: 3
       elite: 4
-    Light Drone Operation:
-      min: 3
-      elite: 4
-    Medium Drone Operation:
-      min: 3
-      elite: 4
-    Heavy Drone Operation:
-      min: 3
-      elite: 4
     Science:
       min: 3
       elite: 5
@@ -464,92 +412,160 @@ requirements:
     Large Energy Turret:
       min: 5
     Large Pulse Laser Specialization:
-      elite: 4
+      elite: 5
       priority: 10
     Marauders:
-      min: 3
-      elite: 4
+      min: 5
+      elite: 5
       priority: 10
     Capacitor Emission Systems:
-      min: 3
+      min: 4
       elite: 4
-    Repair Systems:
-      min: 2
-      gold: 2
     Remote Armor Repair Systems:
-      min: 3
-      elite: 4
-    Remote Hull Repair Systems:
-      min: 3
-      gold: 4
-    Micro Jump Drive Operation:
-      min: 3
-      elite: 4
-    Light Drone Operation:
-      min: 3
+      min: 5
       elite: 5
-    Medium Drone Operation:
-      min: 3
-      elite: 5
-    Repair Drone Operation:
-      min: 1
     Science:
-      min: 3
+      min: 5
       elite: 5
     Advanced Target Management:
-      elite: 3
+      min: 5
+      elite: 5
     Radar Sensor Compensation:
-      elite: 4
+      min: 5
+      elite: 5
     Amarr Battleship:
       min: 5
-    Advanced Weapon Upgrades:
-      min: 5
-    Energy Grid Upgrades:
-      min: 5
-    CPU Management:
-      min: 5
+      elite: 5
 
   Kronos:
     <<: [*generic, *gunnery, *sideeffects, *rigging]
     Large Hybrid Turret:
       min: 5
     Large Blaster Specialization:
-      elite: 4
+      min: 5
+      elite: 5
       priority: 10
     Marauders:
-      min: 3
-      elite: 4
+      min: 5
+      elite: 5
       priority: 10
     Capacitor Emission Systems:
-      min: 3
+      min: 4
       elite: 4
-    Repair Systems:
-      min: 2
-      gold: 2
     Remote Armor Repair Systems:
-      min: 3
-      elite: 4
-    Remote Hull Repair Systems:
-      min: 3
-      gold: 4
-    Micro Jump Drive Operation:
-      min: 3
-      elite: 4
-    Medium Drone Operation:
-      min: 3
+      min: 5
       elite: 5
-    Repair Drone Operation:
-      min: 2
+    Micro Jump Drive Operation:
+      min: 5
+      elite: 5
     Advanced Target Management:
-      elite: 3
+      min: 5
+      elite: 5
     Magnetometric Sensor Compensation:
-      elite: 4
+      min: 5
+      elite: 5
     Gallente Battleship:
       min: 5
-    Advanced Weapon Upgrades:
+      elite: 5
+
+  Shield Kronos:
+    <<: [*gunnery, *sideeffects, *rigging]
+    Hull Upgrades:
       min: 5
-    Energy Grid Upgrades:
+    Shield Management:
       min: 5
+      elite: 5
+    Shield Operation:
+      min: 5
+      elite: 5
+    Shield Compensation:
+      min: 5
+      elite: 5
+    Tactical Shield Manipulation:
+      min: 5
+      elite: 5
+    Acceleration Control:
+      min: 5
+      elite: 5
+    Evasive Maneuvering:
+      min: 5
+      elite: 5
+    High Speed Maneuvering:
+      min: 5
+      elite: 5
+    Warp Drive Operation:
+      min: 5
+      elite: 5
+    Navigation:
+      min: 5
+      elite: 5
+    CPU Management:
+      min: 5
+      elite: 5
+    Capacitor Management:
+      min: 5
+      elite: 5
+    Capacitor Systems Operation:
+      min: 5
+      elite: 5
+    Nanite Interfacing:
+      min: 5
+      elite: 5
+    Nanite Operation:
+      min: 5
+      elite: 5
+    Power Grid Management:
+      min: 5
+      elite: 5
+    Thermodynamics:
+      min: 5
+      elite: 5
+    Target Management:
+      min: 5
+      elite: 5
+    Long Range Targeting:
+      min: 5
+      elite: 5
+    Signature Analysis:
+      min: 5
+      elite: 5
+    Biology:
+      min: 5
+      elite: 5
+    Cybernetics:
+      min: 5
+      elite: 5
+    Armor Rigging:
+      min: 5
+      elite: 5
+    Large Hybrid Turret:
+      min: 5
+    Large Blaster Specialization:
+      min: 5
+      elite: 5
+      priority: 10
+    Marauders:
+      min: 5
+      elite: 5
+      priority: 10
+    Capacitor Emission Systems:
+      min: 4
+      elite: 4
+    Remote Armor Repair Systems:
+      min: 5
+      elite: 5
+    Micro Jump Drive Operation:
+      min: 5
+      elite: 5
+    Advanced Target Management:
+      min: 5
+      elite: 5
+    Magnetometric Sensor Compensation:
+      min: 5
+      elite: 5
+    Gallente Battleship:
+      min: 5
+      elite: 5
 
   Vindicator:
     <<: [*generic, *gunnery, *sideeffects, *rigging]
@@ -565,9 +581,6 @@ requirements:
       min: 3
       elite: 5
       priority: 5
-    Heavy Drone Operation:
-      min: 3
-      elite: 5
     Propulsion Jamming:
       min: 1
       elite: 4
@@ -602,12 +615,6 @@ requirements:
       elite: 4
     Amarr Cruiser:
       min: 5
-    Light Drone Operation:
-      min: 1
-      elite: 5
-    Medium Drone Operation:
-      min: 1
-      elite: 5
     CPU Management:
       min: 5
     Power Grid Management:
@@ -634,9 +641,6 @@ requirements:
       elite: 4
     Gallente Cruiser:
       min: 5
-    Medium Drone Operation:
-      min: 1
-      elite: 5
     CPU Management:
       min: 3
     Power Grid Management:
@@ -645,8 +649,6 @@ requirements:
       elite: 4
     Long Distance Jamming:
       elite: 4
-    Drones:
-      min: 5
 
   Nestor:
     <<: [*logistics, *rigging]
@@ -669,20 +671,12 @@ requirements:
       min: 4
     Magnetometric Sensor Compensation:
       elite: 4
-    Repair Drone Operation:
-      min: 3
-      elite: 5
-    Drone Durability:
-      min: 1
     Shield Emission Systems:
       min: 3
       gold: 4
     Remote Hull Repair Systems:
       min: 3
       gold: 4
-    Heavy Drone Operation:
-      min: 1
-      elite: 5
     Cybernetics:
       min: 5
     Astronautics Rigging:
@@ -690,8 +684,6 @@ requirements:
     Thermodynamics:
       min: 4
       elite: 5
-    Drones:
-      min: 5
 
   Eos:
     <<: [*booster]

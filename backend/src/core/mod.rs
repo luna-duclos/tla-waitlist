@@ -3,5 +3,7 @@ pub mod auth;
 pub mod ban;
 pub mod esi;
 pub mod fleet_updater;
+pub mod incursion_updater;
 pub mod skill_updater;
+pub mod srp_updater;
 pub mod sse;
