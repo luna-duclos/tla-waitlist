@@ -78,8 +78,8 @@ impl FleetUpdater {
             match esi::fleet_members::get(&self.esi_client, fleet_id, fleet.boss_id).await {
                 Ok(m) => m,
                 Err(
-                    esi::ESIError::Status(403)
-                    | esi::ESIError::Status(404)
+                    esi::ESIError::WithMessage(403, _)
+                    | esi::ESIError::WithMessage(404, _)
                     | esi::ESIError::NoToken
                     | esi::ESIError::MissingScope,
                 ) => {
