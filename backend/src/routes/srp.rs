@@ -542,6 +542,19 @@ async fn get_srp_reports(
     Ok(Json(SRPReportsResponse { reports }))
 }
 
+// GET /api/fc/srp/reports - Get SRP reports for FCs to view
+#[get("/api/fc/srp/reports")]
+async fn get_fc_srp_reports(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+) -> Result<Json<SRPReportsResponse>, Madness> {
+    account.require_access("fleet-view")?;
+
+    let reports = srp::get_all_srp_reports(app).await?;
+
+    Ok(Json(SRPReportsResponse { reports }))
+}
+
 // GET /api/admin/srp/reports/{id} - Get specific SRP report details
 #[get("/api/admin/srp/reports/<killmail_id>")]
 async fn get_srp_report(
@@ -1074,6 +1087,20 @@ async fn update_srp_report(
 ) -> Result<Json<SRPResponse>, Madness> {
     account.require_access("fleet-view")?;
 
+    // Check if the user is the one who submitted this SRP report
+    let report = sqlx::query!(
+        "SELECT submitted_by_id FROM srp_reports WHERE killmail_id = ?",
+        killmail_id
+    )
+    .fetch_optional(app.get_db())
+    .await?;
+
+    let report = report.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
+    
+    if report.submitted_by_id != account.id {
+        return Err(Madness::Forbidden("You can only update SRP reports that you submitted".to_string()));
+    }
+
     srp::update_srp_report(
         app,
         killmail_id,
@@ -1094,6 +1121,20 @@ async fn get_srp_report_for_edit(
     killmail_id: i64,
 ) -> Result<Json<serde_json::Value>, Madness> {
     account.require_access("fleet-view")?;
+
+    // Check if the user is the one who submitted this SRP report
+    let report_check = sqlx::query!(
+        "SELECT submitted_by_id FROM srp_reports WHERE killmail_id = ?",
+        killmail_id
+    )
+    .fetch_optional(app.get_db())
+    .await?;
+
+    let report_check = report_check.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
+    
+    if report_check.submitted_by_id != account.id {
+        return Err(Madness::Forbidden("You can only edit SRP reports that you submitted".to_string()));
+    }
 
     let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
     
@@ -1147,6 +1188,7 @@ pub fn routes() -> Vec<rocket::Route> {
         get_incursion_focus_status,
         get_focus_end_timestamp,
         get_srp_reports,
+        get_fc_srp_reports,
         get_srp_report,
         get_srp_report_killmail,
         get_srp_report_killmail_enriched,

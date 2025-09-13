@@ -136,10 +136,10 @@ export function SRP() {
   const location = useLocation();
   const isAdminPage = location.pathname === "/srp-admin";
   
-  const [setupData] = useApi("/api/admin/srp/setup");
-  const [serviceAccount] = useApi("/api/admin/srp/service-account");
-  const [allStatuses] = useApi("/api/admin/srp/all-statuses");
-  const [srpReports] = useApi("/api/admin/srp/reports");
+  const [setupData] = useApi(isAdminPage ? "/api/admin/srp/setup" : null);
+  const [serviceAccount] = useApi(isAdminPage ? "/api/admin/srp/service-account" : null);
+  const [allStatuses] = useApi(isAdminPage ? "/api/admin/srp/all-statuses" : null);
+  const [srpReports] = useApi(isAdminPage ? "/api/admin/srp/reports" : "/api/fc/srp/reports");
   const [journalResult, setJournalResult] = React.useState(null);
   const [reconfigureResult, setReconfigureResult] = React.useState(null);
   const [focusEndResult, setFocusEndResult] = React.useState(null);
