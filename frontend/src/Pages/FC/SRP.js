@@ -10,6 +10,7 @@ import { formatNumber } from "../../Util/number";
 import { formatDatetime } from "../../Util/time";
 import { useLocation } from "react-router-dom";
 import { Modal } from "../../Components/Modal";
+import { getCharacterCountText } from "../../Util/srpCharacterCount";
 
 // Component for truncated description with modal functionality
 function TruncatedDescription({ text, maxLength = 50 }) {
@@ -434,6 +435,7 @@ export function SRP() {
                 <Row>
                   <CellHead>Character</CellHead>
                   <CellHead>Payment Amount</CellHead>
+                  <CellHead>Characters</CellHead>
                   <CellHead>Payment Date</CellHead>
                   <CellHead>Coverage Type</CellHead>
                   <CellHead>Coverage End</CellHead>
@@ -446,6 +448,7 @@ export function SRP() {
                   <Row key={payment.id}>
                     <Cell>{payment.character_name}</Cell>
                     <Cell>{formatNumber(payment.payment_amount)} ISK</Cell>
+                    <Cell>{getCharacterCountText(payment.payment_amount, payment.coverage_type)}</Cell>
                     <Cell>{formatDatetime(new Date(payment.payment_date * 1000))}</Cell>
                     <Cell>
                       <span

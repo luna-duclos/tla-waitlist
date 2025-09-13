@@ -16,6 +16,8 @@ use crate::{
 #[derive(Debug, Serialize)]
 struct SRPStatusResponse {
     status: Option<String>,
+    payment_amount: Option<f64>,
+    coverage_type: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -364,16 +366,20 @@ async fn get_srp_status(
     .await?;
 
     if character.is_none() {
-        return Ok(Json(SRPStatusResponse { status: Some("Unpaid".to_string()) }));
+        return Ok(Json(SRPStatusResponse { 
+            status: Some("Unpaid".to_string()),
+            payment_amount: None,
+            coverage_type: None,
+        }));
     }
 
     let character_name = character.unwrap().name;
     let now = chrono::Utc::now().timestamp();
 
     // Helper function to check SRP for a character name
-    async fn check_srp_for_character(app: &crate::app::Application, character_name: &str, now: i64) -> Result<Option<(i64, String)>, Madness> {
+    async fn check_srp_for_character(app: &crate::app::Application, character_name: &str, now: i64) -> Result<Option<(i64, String, f64)>, Madness> {
         let result = sqlx::query!(
-            "SELECT expires_at, coverage_type FROM srp_payments 
+            "SELECT expires_at, coverage_type, payment_amount FROM srp_payments 
              WHERE character_name = ? AND expires_at > ? 
              ORDER BY expires_at DESC LIMIT 1",
             character_name,
@@ -382,7 +388,7 @@ async fn get_srp_status(
         .fetch_optional(app.get_db())
         .await?;
         
-        Ok(result.map(|r| (r.expires_at, r.coverage_type)))
+        Ok(result.map(|r| (r.expires_at, r.coverage_type, r.payment_amount.to_string().parse::<f64>().unwrap_or(0.0))))
     }
 
     // First, check for active SRP payment for this character directly
@@ -430,7 +436,7 @@ async fn get_srp_status(
         }
     }
 
-    if let Some((expires_at, coverage_type)) = payment {
+    if let Some((expires_at, coverage_type, payment_amount)) = payment {
         let status = if coverage_type == "per_focus" {
             "Paid until end of focus".to_string()
         } else {
@@ -440,9 +446,17 @@ async fn get_srp_status(
             );
             format!("Paid until {}", expires_dt.format("%Y-%m-%d %H:%M UTC"))
         };
-        Ok(Json(SRPStatusResponse { status: Some(status) }))
+        Ok(Json(SRPStatusResponse { 
+            status: Some(status),
+            payment_amount: Some(payment_amount),
+            coverage_type: Some(coverage_type),
+        }))
     } else {
-        Ok(Json(SRPStatusResponse { status: Some("Unpaid".to_string()) }))
+        Ok(Json(SRPStatusResponse { 
+            status: Some("Unpaid".to_string()),
+            payment_amount: None,
+            coverage_type: None,
+        }))
     }
 }
 
