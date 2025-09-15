@@ -35,3 +35,5 @@ interval_seconds = 3600
 
 [janice]
 api_key = "YOUR_JANICE_API_KEY"
+
+#FOR SRP TIERS, YOU NEED TO CHANGE IT MANUALLY IN srp.rs and srpCharacterCount.js

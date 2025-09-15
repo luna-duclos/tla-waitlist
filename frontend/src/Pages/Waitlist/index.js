@@ -21,6 +21,7 @@ import { usePageTitle } from "../../Util/title";
 import { Xup } from "../Xup";
 import { Modal } from "../../Components/Modal";
 import { Box } from "../../Components/Box";
+import { getCharacterCountText } from "../../Util/srpCharacterCount";
 const FixedBox = styled.div`
   width: 100%;
 `;
@@ -250,6 +251,11 @@ export function Waitlist() {
                 cursor: srpStatus.status === "Unpaid" ? "pointer" : "default"
               }}>
               SRP: {srpStatus.status}
+              {srpStatus.payment_amount && srpStatus.coverage_type && (
+                <span style={{ marginLeft: "0.5em", fontSize: "0.8em", opacity: "0.9" }}>
+                  ({getCharacterCountText(srpStatus.payment_amount, srpStatus.coverage_type)})
+                </span>
+              )}
             </div>
           </InputGroup>
         )}

@@ -137,6 +137,11 @@ impl<'a> FitChecker<'a> {
     }
 
     fn check_hybrid_rig_combinations(&mut self) {
+        // Exception: Nestor should not be flagged for hybrid rig combinations
+        if self.fit.hull == type_id!("Nestor") {
+            return;
+        }
+        
         let has_hybrid_set = self.has_hybrid_implant_set();
         
         let has_trimark = self.fit.modules.contains_key(&type_id!("Large Trimark Armor Pump II"));
