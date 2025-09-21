@@ -46,7 +46,7 @@ export function ImplantTable({ type }) {
           <Row>
             <SmallCellHead></SmallCellHead>
             <CellHead>DEFAULT</CellHead>
-            <CellHead>ALTERNATIVE (not required)</CellHead>
+            <CellHead>ALTERNATIVE</CellHead>
           </Row>
         </TableHead>
         <TableBody>
@@ -116,7 +116,14 @@ function HardWires({ toastContext }) {
           <b>Slot 7</b>
         </Cell>
         <Cell>
+          <b>Kronos/Paladin/Vindicator:</b>
+          <br />
           <CopyImplantText toast={toastContext} item={"Ogdin's Eye"} /> +6% Tracking
+          <br />
+          <b>Vargur:</b>
+          <br />
+          <CopyImplantText toast={toastContext} item={"TA-706"} /> +6% Falloff
+          <br />
         </Cell>
 
         <Cell>

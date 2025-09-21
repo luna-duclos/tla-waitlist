@@ -37,7 +37,7 @@ export function Home() {
           <CenteredParagraph.Paragraph>
             Please have a read of the <NavLink to="/guide">GUIDES</NavLink>, join the{" "}
             <a href="https://discord.gg/MR3nA9BD9K">DISCORD</a> & in game channel TLA Incursions
-            to ask any questions that aren&apos;t answered here, were more than happy to help.
+            to ask any questions that aren&apos;t answered here, we&apos;re more than happy to help.
             Look at our <NavLink to="/fits">FITS</NavLink> and make sure your fit matches ours.
             The associated DPS number is expected after roughly 2 weeks of flying with us,
             DPS requirements must be met <b>WITHOUT DRUGS & DRONES, GUN DAMAGE ONLY</b>.

@@ -100,7 +100,7 @@ There are several roles in TLA fleets each with specific jobs or tasks, they are
 
 - DDD
 
-  The Vindicator(s) in fleet, responsible for killing frigates in all sites, and primarily Niarjas in TCRC's. Specific guidance can be found [here](guide/ddd).
+  The Vindicator(s) in fleet, responsible for killing frigates in all sites, and primarily Niarjas in TCRC's. Specific guidance can be found [here](ddd).
 
 - Meatshield
 
