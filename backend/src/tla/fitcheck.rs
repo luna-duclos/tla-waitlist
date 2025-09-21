@@ -137,8 +137,8 @@ impl<'a> FitChecker<'a> {
     }
 
     fn check_hybrid_rig_combinations(&mut self) {
-        // Exception: Nestor should not be flagged for hybrid rig combinations
-        if self.fit.hull == type_id!("Nestor") {
+        // Exception: Nestor and Vindicator should not be flagged for hybrid rig combinations
+        if self.fit.hull == type_id!("Nestor") || self.fit.hull == type_id!("Vindicator") {
             return;
         }
         
