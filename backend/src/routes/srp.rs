@@ -16,6 +16,8 @@ use crate::{
 #[derive(Debug, Serialize)]
 struct SRPStatusResponse {
     status: Option<String>,
+    payment_amount: Option<f64>,
+    coverage_type: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -364,16 +366,20 @@ async fn get_srp_status(
     .await?;
 
     if character.is_none() {
-        return Ok(Json(SRPStatusResponse { status: Some("Unpaid".to_string()) }));
+        return Ok(Json(SRPStatusResponse { 
+            status: Some("Unpaid".to_string()),
+            payment_amount: None,
+            coverage_type: None,
+        }));
     }
 
     let character_name = character.unwrap().name;
     let now = chrono::Utc::now().timestamp();
 
     // Helper function to check SRP for a character name
-    async fn check_srp_for_character(app: &crate::app::Application, character_name: &str, now: i64) -> Result<Option<(i64, String)>, Madness> {
+    async fn check_srp_for_character(app: &crate::app::Application, character_name: &str, now: i64) -> Result<Option<(i64, String, f64)>, Madness> {
         let result = sqlx::query!(
-            "SELECT expires_at, coverage_type FROM srp_payments 
+            "SELECT expires_at, coverage_type, payment_amount FROM srp_payments 
              WHERE character_name = ? AND expires_at > ? 
              ORDER BY expires_at DESC LIMIT 1",
             character_name,
@@ -382,7 +388,7 @@ async fn get_srp_status(
         .fetch_optional(app.get_db())
         .await?;
         
-        Ok(result.map(|r| (r.expires_at, r.coverage_type)))
+        Ok(result.map(|r| (r.expires_at, r.coverage_type, r.payment_amount.to_string().parse::<f64>().unwrap_or(0.0))))
     }
 
     // First, check for active SRP payment for this character directly
@@ -430,7 +436,7 @@ async fn get_srp_status(
         }
     }
 
-    if let Some((expires_at, coverage_type)) = payment {
+    if let Some((expires_at, coverage_type, payment_amount)) = payment {
         let status = if coverage_type == "per_focus" {
             "Paid until end of focus".to_string()
         } else {
@@ -440,9 +446,17 @@ async fn get_srp_status(
             );
             format!("Paid until {}", expires_dt.format("%Y-%m-%d %H:%M UTC"))
         };
-        Ok(Json(SRPStatusResponse { status: Some(status) }))
+        Ok(Json(SRPStatusResponse { 
+            status: Some(status),
+            payment_amount: Some(payment_amount),
+            coverage_type: Some(coverage_type),
+        }))
     } else {
-        Ok(Json(SRPStatusResponse { status: Some("Unpaid".to_string()) }))
+        Ok(Json(SRPStatusResponse { 
+            status: Some("Unpaid".to_string()),
+            payment_amount: None,
+            coverage_type: None,
+        }))
     }
 }
 
@@ -536,6 +550,19 @@ async fn get_srp_reports(
     app: &rocket::State<Application>,
 ) -> Result<Json<SRPReportsResponse>, Madness> {
     account.require_access("commanders-manage:admin")?;
+
+    let reports = srp::get_all_srp_reports(app).await?;
+
+    Ok(Json(SRPReportsResponse { reports }))
+}
+
+// GET /api/fc/srp/reports - Get SRP reports for FCs to view
+#[get("/api/fc/srp/reports")]
+async fn get_fc_srp_reports(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+) -> Result<Json<SRPReportsResponse>, Madness> {
+    account.require_access("fleet-view")?;
 
     let reports = srp::get_all_srp_reports(app).await?;
 
@@ -1074,6 +1101,20 @@ async fn update_srp_report(
 ) -> Result<Json<SRPResponse>, Madness> {
     account.require_access("fleet-view")?;
 
+    // Check if the user is the one who submitted this SRP report
+    let report = sqlx::query!(
+        "SELECT submitted_by_id FROM srp_reports WHERE killmail_id = ?",
+        killmail_id
+    )
+    .fetch_optional(app.get_db())
+    .await?;
+
+    let report = report.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
+    
+    if report.submitted_by_id != account.id {
+        return Err(Madness::Forbidden("You can only update SRP reports that you submitted".to_string()));
+    }
+
     srp::update_srp_report(
         app,
         killmail_id,
@@ -1094,6 +1135,20 @@ async fn get_srp_report_for_edit(
     killmail_id: i64,
 ) -> Result<Json<serde_json::Value>, Madness> {
     account.require_access("fleet-view")?;
+
+    // Check if the user is the one who submitted this SRP report
+    let report_check = sqlx::query!(
+        "SELECT submitted_by_id FROM srp_reports WHERE killmail_id = ?",
+        killmail_id
+    )
+    .fetch_optional(app.get_db())
+    .await?;
+
+    let report_check = report_check.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
+    
+    if report_check.submitted_by_id != account.id {
+        return Err(Madness::Forbidden("You can only edit SRP reports that you submitted".to_string()));
+    }
 
     let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
     
@@ -1147,6 +1202,7 @@ pub fn routes() -> Vec<rocket::Route> {
         get_incursion_focus_status,
         get_focus_end_timestamp,
         get_srp_reports,
+        get_fc_srp_reports,
         get_srp_report,
         get_srp_report_killmail,
         get_srp_report_killmail_enriched,

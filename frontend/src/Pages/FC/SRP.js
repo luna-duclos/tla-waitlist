@@ -10,6 +10,7 @@ import { formatNumber } from "../../Util/number";
 import { formatDatetime } from "../../Util/time";
 import { useLocation } from "react-router-dom";
 import { Modal } from "../../Components/Modal";
+import { getCharacterCountText } from "../../Util/srpCharacterCount";
 
 // Component for truncated description with modal functionality
 function TruncatedDescription({ text, maxLength = 50 }) {
@@ -136,10 +137,10 @@ export function SRP() {
   const location = useLocation();
   const isAdminPage = location.pathname === "/srp-admin";
   
-  const [setupData] = useApi("/api/admin/srp/setup");
-  const [serviceAccount] = useApi("/api/admin/srp/service-account");
-  const [allStatuses] = useApi("/api/admin/srp/all-statuses");
-  const [srpReports] = useApi("/api/admin/srp/reports");
+  const [setupData] = useApi(isAdminPage ? "/api/admin/srp/setup" : null);
+  const [serviceAccount] = useApi(isAdminPage ? "/api/admin/srp/service-account" : null);
+  const [allStatuses] = useApi(isAdminPage ? "/api/admin/srp/all-statuses" : null);
+  const [srpReports] = useApi(isAdminPage ? "/api/admin/srp/reports" : "/api/fc/srp/reports");
   const [journalResult, setJournalResult] = React.useState(null);
   const [reconfigureResult, setReconfigureResult] = React.useState(null);
   const [focusEndResult, setFocusEndResult] = React.useState(null);
@@ -434,6 +435,7 @@ export function SRP() {
                 <Row>
                   <CellHead>Character</CellHead>
                   <CellHead>Payment Amount</CellHead>
+                  <CellHead>Characters</CellHead>
                   <CellHead>Payment Date</CellHead>
                   <CellHead>Coverage Type</CellHead>
                   <CellHead>Coverage End</CellHead>
@@ -446,6 +448,7 @@ export function SRP() {
                   <Row key={payment.id}>
                     <Cell>{payment.character_name}</Cell>
                     <Cell>{formatNumber(payment.payment_amount)} ISK</Cell>
+                    <Cell>{getCharacterCountText(payment.payment_amount, payment.coverage_type)}</Cell>
                     <Cell>{formatDatetime(new Date(payment.payment_date * 1000))}</Cell>
                     <Cell>
                       <span
