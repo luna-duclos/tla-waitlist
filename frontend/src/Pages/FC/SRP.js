@@ -569,7 +569,7 @@ export function SRP() {
                         const killmailId = report.killmail_id;
                         // Extract hash from URL - it's the second-to-last part (before the trailing slash)
                         const urlParts = report.killmail_link.split('/').filter(part => part.length > 0);
-                        const hash = urlParts[urlParts.length - 1]; // Last non-empty part
+                        const hash = urlParts[urlParts.length - 2] || urlParts[urlParts.length - 1];
                         const formattedText = `<url=killReport:${killmailId}:${hash}>Kill: ${victimName}'s ${shipType}</url>`;
                         navigator.clipboard.writeText(formattedText).then(() => {
                           // Show notification

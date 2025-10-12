@@ -29,6 +29,7 @@ const PER_FOCUS_PAYMENTS: &[(f64, &str)] = &[
     (505.0, "per_focus"),
     (540.0, "per_focus"),
     (600.0, "per_focus"),
+    (680.0, "per_focus"),
 ];
 
 #[derive(Debug, Deserialize, Serialize, Clone)]

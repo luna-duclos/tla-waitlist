@@ -27,7 +27,8 @@ const PER_FOCUS_PAYMENTS = [
   { amount: 470, characters: 8 },
   { amount: 505, characters: 9 },
   { amount: 540, characters: 10 },
-  { amount: 600, characters: 11 }
+  { amount: 600, characters: 11 },
+  { amount: 680, characters: 12 }
 ];
 
 /**
