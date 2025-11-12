@@ -354,6 +354,9 @@ version = "0.1.0"
 dependencies = [
  "eve_data_core",
  "quote",
+ "rusqlite",
+ "serde",
+ "serde_json",
  "syn",
 ]
 
