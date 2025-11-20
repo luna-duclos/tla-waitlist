@@ -1,5 +1,5 @@
 import React from "react";
-import { useApi } from "../../api";
+import { useApi, apiCall } from "../../api";
 import { Input, InputGroup } from "../../Components/Form";
 import _ from "lodash";
 import { Content } from "../../Components/Page";
@@ -13,6 +13,32 @@ import { NavLink } from "react-router-dom";
 export function FleetCompHistory() {
   const [date, setDate] = React.useState("");
   const [time, setTime] = React.useState("");
+  const [latestTimeLoaded, setLatestTimeLoaded] = React.useState(false);
+
+  // Fetch the latest fleet time on mount
+  React.useEffect(() => {
+    if (!latestTimeLoaded) {
+      apiCall("/api/history/fleet-comp/latest", {})
+        .then((data) => {
+          if (data && data.time) {
+            const latestDate = new Date(data.time * 1000);
+            const year = latestDate.getUTCFullYear();
+            const month = String(latestDate.getUTCMonth() + 1).padStart(2, "0");
+            const day = String(latestDate.getUTCDate()).padStart(2, "0");
+            const hours = String(latestDate.getUTCHours()).padStart(2, "0");
+            const minutes = String(latestDate.getUTCMinutes()).padStart(2, "0");
+            
+            setDate(`${year}-${month}-${day}`);
+            setTime(`${hours}:${minutes}`);
+            setLatestTimeLoaded(true);
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to load latest fleet time:", err);
+          setLatestTimeLoaded(true);
+        });
+    }
+  }, [latestTimeLoaded]);
 
   const parsedDate = date && time ? new Date(`${date}T${time}Z`) : null;
   const parsedDateUnix = parsedDate ? parsedDate.getTime() / 1000 : null;
