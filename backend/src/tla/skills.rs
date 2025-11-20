@@ -191,9 +191,19 @@ pub fn save_skills_to_file(yaml_content: &str) -> Result<(), Madness> {
 }
 
 pub fn validate_yaml(yaml_content: &str) -> Result<(), Madness> {
-    // Validate YAML syntax and structure
-    let _: SkillFile = serde_yaml::from_str(yaml_content)
-        .map_err(|e| Madness::BadRequest(format!("Invalid YAML: {}", e)))?;
+    // Parse YAML and expand merge keys (same as yamlhelper::from_file)
+    let file_data: serde_yaml::Value = serde_yaml::from_str(yaml_content)
+        .map_err(|e| Madness::BadRequest(format!("Invalid YAML syntax: {}", e)))?;
+    
+    let merged = yaml_merge_keys::merge_keys_serde(file_data)
+        .map_err(|e| Madness::BadRequest(format!("Failed to merge YAML keys: {}", e)))?;
+    
+    let back_to_str = serde_yaml::to_string(&merged)
+        .map_err(|e| Madness::BadRequest(format!("Failed to serialize merged YAML: {}", e)))?;
+    
+    // Validate the structure after merging
+    let _: SkillFile = serde_yaml::from_str(&back_to_str)
+        .map_err(|e| Madness::BadRequest(format!("Invalid YAML structure: {}", e)))?;
     Ok(())
 }
 
