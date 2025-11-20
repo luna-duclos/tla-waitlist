@@ -1,6 +1,6 @@
 use eve_data_core::{SkillLevel, TypeDB, TypeID};
 use rocket::serde::json::Json;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::{
     core::auth::AuthenticatedAccount,
@@ -196,6 +196,156 @@ fn get_skill_plans(_account: AuthenticatedAccount) -> Result<Json<SkillPlansResp
     Ok(Json(build_data_skip_errors()))
 }
 
+// Admin routes
+#[get("/api/admin/skillplans")]
+fn get_admin_skill_plans(account: AuthenticatedAccount) -> Result<Json<Vec<SkillPlan>>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+    let plans = skillplans::load_plans_from_file();
+    Ok(Json(plans))
+}
+
+#[get("/api/admin/skillplans/<name>")]
+fn get_admin_skill_plan(account: AuthenticatedAccount, name: String) -> Result<Json<SkillPlan>, Madness> {
+    account.require_access("commanders-manage:admin")?;
+    let plans = skillplans::load_plans_from_file();
+    let plan = plans.iter()
+        .find(|p| p.name == name)
+        .ok_or_else(|| Madness::NotFound("Skill plan not found"))?;
+    Ok(Json(plan.clone()))
+}
+
+#[derive(Debug, Deserialize)]
+struct CreateSkillPlanRequest {
+    plan: SkillPlan,
+}
+
+#[post("/api/admin/skillplans", data = "<input>")]
+fn create_admin_skill_plan(account: AuthenticatedAccount, input: Json<CreateSkillPlanRequest>) -> Result<&'static str, Madness> {
+    account.require_access("commanders-manage:admin")?;
+    
+    // Validate the plan
+    skillplans::validate_plan(&input.plan)?;
+    
+    // Load existing plans
+    let mut plans = skillplans::load_plans_from_file();
+    
+    // Check if plan name already exists
+    if plans.iter().any(|p| p.name == input.plan.name) {
+        return Err(Madness::BadRequest(format!("Skill plan with name '{}' already exists", input.plan.name)));
+    }
+    
+    // Add new plan
+    plans.push(input.plan.clone());
+    
+    // Save to file
+    skillplans::save_plans_to_file(&plans)?;
+    
+    Ok("Skill plan created successfully")
+}
+
+#[put("/api/admin/skillplans/<name>", data = "<input>")]
+fn update_admin_skill_plan(account: AuthenticatedAccount, name: String, input: Json<CreateSkillPlanRequest>) -> Result<&'static str, Madness> {
+    account.require_access("commanders-manage:admin")?;
+    
+    // Validate the plan
+    skillplans::validate_plan(&input.plan)?;
+    
+    // Load existing plans
+    let mut plans = skillplans::load_plans_from_file();
+    
+    // Find the plan index
+    let index = plans.iter()
+        .position(|p| p.name == name)
+        .ok_or_else(|| Madness::NotFound("Skill plan not found"))?;
+    
+    // If name changed, check for conflicts
+    if input.plan.name != name {
+        if plans.iter().any(|p| p.name == input.plan.name) {
+            return Err(Madness::BadRequest(format!("Skill plan with name '{}' already exists", input.plan.name)));
+        }
+    }
+    
+    // Update the plan
+    plans[index] = input.plan.clone();
+    
+    // Save to file
+    skillplans::save_plans_to_file(&plans)?;
+    
+    Ok("Skill plan updated successfully")
+}
+
+#[delete("/api/admin/skillplans/<name>")]
+fn delete_admin_skill_plan(account: AuthenticatedAccount, name: String) -> Result<&'static str, Madness> {
+    account.require_access("commanders-manage:admin")?;
+    
+    // Load existing plans
+    let mut plans = skillplans::load_plans_from_file();
+    
+    // Find and remove the plan
+    let initial_len = plans.len();
+    plans.retain(|p| p.name != name);
+    
+    if plans.len() == initial_len {
+        return Err(Madness::NotFound("Skill plan not found"));
+    }
+    
+    // Save to file
+    skillplans::save_plans_to_file(&plans)?;
+    
+    Ok("Skill plan deleted successfully")
+}
+
+#[get("/api/admin/skillplans/raw")]
+fn get_admin_skill_plans_raw(account: AuthenticatedAccount) -> Result<String, Madness> {
+    account.require_access("commanders-manage:admin")?;
+    
+    use std::fs;
+    let yaml_content = fs::read_to_string("./data/skillplan.yaml")
+        .map_err(|e| Madness::BadRequest(format!("Failed to read skillplan.yaml: {}", e)))?;
+    
+    Ok(yaml_content)
+}
+
+#[post("/api/admin/skillplans/raw", data = "<input>")]
+fn save_admin_skill_plans_raw(account: AuthenticatedAccount, input: String) -> Result<&'static str, Madness> {
+    account.require_access("commanders-manage:admin")?;
+    
+    use std::fs;
+    use std::io::Write;
+    
+    // Validate the YAML before saving
+    skillplans::validate_yaml(&input)?;
+    
+    // Create backup
+    skillplans::create_backup()?;
+    
+    // Write to temporary file
+    let temp_path = "./data/skillplan.yaml.tmp";
+    let mut temp_file = fs::File::create(temp_path)
+        .map_err(|e| Madness::BadRequest(format!("Failed to create temp file: {}", e)))?;
+    
+    temp_file.write_all(input.as_bytes())
+        .map_err(|e| Madness::BadRequest(format!("Failed to write temp file: {}", e)))?;
+    
+    temp_file.sync_all()
+        .map_err(|e| Madness::BadRequest(format!("Failed to sync temp file: {}", e)))?;
+    
+    // Atomic rename
+    fs::rename(temp_path, "./data/skillplan.yaml")
+        .map_err(|e| Madness::BadRequest(format!("Failed to rename temp file: {}", e)))?;
+    
+    Ok("Skill plans saved successfully")
+}
+
 pub fn routes() -> Vec<rocket::Route> {
-    routes![get_skill_plans]
+    routes![
+        get_skill_plans,
+        get_admin_skill_plans,
+        get_admin_skill_plan,
+        create_admin_skill_plan,
+        update_admin_skill_plan,
+        delete_admin_skill_plan,
+        get_admin_skill_plans_raw,
+        save_admin_skill_plans_raw,
+    ]
 }

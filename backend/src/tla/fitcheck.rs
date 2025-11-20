@@ -75,7 +75,9 @@ impl<'a> FitChecker<'a> {
     /*
     fn check_skill_reqs_tier(&self, tier: SkillTier) -> Result<bool, FitError> {
         let ship_name = TypeDB::name_of(self.fit.hull)?;
-        if let Some(reqs) = super::skills::skill_data().requirements.get(&ship_name) {
+        let skill_data = super::skills::skill_data();
+        let skill_data_guard = skill_data.read().unwrap();
+        if let Some(reqs) = skill_data_guard.requirements.get(&ship_name) {
             for (&skill_id, tiers) in reqs {
                 if let Some(req) = tiers.get(tier) {
                     if self.pilot.skills.get(skill_id) < req {

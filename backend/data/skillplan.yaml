@@ -1,7 +1,7 @@
+---
 plans:
-  - name: Minimum T2 Gun Vindicator 
-    description: >
-      T2 Guns
+  - name: Minimum T2 Gun Vindicator
+    description: "T2 Guns\n"
     plan:
       - type: skills
         from: Vindicator
@@ -10,8 +10,7 @@ plans:
         hull: Vindicator
         fit: TLA_ARMOR_VINDI
   - name: Good Vindicator
-    description: >
-      FCs will be happy
+    description: "FCs will be happy\n"
     plan:
       - type: fit
         hull: Vindicator
@@ -20,8 +19,7 @@ plans:
         from: Vindicator
         tier: elite
   - name: Recommended Armor Kronos
-    description: >
-      FCs will be happy
+    description: "FCs will be happy\n"
     plan:
       - type: fit
         hull: Kronos
@@ -30,8 +28,7 @@ plans:
         from: Armor Kronos
         tier: elite
   - name: Recommended Shield Kronos
-    description: >
-      FCs will be happy
+    description: "FCs will be happy\n"
     plan:
       - type: fit
         hull: Kronos
@@ -40,8 +37,7 @@ plans:
         from: Shield Kronos
         tier: elite
   - name: Armor Kronos T Badge Spec 4 Minimum
-    description: >
-      T badge damage, no extras like speed, tank, tracking etc.
+    description: "T badge damage, no extras like speed, tank, tracking etc.\n"
     plan:
       - type: fit
         hull: Kronos
@@ -55,10 +51,8 @@ plans:
       - type: skill
         from: Large Blaster Specialization
         level: 4
-
   - name: Shield Kronos T Badge Spec 4 Minimum
-    description: >
-      T badge damage, no extras like speed, tank, tracking etc.
+    description: "T badge damage, no extras like speed, tank, tracking etc.\n"
     plan:
       - type: fit
         hull: Kronos
@@ -73,8 +67,7 @@ plans:
         from: Large Blaster Specialization
         level: 4
   - name: Recommended Paladin
-    description: >
-      FCs will be happy
+    description: "FCs will be happy\n"
     plan:
       - type: fit
         hull: Paladin
@@ -83,8 +76,7 @@ plans:
         from: Paladin
         tier: elite
   - name: Paladin T Badge Spec 4 Minimum
-    description: >
-      T badge damage, no extras like speed, tank, tracking etc.
+    description: "T badge damage, no extras like speed, tank, tracking etc.\n"
     plan:
       - type: fit
         hull: Paladin
@@ -102,8 +94,7 @@ plans:
         from: Large Pulse Laser Specialization
         level: 4
   - name: Recommended Vargur
-    description: >
-      FCs will be happy
+    description: "FCs will be happy\n"
     plan:
       - type: fit
         hull: Vargur
@@ -112,8 +103,7 @@ plans:
         from: Vargur
         tier: elite
   - name: Vargur T Badge Spec 4 Minimum
-    description: >
-      T Badge damage, no extras like speed, tank, tracking etc.
+    description: "T Badge damage, no extras like speed, tank, tracking etc.\n"
     plan:
       - type: fit
         hull: Vargur
@@ -128,8 +118,7 @@ plans:
         from: Large Autocannon Specialization
         level: 4
   - name: Nestor
-    description: >
-      Nestor
+    description: "Nestor\n"
     plan:
       - type: fit
         hull: Nestor
@@ -138,8 +127,7 @@ plans:
         from: Nestor
         tier: elite
   - name: Loki
-    description: >
-      Loki
+    description: "Loki\n"
     plan:
       - type: fit
         hull: Loki
@@ -148,22 +136,19 @@ plans:
         from: Loki
         tier: elite
   - name: Eos
-    description: >
-      Eos
+    description: "Eos\n"
     plan:
       - type: skills
         from: Eos
         tier: min
   - name: Damnation
-    description: >
-      Damnation
+    description: "Damnation\n"
     plan:
       - type: skills
         from: Damnation
         tier: min
   - name: Claymore
-    description: >
-      Claymore
+    description: "Claymore\n"
     plan:
       - type: skills
         from: Claymore

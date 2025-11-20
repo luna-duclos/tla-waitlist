@@ -10,6 +10,7 @@ async fn health_check(app: &rocket::State<Application>) -> Result<&'static str, 
     // Statically initialized data - would panic if there's trouble
     let _skills = tla::skills::skill_data();
     let _fits = data::fits::get_fits();
+    let _fits_guard = _fits.read().unwrap();
 
     // Don't check ESI.
 

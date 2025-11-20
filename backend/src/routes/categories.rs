@@ -7,7 +7,7 @@ use crate::util::types::WaitlistCategory;
 
 #[derive(Debug, Serialize)]
 struct CategoryResponse {
-    categories: &'static Vec<WaitlistCategory>,
+    categories: Vec<WaitlistCategory>,
 }
 
 #[get("/api/categories")]

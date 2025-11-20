@@ -13,9 +13,9 @@ use crate::{
 #[derive(Serialize, Debug)]
 struct SkillsResponse {
     current: HashMap<TypeID, SkillLevel>,
-    ids: &'static HashMap<String, TypeID>,
-    categories: &'static tla_skills::SkillCategories,
-    requirements: &'static tla_skills::SkillRequirements,
+    ids: HashMap<String, TypeID>,
+    categories: tla_skills::SkillCategories,
+    requirements: tla_skills::SkillRequirements,
 }
 
 #[get("/api/skills?<character_id>")]
@@ -28,16 +28,18 @@ async fn list_skills(
 
     let skills =
         crate::data::skills::load_skills(&app.esi_client, app.get_db(), character_id).await?;
+    let skill_data = tla_skills::skill_data();
+    let skill_data_guard = skill_data.read().unwrap();
     let mut relevant_skills = HashMap::new();
-    for &skill_id in tla_skills::skill_data().relevant_skills.iter() {
+    for &skill_id in skill_data_guard.relevant_skills.iter() {
         relevant_skills.insert(skill_id, skills.get(skill_id));
     }
 
     Ok(Json(SkillsResponse {
         current: relevant_skills,
-        ids: &tla_skills::skill_data().name_lookup,
-        categories: &tla_skills::skill_data().categories,
-        requirements: &tla_skills::skill_data().requirements,
+        ids: skill_data_guard.name_lookup.clone(),
+        categories: skill_data_guard.categories.clone(),
+        requirements: skill_data_guard.requirements.clone(),
     }))
 }
 

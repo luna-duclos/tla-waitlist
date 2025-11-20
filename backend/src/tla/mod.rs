@@ -1,4 +1,4 @@
 pub mod fitcheck;
-mod fitmatch;
+pub mod fitmatch;
 mod implantmatch;
 pub mod skills;

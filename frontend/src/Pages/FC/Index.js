@@ -16,6 +16,7 @@ import {
   faBullhorn,
   faBan,
   faCreditCard,
+  faDatabase,
 } from "@fortawesome/free-solid-svg-icons";
 import { replaceTitle, parseMarkdownTitle, usePageTitle } from "../../Util/title";
 
@@ -128,18 +129,32 @@ export function FCMenu() {
           <GuideCard slug="srp" name="SRP" icon={faCreditCard} />
         )}
         {authContext && authContext.access["commanders-manage:admin"] && (
-          <CardMargin>
-            <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to="/srp-admin">
-              <Card
-                title={
-                  <>
-                    <FontAwesomeIcon fixedWidth icon={faCreditCard} /> SRP Admin
-                  </>
-                }
-              >
-              </Card>
-            </NavLink>
-          </CardMargin>
+          <>
+            <CardMargin>
+              <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to="/srp-admin">
+                <Card
+                  title={
+                    <>
+                      <FontAwesomeIcon fixedWidth icon={faCreditCard} /> SRP Admin
+                    </>
+                  }
+                >
+                </Card>
+              </NavLink>
+            </CardMargin>
+            <CardMargin>
+              <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to="/admin/data-files">
+                <Card
+                  title={
+                    <>
+                      <FontAwesomeIcon fixedWidth icon={faDatabase} /> Data Files Admin
+                    </>
+                  }
+                >
+                </Card>
+              </NavLink>
+            </CardMargin>
+          </>
         )}
         {/*{authContext &&
           authContext.access["fleet-view"] && ( //fleet view should be any fc

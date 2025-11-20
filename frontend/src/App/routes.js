@@ -28,6 +28,8 @@ import CommandersPage from "../Pages/FC/Commanders";
 import { SRP } from "../Pages/FC/SRP";
 import { SRPSubmit } from "../Pages/FC/SRPSubmit";
 import { SRPReportDetail } from "../Pages/FC/SRPReportDetail";
+import { SkillPlans } from "../Pages/Admin/SkillPlans";
+import { DataFiles } from "../Pages/Admin/DataFiles";
 
 import { E401, E403, E404 } from "../Pages/Errors";
 
@@ -114,6 +116,12 @@ export function Routes() {
       </Route>
       <Route exact path="/srp-admin">
         <AuthenticatedRoute component={<SRP />} access="commanders-manage:admin" />
+      </Route>
+      <Route exact path="/admin/skillplans">
+        <AuthenticatedRoute component={<SkillPlans />} access="commanders-manage:admin" />
+      </Route>
+      <Route exact path="/admin/data-files">
+        <AuthenticatedRoute component={<DataFiles />} access="commanders-manage:admin" />
       </Route>
       <Route exact path="/fc/srp">
         <AuthenticatedRoute component={<SRP />} access="fleet-view" />

@@ -15,13 +15,13 @@ struct SkillHistoryResponseLine {
     old_level: SkillLevel,
     new_level: SkillLevel,
     logged_at: i64,
-    name: &'static str,
+    name: String,
 }
 
 #[derive(Serialize)]
 struct SkillHistoryResponse {
     history: Vec<SkillHistoryResponseLine>,
-    ids: &'static HashMap<String, TypeID>,
+    ids: HashMap<String, TypeID>,
 }
 
 #[get("/api/history/skills?<character_id>")]
@@ -37,7 +37,17 @@ async fn skill_history(
         Some("skill-history-view"),
     )
     .await?;
-    let relevance = &tla_skills::skill_data().relevant_skills;
+    
+    // Clone all needed data while holding the lock, then release it
+    let (relevance, id_lookup, name_lookup) = {
+        let skill_data = tla_skills::skill_data();
+        let skill_data_guard = skill_data.read().unwrap();
+        (
+            skill_data_guard.relevant_skills.clone(),
+            skill_data_guard.id_lookup.clone(),
+            skill_data_guard.name_lookup.clone(),
+        )
+    };
 
     let history = sqlx::query!(
         "SELECT * FROM skill_history WHERE character_id = ? ORDER BY id DESC",
@@ -52,17 +62,16 @@ async fn skill_history(
         old_level: row.old_level as SkillLevel,
         new_level: row.new_level as SkillLevel,
         logged_at: row.logged_at,
-        name: tla_skills::skill_data()
-            .id_lookup
+        name: id_lookup
             .get(&row.skill_id)
             .unwrap()
-            .as_str(),
+            .clone(),
     })
     .collect();
 
     Ok(Json(SkillHistoryResponse {
         history,
-        ids: &tla_skills::skill_data().name_lookup,
+        ids: name_lookup,
     }))
 }
 
