@@ -238,7 +238,23 @@ fn get_fit_plan(hull: &str, fit_name: &str) -> Result<Vec<LevelPair>, SkillPlanE
         }
 
         let hull_name = TypeDB::name_of(fit.fit.hull)?;
-        create_sorted_plan(&hull_name, &requirements)
+        
+        // Map hull name to skill set name if needed
+        // For ships with multiple skill sets (like Kronos), infer from fit name
+        let skill_set_name = match hull_name.as_str() {
+            "Kronos" => {
+                if fit_name.contains("ARMOR") {
+                    "Armor Kronos"
+                } else if fit_name.contains("SHIELD") {
+                    "Shield Kronos"
+                } else {
+                    "Armor Kronos" // default to Armor Kronos
+                }
+            },
+            _ => hull_name.as_str(),
+        };
+        
+        create_sorted_plan(skill_set_name, &requirements)
     } else {
         Err(SkillPlanError::FitNotFound)
     }
