@@ -1,6 +1,8 @@
 use std::collections::{HashMap, HashSet};
+use std::sync::{Arc, RwLock};
 
 use crate::data::yamlhelper;
+use crate::util::madness::Madness;
 use eve_data_core::{SkillLevel, TypeDB, TypeError, TypeID};
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +13,7 @@ pub enum SkillTier {
     Gold,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct SkillTiers {
     min: Option<SkillLevel>,
     elite: Option<SkillLevel>,
@@ -22,6 +24,7 @@ pub struct SkillTiers {
 pub type SkillRequirements = HashMap<String, HashMap<TypeID, SkillTiers>>;
 pub type SkillCategories = HashMap<String, Vec<TypeID>>;
 
+#[derive(Debug, Serialize)]
 pub struct SkillData {
     pub requirements: SkillRequirements,
     pub categories: SkillCategories,
@@ -30,19 +33,33 @@ pub struct SkillData {
     pub id_lookup: HashMap<TypeID, String>,
 }
 
-lazy_static::lazy_static! {
-    static ref SKILL_DATA: SkillData = build_skill_data().unwrap();
+#[derive(Debug, Deserialize, Serialize)]
+struct SkillFile {
+    categories: HashMap<String, Vec<String>>,
+    requirements: HashMap<String, HashMap<String, HashMap<String, SkillLevel>>>,
 }
 
-pub fn skill_data() -> &'static SkillData {
-    &SKILL_DATA
+lazy_static::lazy_static! {
+    static ref SKILL_DATA: Arc<RwLock<SkillData>> = Arc::new(RwLock::new(build_skill_data().unwrap()));
+}
+
+pub fn skill_data() -> Arc<RwLock<SkillData>> {
+    SKILL_DATA.clone()
+}
+
+pub fn reload_skill_data() -> Result<(), TypeError> {
+    let new_data = build_skill_data()?;
+    *SKILL_DATA.write().unwrap() = new_data;
+    Ok(())
 }
 
 fn extend_known_skills(known_skills: &mut HashSet<TypeID>) -> Result<(), TypeError> {
     // Extend known_skills with skills required to fly our fits
     {
         let mut fit_types = HashSet::new();
-        for fit in crate::data::fits::get_fits().values().flatten() {
+        let fits_data = crate::data::fits::get_fits();
+        let fits_guard = fits_data.read().unwrap();
+        for fit in fits_guard.values().flatten() {
             fit_types.insert(fit.fit.hull);
             for module_id in fit.fit.modules.keys() {
                 fit_types.insert(*module_id);
@@ -76,12 +93,6 @@ fn extend_known_skills(known_skills: &mut HashSet<TypeID>) -> Result<(), TypeErr
 }
 
 fn build_skill_data() -> Result<SkillData, TypeError> {
-    #[derive(Deserialize, Debug)]
-    struct SkillFile {
-        categories: HashMap<String, Vec<String>>,
-        requirements: HashMap<String, HashMap<String, HashMap<String, SkillLevel>>>,
-    }
-
     let skill_data: SkillFile = yamlhelper::from_file("./data/skills.yaml");
 
     // Build the category data. Content is {category:[..skill_ids]}
@@ -147,4 +158,87 @@ impl SkillTiers {
             Gold => self.gold,
         }
     }
+}
+
+use std::path::Path;
+
+pub fn save_skills_to_file(yaml_content: &str) -> Result<(), Madness> {
+    use std::fs;
+    use std::io::Write;
+    
+    // Validate the YAML before saving
+    validate_yaml(yaml_content)?;
+    
+    // Create backup
+    create_backup()?;
+    
+    // Write to temporary file
+    let temp_path = "./data/skills.yaml.tmp";
+    let mut temp_file = fs::File::create(temp_path)
+        .map_err(|e| Madness::BadRequest(format!("Failed to create temp file: {}", e)))?;
+    
+    temp_file.write_all(yaml_content.as_bytes())
+        .map_err(|e| Madness::BadRequest(format!("Failed to write temp file: {}", e)))?;
+    
+    temp_file.sync_all()
+        .map_err(|e| Madness::BadRequest(format!("Failed to sync temp file: {}", e)))?;
+    
+    // Atomic rename
+    fs::rename(temp_path, "./data/skills.yaml")
+        .map_err(|e| Madness::BadRequest(format!("Failed to rename temp file: {}", e)))?;
+    
+    Ok(())
+}
+
+pub fn validate_yaml(yaml_content: &str) -> Result<(), Madness> {
+    // Validate YAML syntax and structure
+    let _: SkillFile = serde_yaml::from_str(yaml_content)
+        .map_err(|e| Madness::BadRequest(format!("Invalid YAML: {}", e)))?;
+    Ok(())
+}
+
+pub fn create_backup() -> Result<(), Madness> {
+    use std::fs;
+    use std::time::SystemTime;
+    
+    let source = "./data/skills.yaml";
+    if !Path::new(source).exists() {
+        return Ok(());
+    }
+    
+    let timestamp = SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    
+    let backup_path = format!("./data/skills.yaml.backup.{}", timestamp);
+    
+    fs::copy(source, &backup_path)
+        .map_err(|e| Madness::BadRequest(format!("Failed to create backup: {}", e)))?;
+    
+    // Keep only last 5 backups
+    let mut backups: Vec<_> = fs::read_dir("./data")
+        .map_err(|e| Madness::BadRequest(format!("Failed to read data directory: {}", e)))?
+        .filter_map(|entry| entry.ok())
+        .filter_map(|entry| {
+            let name = entry.file_name().to_string_lossy().to_string();
+            if name.starts_with("skills.yaml.backup.") {
+                if let Some(timestamp_str) = name.strip_prefix("skills.yaml.backup.") {
+                    if let Ok(ts) = timestamp_str.parse::<u64>() {
+                        return Some((entry.path(), ts));
+                    }
+                }
+            }
+            None
+        })
+        .collect();
+    
+    backups.sort_by(|a, b| b.1.cmp(&a.1));
+    
+    // Remove old backups (keep last 5)
+    for (path, _) in backups.into_iter().skip(5) {
+        let _ = fs::remove_file(path);
+    }
+    
+    Ok(())
 }

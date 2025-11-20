@@ -5,7 +5,7 @@ use rocket::Response;
 
 use crate::core::esi::ESIError;
 use crate::core::sse::SSEError;
-use crate::{core::auth::AuthorizationError, data::skills::SkillsError};
+use crate::{core::auth::AuthorizationError, data::skills::SkillsError, data::skillplans::SkillPlanError};
 
 use eve_data_core::{FitError, TypeError};
 
@@ -21,6 +21,8 @@ pub enum Madness {
     TypeError(#[from] TypeError),
     #[error("fit error: {0}")]
     FitError(#[from] FitError),
+    #[error("skill plan error: {0}")]
+    SkillPlanError(#[from] SkillPlanError),
 
     #[error("{0}")]
     BadRequest(String),
@@ -68,7 +70,7 @@ impl<'r> rocket::response::Responder<'r, 'static> for Madness {
             Self::NotFound(_) => Status::NotFound,
             Self::Forbidden(_) => Status::Forbidden,
 
-            Self::FitError(_) | Self::BadRequest(_) | Self::TypeError(_) => Status::BadRequest,
+            Self::FitError(_) | Self::BadRequest(_) | Self::TypeError(_) | Self::SkillPlanError(_) => Status::BadRequest,
         };
 
         if status == Status::InternalServerError {

@@ -46,7 +46,7 @@ export function Search() {
                 <Cell>
                   <Buttons marginb={"0em"}>
                     <InputGroup>
-                      {/*<NavButton to={"/skills?character_id=" + character.id}>Skills</NavButton>*/}
+                      <NavButton to={"/skills?character_id=" + character.id}>Skills</NavButton>
                       <NavButton to={"/pilot?character_id=" + character.id}>Information</NavButton>
                     </InputGroup>
                     <InputGroup>

@@ -43,6 +43,10 @@ function PlanDisplay({ authContext }) {
     return <em>Loading...</em>;
   }
 
+  if (!plans.plans || !Array.isArray(plans.plans)) {
+    return <em>Error loading skill plans</em>;
+  }
+
   if (plan) {
     const planObj = _.find(plans.plans, (elmt) => elmt.source.name === plan);
     if (!planObj) {
@@ -90,13 +94,35 @@ function ShowPlan({ plan, mySkills }) {
   });
 
   usePageTitle(titleCase(plan.source.name));
+  
+  // All this just for a back button smh
+  const getShipForBackButton = () => {
+    if (!plan.ships || plan.ships.length === 0) {
+      return null;
+    }
+    
+    // Look for tank type variants first
+    const tankVariant = plan.ships.find(ship => 
+      ship.name === "Armor Kronos" || ship.name === "Shield Kronos"
+    );
+    if (tankVariant) {
+      return tankVariant.name;
+    }
+    
+    // Fall back to the first ship name
+    return plan.ships[0].name;
+  };
+  
+  const shipName = getShipForBackButton();
+  const backUrl = shipName ? `/skills?ship=${encodeURIComponent(shipName)}` : `/skills`;
+  
   return (
     <GridRow>
       <Col xs={4} md={4}>
         <Buttons>
           <NavLink
             exact
-            to={`/skills/plans`}
+            to={backUrl}
             style={{ textDecoration: "inherit", color: "inherit" }}
           >
             <Button>Back</Button>

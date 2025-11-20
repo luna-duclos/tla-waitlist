@@ -4,6 +4,8 @@ import { useLocation, useHistory } from "react-router-dom";
 import { PageTitle, Content } from "../../Components/Page";
 import { useApi } from "../../api";
 import { usePageTitle } from "../../Util/title";
+// import { Button, Buttons } from "../../Components/Form";
+// import { NavLink } from "react-router-dom";
 
 import { SkillDisplay } from "../../Components/SkillDisplay";
 
@@ -14,7 +16,7 @@ export function Skills() {
       <Content>
         <b>Login Required!</b>
         <p>
-          This page will show tables with TDF related skills comparing to your current skills with a
+          This page will show tables with TLA related skills comparing to your current skills with a
           color indicating the progres tier that skill is at.
         </p>
       </Content>
@@ -31,6 +33,7 @@ function SkillsAuth({ authContext }) {
   var ship = queryParams.get("ship") || "Vindicator";
 
   const [basicInfo] = useApi(`/api/pilot/info?character_id=${characterId}`);
+  const [plans] = useApi("/api/skills/plans");
 
   const setShip = (newShip) => {
     queryParams.set("ship", newShip);
@@ -43,7 +46,16 @@ function SkillsAuth({ authContext }) {
   return (
     <>
       <PageTitle>{basicInfo ? `Skills for ${basicInfo.name}` : "Skills"}</PageTitle>
-      <SkillDisplay characterId={characterId} ship={ship} setShip={setShip} />
+      {/* <Buttons style={{ marginBottom: "1em" }}>
+        <NavLink
+          exact
+          to="/skills/plans"
+          style={{ textDecoration: "inherit", color: "inherit" }}
+        >
+          <Button>View All Skill Plans</Button>
+        </NavLink>
+      </Buttons> */}
+      <SkillDisplay characterId={characterId} ship={ship} setShip={setShip} plans={plans} />
     </>
   );
 }

@@ -12,3 +12,10 @@ proc-macro = true
 eve_data_core = { path = "../eve-data-core" }
 syn = "*"
 quote = "*"
+serde = { version = "1", features = ["derive"] }
+serde_json = "*"
+rusqlite = { version = "*", features = ["bundled"] }
+
+[[bin]]
+name = "convert_sde_to_sqlite"
+path = "convert_sde_to_sqlite.rs"

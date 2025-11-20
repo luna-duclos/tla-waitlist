@@ -18,7 +18,7 @@ use eve_data_core::{TypeDB, TypeID};
 struct WaitlistResponse {
     open: bool,
     waitlist: Option<Vec<WaitlistEntry>>,
-    categories: Vec<&'static str>,
+    categories: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -53,11 +53,12 @@ async fn list(
     account: AuthenticatedAccount,
     waitlist_id: i64,
 ) -> Result<Json<WaitlistResponse>, Madness> {
-    let waitlist_categories = data::categories::categories()
+    let categories = data::categories::categories();
+    let waitlist_categories: Vec<String> = categories
         .iter()
-        .map(|cat| &(cat.name) as &str)
+        .map(|cat| cat.name.clone())
         .collect();
-    let waitlist_categories_lookup: BTreeMap<_, _> = data::categories::categories()
+    let waitlist_categories_lookup: BTreeMap<_, _> = categories
         .iter()
         .map(|cat| (&cat.id, &cat.name))
         .collect();
@@ -200,8 +201,8 @@ async fn list(
                     .map(|s| s.parse::<TypeID>().unwrap())
                     .collect(),
             );
-            if let Some(fit_analysis) = record.wef_fit_analysis {
-                this_fit.fit_analysis = rocket::serde::json::from_str(&fit_analysis).unwrap();
+            if let Some(fit_analysis) = record.wef_fit_analysis.as_ref() {
+                this_fit.fit_analysis = rocket::serde::json::from_str(fit_analysis).unwrap();
             }
         }
 

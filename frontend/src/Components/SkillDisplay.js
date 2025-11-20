@@ -1,11 +1,15 @@
-import { useApi } from "../api";
+import { useApi, toaster } from "../api";
 import { Badge } from "./Badge";
 import { InputGroup, Button, Buttons } from "./Form";
 import { Col, Row } from "react-awesome-styled-grid";
-import { InfoNote } from "./NoteBox";
+import { ToastContext } from "../contexts";
+import { useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaste } from "@fortawesome/free-solid-svg-icons";
 
 import styled from "styled-components";
 import _ from "lodash";
+import React from "react";
 
 const SkillDom = {};
 
@@ -35,8 +39,25 @@ SkillDom.Table.Row = styled.div`
   }
 `;
 
-const SkillHeader = styled.div`
-  height: 36px;
+const ContextMenu = styled.div`
+  position: fixed;
+  background-color: ${(props) => props.theme.colors.background};
+  border: 1px solid ${(props) => props.theme.colors.accent2};
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  min-width: 150px;
+  padding: 0.25em 0;
+`;
+
+const ContextMenuItem = styled.div`
+  padding: 0.5em 1em;
+  cursor: pointer;
+  color: ${(props) => props.theme.colors.text};
+  
+  &:hover {
+    background-color: ${(props) => props.theme.colors.accent1};
+  }
 `;
 
 const categoryOrder = [
@@ -52,14 +73,14 @@ const knownCategories = new Set(categoryOrder);
 
 const LevelIndicator = ({ current, skill }) => {
   if (current === 5) {
-    return <Badge variant="success">{current}</Badge>;
+    return <Badge variant="primary">{current}</Badge>;
   }
 
   var nextLevel = null;
 
   for (const [group, variant] of [
-    ["gold", "success"],
-    ["elite", "secondary"],
+    ["gold", "primary"],
+    ["elite", "success"],
     ["min", "warning"],
   ]) {
     if (group in skill) {
@@ -163,7 +184,131 @@ export function SkillList({ mySkills, shipName, filterMin }) {
 
 export function Legend() {}
 
-export function SkillDisplay({ characterId, ship, setShip = null, filterMin = false }) {
+function SkillPlanButtons({ ship, plans, mySkills }) {
+  const toastContext = React.useContext(ToastContext);
+  const history = useHistory();
+  const [contextMenu, setContextMenu] = React.useState(null);
+
+  // Filter skill plans that match the current ship and tank type
+  const shipPlans = React.useMemo(() => {
+    if (!plans || !plans.plans || !ship) return [];
+    
+    // For ships with tank type variants (like Kronos), only match plans with the exact tank type
+    // For other ships, match by exact name
+    return plans.plans.filter((plan) => {
+      return plan.ships.some((planShip) => {
+        // Exact match for tank type variants
+        if (ship === "Armor Kronos" || ship === "Shield Kronos") {
+          return planShip.name === ship;
+        }
+        // For other ships, match by exact name
+        return planShip.name === ship;
+      });
+    });
+  }, [plans, ship]);
+
+  // Helper function to convert skill level to Roman numeral
+  const romanNumeral = (i) => {
+    if (i === 1) return "I";
+    if (i === 2) return "II";
+    if (i === 3) return "III";
+    if (i === 4) return "IV";
+    if (i === 5) return "V";
+    throw new Error("Unlikely skill numeral");
+  };
+
+  // Helper function to format plan for clipboard
+  const copyablePlan = (levels, lookup) => {
+    return levels
+      .map(([skillId, level]) => `${lookup[skillId] || "MISSING SKILL"} ${romanNumeral(level)}`)
+      .join("\n");
+  };
+
+  // Copy plan to clipboard
+  const copyPlan = (plan) => {
+    if (!mySkills || !mySkills.ids) {
+      toaster(toastContext, Promise.resolve("Loading skills..."));
+      return;
+    }
+    
+    const lookup = _.invert(mySkills.ids);
+    const planText = copyablePlan(plan.levels, lookup);
+    
+    toaster(
+      toastContext,
+      navigator.clipboard
+        .writeText(planText)
+        .then(() => `Copied "${plan.source.name}" to clipboard`)
+    );
+  };
+
+  // Handle right-click to show context menu
+  const handleContextMenu = (e, plan) => {
+    e.preventDefault();
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      plan: plan,
+    });
+  };
+
+  // Close context menu when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      setContextMenu(null);
+    };
+
+    if (contextMenu) {
+      document.addEventListener("click", handleClickOutside);
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }
+  }, [contextMenu]);
+
+  // Navigate to plan page
+  const viewPlan = (plan) => {
+    setContextMenu(null);
+    history.push(`/skills/plans?plan=${encodeURIComponent(plan.source.name)}`);
+  };
+
+  if (!shipPlans || shipPlans.length === 0) {
+    return null;
+  }
+
+  return (
+    <>
+      <Buttons style={{ marginBottom: "1em" }}>
+        {shipPlans.map((plan) => (
+          <Button
+            key={plan.source.name}
+            onClick={() => copyPlan(plan)}
+            onContextMenu={(e) => handleContextMenu(e, plan)}
+            title="Left-click to copy plan. Right-click to view plan page."
+          >
+            <FontAwesomeIcon icon={faPaste} style={{ marginRight: "0.5em" }} />
+            Copy {plan.source.name} Skill Plan
+          </Button>
+        ))}
+      </Buttons>
+      {contextMenu && (
+        <ContextMenu
+          style={{
+            left: `${contextMenu.x}px`,
+            top: `${contextMenu.y}px`,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <ContextMenuItem onClick={() => viewPlan(contextMenu.plan)}>
+            View Plan
+          </ContextMenuItem>
+        </ContextMenu>
+      )}
+    </>
+  );
+}
+
+export function SkillDisplay({ characterId, ship, setShip = null, filterMin = false, plans = null }) {
   const [skills] = useApi(`/api/skills?character_id=${characterId}`);
 
   return (
@@ -174,25 +319,22 @@ export function SkillDisplay({ characterId, ship, setShip = null, filterMin = fa
             <Button active={ship === "Vindicator"} onClick={(evt) => setShip("Vindicator")}>
               Vindicator
             </Button>
-            <Button active={ship === "Kronos"} onClick={(evt) => setShip("Kronos")}>
-              Kronos
+            <Button active={ship === "Armor Kronos"} onClick={(evt) => setShip("Armor Kronos")}>
+              Armor Kronos
             </Button>
             <Button active={ship === "Shield Kronos"} onClick={(evt) => setShip("Shield Kronos")}>
               Shield Kronos
             </Button>
-            <Button active={ship === "Nightmare"} onClick={(evt) => setShip("Nightmare")}>
-              Nightmare
+            <Button active={ship === "Vargur"} onClick={(evt) => setShip("Vargur")}>
+              Vargur
             </Button>
             <Button active={ship === "Paladin"} onClick={(evt) => setShip("Paladin")}>
               Paladin
             </Button>
           </InputGroup>
           <InputGroup>
-            <Button active={ship === "Oneiros"} onClick={(evt) => setShip("Oneiros")}>
-              Oneiros
-            </Button>
-            <Button active={ship === "Guardian"} onClick={(evt) => setShip("Guardian")}>
-              Guardian
+            <Button active={ship === "Loki"} onClick={(evt) => setShip("Loki")}>
+              Loki
             </Button>
             <Button active={ship === "Nestor"} onClick={(evt) => setShip("Nestor")}>
               Nestor
@@ -205,19 +347,18 @@ export function SkillDisplay({ characterId, ship, setShip = null, filterMin = fa
             <Button active={ship === "Damnation"} onClick={(evt) => setShip("Damnation")}>
               Damnation
             </Button>
+            <Button active={ship === "Claymore"} onClick={(evt) => setShip("Claymore")}>
+              Claymore
+            </Button>
           </InputGroup>
         </Buttons>
       )}
 
       <div style={{ marginBottom: "1em" }}>
-        Legend: <Badge variant="danger">Starter</Badge> <Badge variant="warning">Basic</Badge>{" "}
-        <Badge variant="secondary">Elite</Badge> <Badge variant="success">Elite GOLD</Badge>
+        Legend: <Badge variant="danger">Below Requirements</Badge> <Badge variant="warning">Meets Requirements</Badge>{" "}
+        <Badge variant="success">Recommended</Badge> <Badge variant="primary">Maxed</Badge>
       </div>
-      <SkillHeader>
-        {ship === "Nestor" || ship === "Guardian" || ship === "Oneiros" ? (
-          <InfoNote>Basic tier skills are required for logistics.</InfoNote>
-        ) : null}
-      </SkillHeader>
+      {plans && <SkillPlanButtons ship={ship} plans={plans} mySkills={skills} />}
       {skills ? (
         <SkillList mySkills={skills} shipName={ship} filterMin={filterMin} />
       ) : (

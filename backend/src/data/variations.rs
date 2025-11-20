@@ -1,13 +1,15 @@
 use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::sync::{Arc, RwLock};
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::data::yamlhelper;
+use crate::util::madness::Madness;
 
 use eve_data_core::{Attribute, TypeDB, TypeError, TypeID};
 
 lazy_static::lazy_static! {
-    static ref INSTANCE: Variator = Builder::build().unwrap();
+    static ref INSTANCE: Arc<RwLock<Variator>> = Arc::new(RwLock::new(Builder::build().unwrap()));
 }
 
 #[derive(Debug)]
@@ -32,21 +34,21 @@ impl Variator {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct FromMetaEntry {
     base: String,
     abyssal: Option<String>,
     alternative: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct FromAttributeEntry {
     base: Vec<String>,
     attribute: i32,
     reverse: Option<bool>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct ModuleFile {
     alternatives: Vec<Vec<Vec<String>>>,
     from_meta: Vec<FromMetaEntry>,
@@ -55,13 +57,13 @@ struct ModuleFile {
     cargo_ignore: Vec<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct ModuleString {
     name: String,
     amount: i64,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct AddRemove {
     detect: String,
     remove: Vec<String>,
@@ -74,7 +76,7 @@ pub struct DrugChanger {
     pub remove: BTreeSet<TypeID>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct ModuleFileDrug {
     drugs_approve_override: Vec<AddRemove>,
 }
@@ -267,19 +269,19 @@ pub fn drug_handling() -> Result<BTreeMap<TypeID, DrugChanger>, TypeError> {
     Ok(drugmap)
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct FitVariationRule {
     hull: String,
     missing: Option<Vec<ModuleString>>,
     extra: Option<Vec<ModuleString>>,
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 struct FitVariationRules {
     fit_variation_rules: Vec<FitVariationRule>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct ModuleVariation {
     pub missing: BTreeMap<TypeID, i64>,
     pub extra: BTreeMap<TypeID, i64>,
@@ -324,8 +326,96 @@ pub fn fit_module_variations() -> Result<BTreeMap<TypeID, Vec<ModuleVariation>>,
     Ok(hull_variations)
 }
 
-pub fn get() -> &'static Variator {
-    &INSTANCE
+pub fn get() -> Arc<RwLock<Variator>> {
+    INSTANCE.clone()
+}
+
+pub fn reload_variations() -> Result<(), TypeError> {
+    let new_variator = Builder::build()?;
+    *INSTANCE.write().unwrap() = new_variator;
+    Ok(())
+}
+
+use std::fs;
+use std::path::Path;
+
+pub fn save_modules_to_file(yaml_content: &str) -> Result<(), Madness> {
+    use std::io::Write;
+    
+    // Validate the YAML before saving
+    validate_yaml(yaml_content)?;
+    
+    // Create backup
+    create_backup()?;
+    
+    // Write to temporary file
+    let temp_path = "./data/modules.yaml.tmp";
+    let mut temp_file = fs::File::create(temp_path)
+        .map_err(|e| Madness::BadRequest(format!("Failed to create temp file: {}", e)))?;
+    
+    temp_file.write_all(yaml_content.as_bytes())
+        .map_err(|e| Madness::BadRequest(format!("Failed to write temp file: {}", e)))?;
+    
+    temp_file.sync_all()
+        .map_err(|e| Madness::BadRequest(format!("Failed to sync temp file: {}", e)))?;
+    
+    // Atomic rename
+    fs::rename(temp_path, "./data/modules.yaml")
+        .map_err(|e| Madness::BadRequest(format!("Failed to rename temp file: {}", e)))?;
+    
+    Ok(())
+}
+
+pub fn validate_yaml(yaml_content: &str) -> Result<(), Madness> {
+    // Validate YAML syntax and structure
+    let _: ModuleFile = serde_yaml::from_str(yaml_content)
+        .map_err(|e| Madness::BadRequest(format!("Invalid YAML: {}", e)))?;
+    Ok(())
+}
+
+pub fn create_backup() -> Result<(), Madness> {
+    use std::time::SystemTime;
+    
+    let source = "./data/modules.yaml";
+    if !Path::new(source).exists() {
+        return Ok(());
+    }
+    
+    let timestamp = SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    
+    let backup_path = format!("./data/modules.yaml.backup.{}", timestamp);
+    
+    fs::copy(source, &backup_path)
+        .map_err(|e| Madness::BadRequest(format!("Failed to create backup: {}", e)))?;
+    
+    // Keep only last 5 backups
+    let mut backups: Vec<_> = fs::read_dir("./data")
+        .map_err(|e| Madness::BadRequest(format!("Failed to read data directory: {}", e)))?
+        .filter_map(|entry| entry.ok())
+        .filter_map(|entry| {
+            let name = entry.file_name().to_string_lossy().to_string();
+            if name.starts_with("modules.yaml.backup.") {
+                if let Some(timestamp_str) = name.strip_prefix("modules.yaml.backup.") {
+                    if let Ok(ts) = timestamp_str.parse::<u64>() {
+                        return Some((entry.path(), ts));
+                    }
+                }
+            }
+            None
+        })
+        .collect();
+    
+    backups.sort_by(|a, b| b.1.cmp(&a.1));
+    
+    // Remove old backups (keep last 5)
+    for (path, _) in backups.into_iter().skip(5) {
+        let _ = fs::remove_file(path);
+    }
+    
+    Ok(())
 }
 
 #[cfg(test)]

@@ -103,6 +103,29 @@ struct FleetCompResponse {
     fleets: HashMap<i64, Vec<FleetCompEntry>>,
 }
 
+#[derive(Debug, Serialize)]
+struct LatestFleetTimeResponse {
+    time: i64,
+}
+
+#[get("/api/history/fleet-comp/latest")]
+async fn fleet_comp_latest(
+    account: AuthenticatedAccount,
+    app: &rocket::State<Application>,
+) -> Result<Json<LatestFleetTimeResponse>, Madness> {
+    account.require_access("fleet-history-view")?;
+
+    let latest_time = sqlx::query!(
+        "SELECT MAX(last_seen) AS latest_time FROM fleet_activity"
+    )
+    .fetch_one(app.get_db())
+    .await?;
+
+    let time = latest_time.latest_time.unwrap_or(chrono::Utc::now().timestamp());
+
+    Ok(Json(LatestFleetTimeResponse { time }))
+}
+
 #[get("/api/history/fleet-comp?<time>")]
 async fn fleet_comp(
     time: i64,
@@ -147,5 +170,5 @@ async fn fleet_comp(
 }
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![fleet_history, fleet_comp]
+    routes![fleet_history, fleet_comp, fleet_comp_latest]
 }
