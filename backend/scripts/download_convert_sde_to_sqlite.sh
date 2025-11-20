@@ -110,7 +110,7 @@ if [ ! -f "$SDE_ROOT/typeDogma.jsonl" ]; then
 fi
 
 cd "$BACKEND_DIR"
-if ! cargo build --bin convert_sde_to_sqlite --release 2>&1 | grep -E "(Compiling|Finished|error)"; then
+if ! cargo build --bin convert_sde_to_sqlite -p eve_data_macros --release 2>&1 | grep -E "(Compiling|Finished|error)"; then
     # If grep finds nothing, that's okay - just check if build succeeded
     true
 fi
