@@ -1,7 +1,9 @@
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, RwLock};
+use std::sync::{Arc, RwLock};
 
 use crate::data::yamlhelper;
+use crate::util::madness::Madness;
 use crate::util::madness::Madness;
 use eve_data_core::{SkillLevel, TypeDB, TypeError, TypeID};
 use serde::{Deserialize, Serialize};
@@ -14,6 +16,7 @@ pub enum SkillTier {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct SkillTiers {
     min: Option<SkillLevel>,
     elite: Option<SkillLevel>,
@@ -24,6 +27,7 @@ pub struct SkillTiers {
 pub type SkillRequirements = HashMap<String, HashMap<TypeID, SkillTiers>>;
 pub type SkillCategories = HashMap<String, Vec<TypeID>>;
 
+#[derive(Debug, Serialize)]
 #[derive(Debug, Serialize)]
 pub struct SkillData {
     pub requirements: SkillRequirements,
@@ -39,10 +43,25 @@ struct SkillFile {
     requirements: HashMap<String, HashMap<String, HashMap<String, SkillLevel>>>,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+struct SkillFile {
+    categories: HashMap<String, Vec<String>>,
+    requirements: HashMap<String, HashMap<String, HashMap<String, SkillLevel>>>,
+}
+
 lazy_static::lazy_static! {
+    static ref SKILL_DATA: Arc<RwLock<SkillData>> = Arc::new(RwLock::new(build_skill_data().unwrap()));
     static ref SKILL_DATA: Arc<RwLock<SkillData>> = Arc::new(RwLock::new(build_skill_data().unwrap()));
 }
 
+pub fn skill_data() -> Arc<RwLock<SkillData>> {
+    SKILL_DATA.clone()
+}
+
+pub fn reload_skill_data() -> Result<(), TypeError> {
+    let new_data = build_skill_data()?;
+    *SKILL_DATA.write().unwrap() = new_data;
+    Ok(())
 pub fn skill_data() -> Arc<RwLock<SkillData>> {
     SKILL_DATA.clone()
 }
@@ -57,6 +76,9 @@ fn extend_known_skills(known_skills: &mut HashSet<TypeID>) -> Result<(), TypeErr
     // Extend known_skills with skills required to fly our fits
     {
         let mut fit_types = HashSet::new();
+        let fits_data = crate::data::fits::get_fits();
+        let fits_guard = fits_data.read().unwrap();
+        for fit in fits_guard.values().flatten() {
         let fits_data = crate::data::fits::get_fits();
         let fits_guard = fits_data.read().unwrap();
         for fit in fits_guard.values().flatten() {
