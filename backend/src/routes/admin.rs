@@ -1,4 +1,5 @@
 use rocket::serde::json::Json;
+use rocket::data::Data;
 use serde::Serialize;
 use std::fs;
 use std::path::Path;
@@ -118,7 +119,11 @@ fn get_data_file(account: AuthenticatedAccount, filename: String) -> Result<Stri
 }
 
 #[post("/api/admin/data-files/<filename>", data = "<input>")]
-fn save_data_file(account: AuthenticatedAccount, filename: String, input: String) -> Result<&'static str, Madness> {
+async fn save_data_file(
+    account: AuthenticatedAccount, 
+    filename: String, 
+    input: Data<'_>
+) -> Result<&'static str, Madness> {
     account.require_access("commanders-manage:admin")?;
     
     // Validate filename
@@ -135,40 +140,46 @@ fn save_data_file(account: AuthenticatedAccount, filename: String, input: String
         return Err(Madness::BadRequest("File not editable".to_string()));
     }
     
-    let file_path = format!("{}/{}", DATA_DIR, filename);
+    // Read the data with explicit 10MB limit (doesn't depend on Rocket.toml)
+    use rocket::data::ByteUnit;
+    let content = input.open(ByteUnit::Megabyte(10))
+        .into_string()
+        .await
+        .map_err(|e| Madness::BadRequest(format!("Failed to read request body: {}", e)))?
+        .value;
     
     // Handle file-specific save logic
     match filename.as_str() {
         "skills.yaml" => {
-            crate::tla::skills::save_skills_to_file(&input)?;
+            crate::tla::skills::save_skills_to_file(&content)?;
             crate::tla::skills::reload_skill_data()
                 .map_err(|e| Madness::BadRequest(format!("Failed to reload skills: {}", e)))?;
         }
         "categories.yaml" => {
-            crate::data::categories::save_categories_to_file(&input)?;
+            crate::data::categories::save_categories_to_file(&content)?;
             crate::data::categories::reload_category_data()
                 .map_err(|e| Madness::BadRequest(format!("Failed to reload categories: {}", e)))?;
         }
         "modules.yaml" => {
-            crate::data::variations::save_modules_to_file(&input)?;
+            crate::data::variations::save_modules_to_file(&content)?;
             crate::data::variations::reload_variations()
                 .map_err(|e| Madness::BadRequest(format!("Failed to reload modules: {}", e)))?;
             crate::tla::fitmatch::reload_identifier()
                 .map_err(|e| Madness::BadRequest(format!("Failed to reload identifier: {}", e)))?;
         }
         "tags.yaml" => {
-            crate::data::tags::save_tags_to_file(&input)?;
+            crate::data::tags::save_tags_to_file(&content)?;
             crate::data::tags::reload_tags()?;
         }
         "fits.dat" => {
-            crate::data::fits::save_fits_to_file(&input)?;
+            crate::data::fits::save_fits_to_file(&content)?;
             crate::data::fits::reload_fits()?;
         }
         "fitnotes.yaml" => {
-            crate::routes::fittings::fitnotes::save_fitnotes_to_file(&input)?;
+            crate::routes::fittings::fitnotes::save_fitnotes_to_file(&content)?;
         }
         "skillplan.yaml" => {
-            crate::data::skillplans::save_plans_from_raw_yaml(&input)?;
+            crate::data::skillplans::save_plans_from_raw_yaml(&content)?;
         }
         _ => return Err(Madness::BadRequest("Unknown file type".to_string())),
     }
