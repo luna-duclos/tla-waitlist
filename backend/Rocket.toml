@@ -3,3 +3,6 @@ port = 5000
 
 [release]
 address = "0.0.0.0"
+
+[global.limits]
+string = "10 MiB"

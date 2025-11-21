@@ -113,6 +113,7 @@ fn get_data_file(account: AuthenticatedAccount, filename: String) -> Result<Stri
     let content = fs::read_to_string(&file_path)
         .map_err(|e| Madness::BadRequest(format!("Failed to read file: {}", e)))?;
     
+    // Return as String - Rocket.toml configures the size limit
     Ok(content)
 }
 
