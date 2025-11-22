@@ -14,7 +14,7 @@ eve_data_macros = { path = "./eve-data-macros" }
 eve_data_core = { path = "./eve-data-core" }
 
 sqlx = { version = "0.5", features = ["runtime-tokio-rustls", "macros", "chrono", "bigdecimal", "mysql", "json"] }
-rocket = { version = "0.5.0-rc.1", features = ["json"] }
+rocket = { version = "0.5.0", features = ["json"] }
 lazy_static = "1"
 chrono = "0.4"
 reqwest = { version = "*", default-features = false, features = ["json", "rustls-tls"] }
