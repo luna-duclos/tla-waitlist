@@ -1,5 +1,4 @@
 use rocket::serde::json::Json;
-use rocket::data::Data;
 use serde::Serialize;
 use std::fs;
 use std::path::Path;
@@ -118,12 +117,15 @@ fn get_data_file(account: AuthenticatedAccount, filename: String) -> Result<Stri
     Ok(content)
 }
 
-#[post("/api/admin/data-files/<filename>", data = "<input>")]
-async fn save_data_file(
+#[post("/api/admin/data-files/<filename>", data = "<input>", rank = 1)]
+fn save_data_file(
     account: AuthenticatedAccount, 
     filename: String, 
-    input: Data<'_>
+    input: String
 ) -> Result<&'static str, Madness> {
+    eprintln!("DEBUG: save_data_file called for filename: {}", filename);
+    eprintln!("DEBUG: Input length: {} bytes", input.len());
+    
     account.require_access("commanders-manage:admin")?;
     
     // Validate filename
@@ -140,20 +142,20 @@ async fn save_data_file(
         return Err(Madness::BadRequest("File not editable".to_string()));
     }
     
-    // Read the data with explicit 10MB limit (doesn't depend on Rocket.toml)
-    use rocket::data::ByteUnit;
-    let content = input.open(ByteUnit::Megabyte(10))
-        .into_string()
-        .await
-        .map_err(|e| Madness::BadRequest(format!("Failed to read request body: {}", e)))?
-        .value;
+    eprintln!("DEBUG: Starting to process file: {}", filename);
+    
+    // Use the input string directly
+    let content = input;
     
     // Handle file-specific save logic
     match filename.as_str() {
         "skills.yaml" => {
+            eprintln!("DEBUG: Calling save_skills_to_file");
             crate::tla::skills::save_skills_to_file(&content)?;
+            eprintln!("DEBUG: save_skills_to_file completed, calling reload_skill_data");
             crate::tla::skills::reload_skill_data()
                 .map_err(|e| Madness::BadRequest(format!("Failed to reload skills: {}", e)))?;
+            eprintln!("DEBUG: reload_skill_data completed");
         }
         "categories.yaml" => {
             crate::data::categories::save_categories_to_file(&content)?;
@@ -184,6 +186,7 @@ async fn save_data_file(
         _ => return Err(Madness::BadRequest("Unknown file type".to_string())),
     }
     
+    eprintln!("DEBUG: Successfully saved file: {}", filename);
     Ok("File saved successfully")
 }
 

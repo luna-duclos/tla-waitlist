@@ -13,16 +13,16 @@ struct CategoryData {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct CategoryRule {
-    item: String,
-    category: String,
-}
+    struct CategoryRule {
+        item: String,
+        category: String,
+    }
 
 #[derive(Debug, Deserialize, Serialize)]
-struct CategoryFile {
-    categories: Vec<WaitlistCategory>,
-    rules: Vec<CategoryRule>,
-}
+    struct CategoryFile {
+        categories: Vec<WaitlistCategory>,
+        rules: Vec<CategoryRule>,
+    }
 
 lazy_static::lazy_static! {
     static ref CATEGORY_DATA: Arc<RwLock<CategoryData>> = Arc::new(RwLock::new(build_category_data().unwrap()));
