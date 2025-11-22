@@ -48,8 +48,11 @@ pub fn skill_data() -> Arc<RwLock<SkillData>> {
 }
 
 pub fn reload_skill_data() -> Result<(), TypeError> {
+    eprintln!("DEBUG: reload_skill_data: Starting build_skill_data");
     let new_data = build_skill_data()?;
+    eprintln!("DEBUG: reload_skill_data: build_skill_data completed, updating SKILL_DATA");
     *SKILL_DATA.write().unwrap() = new_data;
+    eprintln!("DEBUG: reload_skill_data: Complete");
     Ok(())
 }
 
@@ -166,12 +169,17 @@ pub fn save_skills_to_file(yaml_content: &str) -> Result<(), Madness> {
     use std::fs;
     use std::io::Write;
     
+    eprintln!("DEBUG: save_skills_to_file: Starting validation");
     // Validate the YAML before saving
     validate_yaml(yaml_content)?;
+    eprintln!("DEBUG: save_skills_to_file: Validation completed");
     
+    eprintln!("DEBUG: save_skills_to_file: Creating backup");
     // Create backup
     create_backup()?;
+    eprintln!("DEBUG: save_skills_to_file: Backup created");
     
+    eprintln!("DEBUG: save_skills_to_file: Writing temp file");
     // Write to temporary file
     let temp_path = "./data/skills.yaml.tmp";
     let mut temp_file = fs::File::create(temp_path)
@@ -182,10 +190,13 @@ pub fn save_skills_to_file(yaml_content: &str) -> Result<(), Madness> {
     
     temp_file.sync_all()
         .map_err(|e| Madness::BadRequest(format!("Failed to sync temp file: {}", e)))?;
+    eprintln!("DEBUG: save_skills_to_file: Temp file written");
     
+    eprintln!("DEBUG: save_skills_to_file: Atomic rename");
     // Atomic rename
     fs::rename(temp_path, "./data/skills.yaml")
         .map_err(|e| Madness::BadRequest(format!("Failed to rename temp file: {}", e)))?;
+    eprintln!("DEBUG: save_skills_to_file: Complete");
     
     Ok(())
 }
