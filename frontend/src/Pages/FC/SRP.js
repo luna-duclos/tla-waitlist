@@ -17,7 +17,15 @@ const Container = styled.div`
   background-color: ${(props) => props.theme.colors.accent1};
   padding: 1em;
   border-radius: 4px;
-  text-align: center;
+  margin-top: 1em;
+`;
+
+const InfoCard = styled.div`
+  padding: 1em;
+  background-color: ${(props) =>
+    props.success ? props.theme.colors.success.color : props.theme.colors.danger.color};
+  border-radius: 4px;
+  margin-top: 1em;
 `;
 
 // Component for truncated description with modal functionality
@@ -283,10 +291,7 @@ export function SRP() {
                 {!setupData.has_service_account ? (
                   <Button onClick={handleSetupServiceAccount}>Configure Service Account</Button>
                 ) : (
-                  <Button
-                    onClick={handleRemoveServiceAccount}
-                    style={{ backgroundColor: "#dc3545", borderColor: "#dc3545" }}
-                  >
+                  <Button onClick={handleRemoveServiceAccount} variant="danger">
                     Remove Service Account
                   </Button>
                 )}
@@ -294,18 +299,10 @@ export function SRP() {
             )}
 
             {reconfigureResult && (
-              <div
-                style={{
-                  padding: "1em",
-                  backgroundColor: reconfigureResult.success ? "#d4edda" : "#f8d7da",
-                  border: `1px solid ${reconfigureResult.success ? "#c3e6cb" : "#f5c6cb"}`,
-                  borderRadius: "4px",
-                  marginTop: "1em",
-                }}
-              >
+              <InfoCard succes={reconfigureResult.success}>
                 <strong>{reconfigureResult.success ? "Success:" : "Error:"}</strong>{" "}
                 {reconfigureResult.message}
-              </div>
+              </InfoCard>
             )}
 
             {serviceAccount && serviceAccount.service_account && (
@@ -347,15 +344,7 @@ export function SRP() {
             </div>
 
             {journalResult && (
-              <div
-                style={{
-                  padding: "1em",
-                  backgroundColor: journalResult.success ? "#d4edda" : "#f8d7da",
-                  border: `1px solid ${journalResult.success ? "#c3e6cb" : "#f5c6cb"}`,
-                  borderRadius: "4px",
-                  marginTop: "1em",
-                }}
-              >
+              <InfoCard success={journalResult.success}>
                 <strong>{journalResult.success ? "Success:" : "Error:"}</strong>{" "}
                 {journalResult.message}
                 {journalResult.entries && journalResult.entries.length > 0 && (
@@ -385,19 +374,11 @@ export function SRP() {
                     </Table>
                   </div>
                 )}
-              </div>
+              </InfoCard>
             )}
 
             {focusEndResult && (
-              <div
-                style={{
-                  padding: "1em",
-                  backgroundColor: "#e2e3e5",
-                  border: "1px solid #d6d8db",
-                  borderRadius: "4px",
-                  marginTop: "1em",
-                }}
-              >
+              <Container>
                 <strong>Focus End Timestamp Test Result:</strong>
                 {focusEndResult.error ? (
                   <p style={{ color: "#721c24" }}>{focusEndResult.error}</p>
@@ -413,7 +394,7 @@ export function SRP() {
                     </p>
                   </div>
                 )}
-              </div>
+              </Container>
             )}
 
             {testWindowResult && (
@@ -523,14 +504,7 @@ export function SRP() {
                 )}
               </div>
             ) : (
-              <div
-                style={{
-                  padding: "1em",
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: "4px",
-                  textAlign: "center",
-                }}
-              >
+              <Container>
                 <p>
                   <strong>No SRP payment data found.</strong>
                 </p>
@@ -538,7 +512,7 @@ export function SRP() {
                   Try clicking &quot;Process Payments&quot; to scan for SRP payments in the wallet
                   journal.
                 </p>
-              </div>
+              </Container>
             )}
           </Box>
         </>
@@ -550,7 +524,6 @@ export function SRP() {
           style={{
             display: "flex",
             justifyContent: "flex-end",
-            marginBottom: "1em",
           }}
         >
           {!isAdminPage && (
