@@ -101,11 +101,11 @@ impl<'r> FromRequest<'r> for AuthenticatedAccount {
 
         let token = match req.cookies().get(COOKIE_NAME) {
             None => {
-                return Outcome::Failure((Status::Unauthorized, AuthenticationError::MissingCookie))
+                return Outcome::Error((Status::Unauthorized, AuthenticationError::MissingCookie))
             }
             Some(t) => match decode_token(t.value(), &app.token_secret) {
                 Ok(d) => d,
-                Err(e) => return Outcome::Failure((Status::Unauthorized, e)),
+                Err(e) => return Outcome::Error((Status::Unauthorized, e)),
             },
         };
 
@@ -115,7 +115,7 @@ impl<'r> FromRequest<'r> for AuthenticatedAccount {
                 .await
             {
                 Err(e) => {
-                    return Outcome::Failure((
+                    return Outcome::Error((
                         Status::InternalServerError,
                         AuthenticationError::DatabaseError(e),
                     ))
@@ -127,7 +127,7 @@ impl<'r> FromRequest<'r> for AuthenticatedAccount {
         let access_keys = match ACCESS_LEVELS.get(&access_level) {
             Some(l) => l,
             None => {
-                return Outcome::Failure((Status::Unauthorized, AuthenticationError::InvalidToken))
+                return Outcome::Error((Status::Unauthorized, AuthenticationError::InvalidToken))
             }
         };
 

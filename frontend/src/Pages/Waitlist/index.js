@@ -219,76 +219,64 @@ export function Waitlist() {
               </FixedBox>
             </Modal>
           ) : null}
-          <AButton variant={myEntry ? null : "primary"} onClick={(evt) => setXupOpen(true)}>
+          <AButton variant={myEntry ? null : "primary"} onClick={() => setXupOpen(true)}>
             {myEntry ? "Update fit(s)" : "Join waitlist"}
           </AButton>
 
           <Button
             variant={myEntry ? "danger" : null}
-            onClick={(evt) => errorToaster(toastContext, removeEntry(myEntry.id))}
+            onClick={() => errorToaster(toastContext, removeEntry(myEntry.id))}
             disabled={myEntry ? false : true}
           >
             Leave waitlist
           </Button>
         </InputGroup>
-        
+
         {/* SRP Status for logged-in user */}
         {srpStatus && srpStatus.status && (
           <InputGroup>
-            <div 
-              onClick={srpStatus.status === "Unpaid" ? () => alert("CCP's endpoint only updates once an hour, so don't worry if it still says unpaid after making a payment") : undefined}
-              style={{ 
-                padding: "0.5em 1em",
-                backgroundColor: srpStatus.status !== "Unpaid" ? "#28a745" : "#dc3545",
-                color: "white",
-                borderRadius: "20px",
-                fontSize: "0.9em",
-                border: "1px solid",
-                borderColor: srpStatus.status !== "Unpaid" ? "#28a745" : "#dc3545",
-                display: "inline-flex",
-                alignItems: "center",
-                fontWeight: "500",
-                cursor: srpStatus.status === "Unpaid" ? "pointer" : "default"
-              }}>
+            <Button
+              variant={srpStatus.status === "Unpaid" ? "danger" : "success"}
+              static={srpStatus.status !== "Unpaid"}
+              onClick={
+                srpStatus.status === "Unpaid"
+                  ? () =>
+                      alert(
+                        "CCP's endpoint only updates once an hour, so don't worry if it still says unpaid after making a payment"
+                      )
+                  : undefined
+              }
+            >
               SRP: {srpStatus.status}
               {srpStatus.payment_amount && srpStatus.coverage_type && (
                 <span style={{ marginLeft: "0.5em", fontSize: "0.8em", opacity: "0.9" }}>
                   ({getCharacterCountText(srpStatus.payment_amount, srpStatus.coverage_type)})
                 </span>
               )}
-            </div>
+            </Button>
           </InputGroup>
         )}
         {authContext.access["waitlist-view"] && (
           <>
             <InputGroup>
-              <Button
-                active={displayMode === "columns"}
-                onClick={(evt) => setDisplayMode("columns")}
-              >
+              <Button active={displayMode === "columns"} onClick={() => setDisplayMode("columns")}>
                 Columns
               </Button>
-              <Button active={displayMode === "matrix"} onClick={(evt) => setDisplayMode("matrix")}>
+              <Button active={displayMode === "matrix"} onClick={() => setDisplayMode("matrix")}>
                 Matrix
               </Button>
-              <Button
-                active={displayMode === "compact"}
-                onClick={(evt) => setDisplayMode("compact")}
-              >
+              <Button active={displayMode === "compact"} onClick={() => setDisplayMode("compact")}>
                 Compact
               </Button>
-              <Button active={displayMode === "linear"} onClick={(evt) => setDisplayMode("linear")}>
+              <Button active={displayMode === "linear"} onClick={() => setDisplayMode("linear")}>
                 Linear
               </Button>
-              <Button active={displayMode === "rows"} onClick={(evt) => setDisplayMode("rows")}>
+              <Button active={displayMode === "rows"} onClick={() => setDisplayMode("rows")}>
                 Rows
               </Button>
             </InputGroup>
             <InputGroup>
-              <Button
-                active={displayMode === "notepad"}
-                onClick={(evt) => setDisplayMode("notepad")}
-              >
+              <Button active={displayMode === "notepad"} onClick={() => setDisplayMode("notepad")}>
                 Notepad
               </Button>
             </InputGroup>
@@ -302,7 +290,7 @@ export function Waitlist() {
           </>
         )}
       </Buttons>
-      
+
       <CenteredWl>
         <WaitlistWrapper>
           {displayMode === "columns" ? (
