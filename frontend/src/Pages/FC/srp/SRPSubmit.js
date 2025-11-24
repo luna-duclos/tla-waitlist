@@ -1,16 +1,18 @@
 import React from "react";
-import { AuthContext } from "../../../contexts";
+import { AuthContext, ToastContext } from "../../../contexts";
 import { usePageTitle } from "../../../Util/title";
 import { PageTitle } from "../../../Components/Page";
 import { Box } from "../../../Components/Box";
 import { Button, Input, NavButton, Radio, Textarea } from "../../../Components/Form";
 import { useLocation, useHistory } from "react-router-dom";
 import { apiCall } from "../../../api";
+import { addToast } from "../../../Components/Toast";
 
 export function SRPSubmit() {
   const authContext = React.useContext(AuthContext);
   const location = useLocation();
   const history = useHistory();
+  const toastContext = React.useContext(ToastContext);
 
   const [killmailLink, setKillmailLink] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -133,7 +135,10 @@ export function SRPSubmit() {
       const message = isEditMode
         ? "SRP report updated successfully!"
         : "SRP report submitted successfully!";
-      alert(message);
+      addToast(toastContext, {
+        message,
+        variant: "success",
+      });
 
       history.push("/fc/srp");
     } catch (error) {
