@@ -8,6 +8,7 @@ import { Modal } from "../../../Components/Modal";
 import { formatNumber } from "../../../Util/number";
 import { formatDatetime } from "../../../Util/time";
 import { useStatusStyle } from "./util";
+import { Badge } from "../../../Components/Badge";
 
 export function SRPReportDetail() {
   const reportId = new URLSearchParams(window.location.search).get("id");
@@ -410,16 +411,9 @@ export function SRPReportDetail() {
                 <tr>
                   <td style={{ fontWeight: "bold", padding: "0.5em 0" }}>Loot Returned:</td>
                   <td style={{ padding: "0.5em 0" }}>
-                    <span
-                      style={{
-                        padding: "0.25em 0.5em",
-                        borderRadius: "3px",
-                        backgroundColor: report.loot_returned ? "#d4edda" : "#f8d7da",
-                        color: report.loot_returned ? "#155724" : "#721c24",
-                      }}
-                    >
+                    <Badge variant={report.loot_returned ? "success" : "danger"}>
                       {report.loot_returned ? "Yes" : "No"}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
                 <tr>
@@ -439,16 +433,9 @@ export function SRPReportDetail() {
                 <tr>
                   <td style={{ fontWeight: "bold", padding: "0.5em 0" }}>SRP Paid:</td>
                   <td style={{ padding: "0.5em 0" }}>
-                    <span
-                      style={{
-                        padding: "0.25em 0.5em",
-                        borderRadius: "3px",
-                        backgroundColor: getSrpPaidStatus(report.srp_paid) ? "#d4edda" : "#f8d7da",
-                        color: getSrpPaidStatus(report.srp_paid) ? "#155724" : "#721c24",
-                      }}
-                    >
+                    <Badge variant={getSrpPaidStatus(report.srp_paid) ? "success" : "danger"}>
                       {getSrpPaidStatus(report.srp_paid) ? "Yes" : "No"}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
                 {report.reason && (
