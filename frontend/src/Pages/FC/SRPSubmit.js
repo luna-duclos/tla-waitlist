@@ -4,11 +4,13 @@ import { usePageTitle } from "../../Util/title";
 import { PageTitle } from "../../Components/Page";
 import { Box } from "../../Components/Box";
 import { Button, Input, NavButton, Radio, Textarea } from "../../Components/Form";
-import { useLocation } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
+import { apiCall } from "../../api";
 
 export function SRPSubmit() {
   const authContext = React.useContext(AuthContext);
   const location = useLocation();
+  const history = useHistory();
 
   const [killmailLink, setKillmailLink] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -45,11 +47,11 @@ export function SRPSubmit() {
         }
       } else {
         alert("Error loading report for editing");
-        window.location.href = "/fc/srp";
+        history.push("/fc/srp");
       }
     } catch (error) {
       alert("Error loading report for editing: " + error.message);
-      window.location.href = "/fc/srp";
+      history.push("/fc/srp");
     } finally {
       setLoading(false);
     }
@@ -120,7 +122,7 @@ export function SRPSubmit() {
             loot_returned: lootReturned,
           });
 
-      const response = await fetch(url, {
+      await apiCall(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,24 +130,19 @@ export function SRPSubmit() {
         body: body,
       });
 
-      const result = await response.json();
+      const message = isEditMode
+        ? "SRP report updated successfully!"
+        : "SRP report submitted successfully!";
+      alert(message);
 
-      if (response.ok && result.success) {
-        const message = isEditMode
-          ? "SRP report updated successfully!"
-          : "SRP report submitted successfully!";
-        alert(message);
-        window.location.href = "/fc/srp";
-      } else {
-        alert(
-          "Error " +
-            (isEditMode ? "updating" : "submitting") +
-            " SRP report: " +
-            (result.message || "Unknown error")
-        );
-      }
+      history.push("/fc/srp");
     } catch (error) {
-      alert("Error " + (isEditMode ? "updating" : "submitting") + " SRP report: " + error.message);
+      alert(
+        "Error " +
+          (isEditMode ? "updating" : "submitting") +
+          " SRP report: " +
+          (error.message || error.toString())
+      );
     }
   };
 

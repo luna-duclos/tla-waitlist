@@ -11,7 +11,8 @@ import { formatDatetime } from "../../Util/time";
 import { useLocation } from "react-router-dom";
 import { Modal } from "../../Components/Modal";
 import { getCharacterCountText } from "../../Util/srpCharacterCount";
-import styled from "styled-components";
+import styled, { ThemeContext } from "styled-components";
+import { Badge } from "../../Components/Badge";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.colors.accent1};
@@ -74,19 +75,23 @@ function TruncatedDescription({ text, maxLength = 50 }) {
 // Component for clickable status with reason modal
 function StatusWithReason({ status, reason }) {
   const [showModal, setShowModal] = React.useState(false);
+  const theme = React.useContext(ThemeContext);
 
   const getStatusStyle = (status) => {
     switch (status) {
       case "pending":
-        return { backgroundColor: "#fff3cd", color: "#856404" };
+        return { backgroundColor: theme.colors.warning.color, color: theme.colors.warning.text };
       case "approved":
-        return { backgroundColor: "#d4edda", color: "#155724" };
+        return { backgroundColor: theme.colors.success.color, color: theme.colors.success.text };
       case "rejected":
-        return { backgroundColor: "#f8d7da", color: "#721c24" };
+        return { backgroundColor: theme.colors.danger.color, color: theme.colors.danger.text };
       case "paid":
-        return { backgroundColor: "#cce5ff", color: "#004085" };
+        return { backgroundColor: theme.colors.primary.color, color: theme.colors.primary.text };
       default:
-        return { backgroundColor: "#6c757d", color: "#ffffff" };
+        return {
+          backgroundColor: theme.colors.secondary.color,
+          color: theme.colors.secondary.text,
+        };
     }
   };
 
@@ -527,7 +532,7 @@ export function SRP() {
           }}
         >
           {!isAdminPage && (
-            <NavButton to="/fc/srp/submit" variant="success">
+            <NavButton to="/fc/srp/submit" variant="success" style={{ marginBottom: "1em" }}>
               Submit SRP Report
             </NavButton>
           )}
@@ -599,16 +604,9 @@ export function SRP() {
                     </span>
                   </Cell>
                   <Cell>
-                    <span
-                      style={{
-                        padding: "0.25em 0.5em",
-                        borderRadius: "3px",
-                        backgroundColor: report.loot_returned ? "#d4edda" : "#f8d7da",
-                        color: report.loot_returned ? "#155724" : "#721c24",
-                      }}
-                    >
+                    <Badge variant={getSrpPaidStatus(report.srp_paid) ? "success" : "danger"}>
                       {report.loot_returned ? "Yes" : "No"}
-                    </span>
+                    </Badge>
                   </Cell>
                   <Cell>
                     {report.payout_date
@@ -616,16 +614,9 @@ export function SRP() {
                       : "N/A"}
                   </Cell>
                   <Cell>
-                    <span
-                      style={{
-                        padding: "0.25em 0.5em",
-                        borderRadius: "3px",
-                        backgroundColor: getSrpPaidStatus(report.srp_paid) ? "#d4edda" : "#f8d7da",
-                        color: getSrpPaidStatus(report.srp_paid) ? "#155724" : "#721c24",
-                      }}
-                    >
+                    <Badge variant={getSrpPaidStatus(report.srp_paid) ? "success" : "danger"}>
                       {getSrpPaidStatus(report.srp_paid) ? "Yes" : "No"}
-                    </span>
+                    </Badge>
                   </Cell>
                   <Cell>
                     <TruncatedDescription text={report.description} />
@@ -639,18 +630,9 @@ export function SRP() {
                         {report.payout_amount ? formatNumber(report.payout_amount) + " ISK" : "N/A"}
                       </Cell>
                       <Cell>
-                        <span
-                          style={{
-                            padding: "0.25em 0.5em",
-                            borderRadius: "3px",
-                            backgroundColor: getSrpPaidStatus(report.srp_paid)
-                              ? "#d4edda"
-                              : "#f8d7da",
-                            color: getSrpPaidStatus(report.srp_paid) ? "#155724" : "#721c24",
-                          }}
-                        >
+                        <Badge variant={getSrpPaidStatus(report.srp_paid) ? "success" : "danger"}>
                           {getSrpPaidStatus(report.srp_paid) ? "Yes" : "No"}
-                        </span>
+                        </Badge>
                       </Cell>
                     </>
                   )}
@@ -660,60 +642,35 @@ export function SRP() {
                         onClick={() =>
                           (window.location.href = `/srp-report-detail?id=${report.killmail_id}`)
                         }
-                        style={{
-                          padding: "0.25em 0.5em",
-                          fontSize: "0.875em",
-                          backgroundColor: "#007bff",
-                          borderColor: "#007bff",
-                          color: "white",
-                          margin: "0",
-                          lineHeight: "1.2",
-                        }}
+                        variant="primary"
                       >
                         Process
                       </Button>
                     </Cell>
                   )}
-                  {!isAdminPage && report.status === "pending" ? (
+                  {!isAdminPage &&
+                  report.status === "pending" &&
+                  (report.submitted_by_id === authContext.account_id ||
+                    authContext.access["commanders-manage:admin"]) ? (
                     <Cell style={{ verticalAlign: "middle" }}>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/fc/srp/submit?edit=${report.killmail_id}`)
-                        }
-                        style={{
-                          padding: "0.25em 0.5em",
-                          fontSize: "0.875em",
-                          backgroundColor: "#6c757d",
-                          borderColor: "#6c757d",
-                          color: "white",
-                          margin: "0",
-                          fontWeight: "bold",
-                        }}
+                      <NavButton
+                        to={`/fc/srp/submit?edit=${report.killmail_id}`}
+                        variant="secondary"
                       >
                         Update
-                      </Button>
+                      </NavButton>
                     </Cell>
                   ) : !isAdminPage ? (
                     <Cell style={{ verticalAlign: "middle" }}></Cell>
                   ) : null}
                   {isAdminPage && (
                     <Cell style={{ verticalAlign: "middle" }}>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/fc/srp/submit?edit=${report.killmail_id}`)
-                        }
-                        style={{
-                          padding: "0.25em 0.5em",
-                          fontSize: "0.875em",
-                          backgroundColor: "#6c757d",
-                          borderColor: "#6c757d",
-                          color: "white",
-                          margin: "0",
-                          fontWeight: "bold",
-                        }}
+                      <NavButton
+                        to={`/fc/srp/submit?edit=${report.killmail_id}`}
+                        variant="secondary"
                       >
                         Update
-                      </Button>
+                      </NavButton>
                     </Cell>
                   )}
                 </Row>

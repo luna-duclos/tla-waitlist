@@ -1145,9 +1145,12 @@ async fn get_srp_report_for_edit(
     .await?;
 
     let report_check = report_check.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
-    
-    if report_check.submitted_by_id != account.id {
-        return Err(Madness::Forbidden("You can only edit SRP reports that you submitted".to_string()));
+
+    let is_owner = report_check.submitted_by_id == account.id;
+
+    // If not owner, must have override access
+    if !is_owner {
+        account.require_access("commanders-manage:admin")?;
     }
 
     let report = srp::get_srp_report_by_killmail_id(app, killmail_id).await?;
