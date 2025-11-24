@@ -160,6 +160,56 @@ function getFleetMembers(fleet) {
   return members;
 }
 
+function RoleAssignments({ roleAssignments }) {
+  const roleOrder = ["DDD", "MS", "LR", "MTAC", "PS"];
+
+  return (
+    <div style={{ marginBottom: "1em" }}>
+      <Title>Fleet Roles</Title>
+      <InputGroup>
+        {roleOrder.map((role) => {
+          const characters = roleAssignments && roleAssignments[role];
+          if (!characters || characters.length === 0) {
+            return (
+              <BorderedBox key={role}>
+                {role}: <span style={{ color: "red" }}>Missing</span>
+              </BorderedBox>
+            );
+          }
+          return (
+            <BorderedBox key={role}>
+              {role}:{" "}
+              {characters.map((char, index) => {
+                let color = "inherit";
+                if (!char.in_fleet) {
+                  color = "red"; // Not in fleet
+                } else if (char.correct_hull === false) {
+                  color = "yellow"; // In fleet but wrong hull
+                }
+                return (
+                  <span key={index}>
+                    {index > 0 && ", "}
+                    {char.correct_hull === false && char.hull_id && (
+                      <img
+                        src={`https://images.evetech.net/types/${char.hull_id}/icon?size=32`}
+                        alt=""
+                        style={{ height: "16px", verticalAlign: "middle", marginRight: "4px" }}
+                      />
+                    )}
+                    <span style={{ color: color }}>
+                      {char.name}
+                    </span>
+                  </span>
+                );
+              })}
+            </BorderedBox>
+          );
+        })}
+      </InputGroup>
+    </div>
+  );
+}
+
 export function FleetMembers({ fleetpage = true, setStatTempActive = null }) {
   const authContext = React.useContext(AuthContext);
   const toastContext = React.useContext(ToastContext);
@@ -229,6 +279,7 @@ export function FleetMembers({ fleetpage = true, setStatTempActive = null }) {
               memberlist={getFleetMembers(fleetCompositionInfo)}
             />
           )}
+          <RoleAssignments roleAssignments={fleetCompositionInfo.role_assignments} />
           <Table style={{ fontSize: "12px" }} fullWidth={fleetpage ? undefined : true}>
             <TableBody>
               {fleetCompositionInfo.wings.map((wing, wingIndex) => (

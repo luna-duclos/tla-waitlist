@@ -770,6 +770,34 @@ pub mod fleet_members {
     }
 }
 
+pub mod fleet_info {
+    use crate::core::esi::ESIScope;
+
+    use super::{ESIClient, ESIError};
+    use serde::Deserialize;
+
+    #[derive(Debug, Deserialize)]
+    pub struct ESIFleetInfo {
+        pub is_free_move: bool,
+        pub is_registered: bool,
+        pub motd: String,
+    }
+
+    pub async fn get(
+        client: &ESIClient,
+        fleet_id: i64,
+        boss_id: i64,
+    ) -> Result<ESIFleetInfo, ESIError> {
+        Ok(client
+            .get(
+                &format!("/v1/fleets/{}", fleet_id),
+                boss_id,
+                ESIScope::Fleets_ReadFleet_v1,
+            )
+            .await?)
+    }
+}
+
 fn split_scopes(input: &str) -> BTreeSet<String> {
     input
         .split(' ')
