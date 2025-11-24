@@ -1,11 +1,11 @@
 import React from "react";
-import { AuthContext } from "../../contexts";
-import { usePageTitle } from "../../Util/title";
-import { PageTitle } from "../../Components/Page";
-import { Box } from "../../Components/Box";
-import { Button, Input, NavButton, Radio, Textarea } from "../../Components/Form";
+import { AuthContext } from "../../../contexts";
+import { usePageTitle } from "../../../Util/title";
+import { PageTitle } from "../../../Components/Page";
+import { Box } from "../../../Components/Box";
+import { Button, Input, NavButton, Radio, Textarea } from "../../../Components/Form";
 import { useLocation, useHistory } from "react-router-dom";
-import { apiCall } from "../../api";
+import { apiCall } from "../../../api";
 
 export function SRPSubmit() {
   const authContext = React.useContext(AuthContext);

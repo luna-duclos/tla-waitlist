@@ -1,18 +1,19 @@
 import React from "react";
-import { useApi } from "../../api";
-import { AuthContext } from "../../contexts";
-import { usePageTitle } from "../../Util/title";
-import { PageTitle } from "../../Components/Page";
-import { Box } from "../../Components/Box";
-import { Button, NavButton } from "../../Components/Form";
-import { Table, TableHead, TableBody, Row, Cell, CellHead } from "../../Components/Table";
-import { formatNumber } from "../../Util/number";
-import { formatDatetime } from "../../Util/time";
+import { useApi } from "../../../api";
+import { AuthContext } from "../../../contexts";
+import { usePageTitle } from "../../../Util/title";
+import { PageTitle } from "../../../Components/Page";
+import { Box } from "../../../Components/Box";
+import { Button, NavButton } from "../../../Components/Form";
+import { Table, TableHead, TableBody, Row, Cell, CellHead } from "../../../Components/Table";
+import { formatNumber } from "../../../Util/number";
+import { formatDatetime } from "../../../Util/time";
 import { useLocation } from "react-router-dom";
-import { Modal } from "../../Components/Modal";
-import { getCharacterCountText } from "../../Util/srpCharacterCount";
-import styled, { ThemeContext } from "styled-components";
-import { Badge } from "../../Components/Badge";
+import { Modal } from "../../../Components/Modal";
+import { getCharacterCountText } from "../../../Util/srpCharacterCount";
+import styled from "styled-components";
+import { Badge } from "../../../Components/Badge";
+import { useStatusStyle } from "./util";
 
 const Container = styled.div`
   background-color: ${(props) => props.theme.colors.accent1};
@@ -75,25 +76,7 @@ function TruncatedDescription({ text, maxLength = 50 }) {
 // Component for clickable status with reason modal
 function StatusWithReason({ status, reason }) {
   const [showModal, setShowModal] = React.useState(false);
-  const theme = React.useContext(ThemeContext);
-
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "pending":
-        return { backgroundColor: theme.colors.warning.color, color: theme.colors.warning.text };
-      case "approved":
-        return { backgroundColor: theme.colors.success.color, color: theme.colors.success.text };
-      case "rejected":
-        return { backgroundColor: theme.colors.danger.color, color: theme.colors.danger.text };
-      case "paid":
-        return { backgroundColor: theme.colors.primary.color, color: theme.colors.primary.text };
-      default:
-        return {
-          backgroundColor: theme.colors.secondary.color,
-          color: theme.colors.secondary.text,
-        };
-    }
-  };
+  const getStatusStyle = useStatusStyle();
 
   const statusText = status.charAt(0).toUpperCase() + status.slice(1);
   const statusStyle = getStatusStyle(status);
@@ -472,18 +455,13 @@ export function SRP() {
                           </Cell>
                           <Cell>{formatDatetime(new Date(payment.expires_at * 1000))}</Cell>
                           <Cell>
-                            <span
-                              style={{
-                                padding: "0.25em 0.5em",
-                                borderRadius: "3px",
-                                backgroundColor:
-                                  payment.expires_at * 1000 > Date.now() ? "#d4edda" : "#f8d7da",
-                                color:
-                                  payment.expires_at * 1000 > Date.now() ? "#155724" : "#721c24",
-                              }}
+                            <Badge
+                              variant={
+                                payment.expires_at * 1000 > Date.now() ? "success" : "danger"
+                              }
                             >
                               {payment.expires_at * 1000 > Date.now() ? "Active" : "Expired"}
-                            </span>
+                            </Badge>
                           </Cell>
                           <Cell>{formatDatetime(new Date(payment.created_at * 1000))}</Cell>
                         </Row>
