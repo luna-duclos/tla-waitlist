@@ -20,8 +20,10 @@ import { BorderedBox } from "../../Components/NoteBox";
 import _ from "lodash";
 
 import { PilotTags } from "../../Components/Badge";
+import soundFile from "../../Components/Event/notification-error-427345.mp3";
 const marauders = ["Paladin", "Kronos", "Golem", "Vargur"];
 const booster = ["Eos", "Damnation", "Claymore", "Vulture", "Sleipnir", "Astarte", "Absolution", "Nighthawk", ];
+const roleOrder = ["DDD", "MS", "LR", "MTAC", "PS"];
 
 function PilotTagsFromId({ characterId }) {
   const [basicInfo] = useApi(`/api/pilot/info?character_id=${characterId}`);
@@ -161,7 +163,126 @@ function getFleetMembers(fleet) {
 }
 
 function RoleAssignments({ roleAssignments }) {
-  const roleOrder = ["DDD", "MS", "LR", "MTAC", "PS"];
+  console.log("RoleAssignments component rendered, roleAssignments:", roleAssignments);
+  const prevRoleAssignmentsRef = React.useRef(null);
+  const audioRef = React.useRef(null);
+
+  // Initialize audio element
+  React.useEffect(() => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio(soundFile);
+      audioRef.current.volume = 0.5; // Set volume to 50%
+      audioRef.current.preload = "auto"; // Preload the audio
+    }
+  }, []);
+
+  // Serialize roleAssignments for dependency tracking
+  const roleAssignmentsSerialized = React.useMemo(() => {
+    return roleAssignments ? JSON.stringify(roleAssignments) : null;
+  }, [roleAssignments]);
+
+  // Detect when role assignments leave
+  React.useEffect(() => {
+    console.log("RoleAssignments effect triggered");
+    console.log("roleAssignments:", roleAssignments);
+    console.log("roleAssignmentsSerialized:", roleAssignmentsSerialized?.substring(0, 100));
+    
+    // First load or no previous data - just store current state
+    if (!roleAssignments) {
+      console.log("No roleAssignments, returning early");
+      return;
+    }
+    
+    if (!prevRoleAssignmentsRef.current) {
+      // First time - store current state and return
+      console.log("First time - storing initial state");
+      prevRoleAssignmentsRef.current = JSON.parse(JSON.stringify(roleAssignments));
+      return;
+    }
+
+    // Skip if data hasn't actually changed (by serialized comparison)
+    if (roleAssignmentsSerialized === JSON.stringify(prevRoleAssignmentsRef.current)) {
+      console.log("Data unchanged, skipping comparison");
+      return;
+    }
+    
+    console.log("Data changed, comparing...");
+
+    // Compare current with previous to find departures
+    let hasDeparture = false;
+    const departedCharacters = [];
+    
+    console.log("Comparing role assignments...");
+    for (const role of roleOrder) {
+      const prevChars = prevRoleAssignmentsRef.current[role] || [];
+      const currentChars = roleAssignments[role] || [];
+      
+      console.log(`Role ${role}: prev=${prevChars.length}, current=${currentChars.length}`);
+      
+      // Create a map of current characters by name for easy lookup
+      const currentCharsMap = new Map();
+      currentChars.forEach(char => {
+        currentCharsMap.set(char.name.toLowerCase(), char);
+      });
+      
+      // Check each previous character
+      for (const prevChar of prevChars) {
+        const nameLower = prevChar.name.toLowerCase();
+        const currentChar = currentCharsMap.get(nameLower);
+        
+        console.log(`Checking ${nameLower} in ${role}: prev.in_fleet=${prevChar.in_fleet}, current.in_fleet=${currentChar?.in_fleet}`);
+        
+        // Character left if:
+        // 1. They're not in the current list at all, OR
+        // 2. They were in fleet before but now they're not in fleet
+        if (!currentChar) {
+          // Character completely removed from role assignment
+          hasDeparture = true;
+          departedCharacters.push(`${nameLower} (${role})`);
+          console.log(`Found departure: ${nameLower} removed from ${role}`);
+        } else if (prevChar.in_fleet === true && currentChar.in_fleet === false) {
+          // Character was in fleet but now left fleet (even though still in MOTD)
+          hasDeparture = true;
+          departedCharacters.push(`${nameLower} (${role})`);
+          console.log(`Found departure: ${nameLower} left fleet (${role})`);
+        }
+      }
+    }
+    
+    console.log("Comparison complete. hasDeparture:", hasDeparture);
+
+    // Play sound if someone left and sound notifications are enabled
+    if (hasDeparture && audioRef.current) {
+      // Check if sound notifications are enabled in EventNotifier settings
+      const storageKey = "EventNotifierSettings";
+      let enableSound = false;
+      if (window.localStorage && window.localStorage.getItem(storageKey)) {
+        try {
+          const settings = JSON.parse(window.localStorage.getItem(storageKey));
+          enableSound = settings.enableSound === true;
+        } catch (err) {
+          console.log("Could not parse EventNotifierSettings:", err);
+        }
+      }
+      
+      if (enableSound) {
+        console.log("Role departure detected:", departedCharacters);
+        // Reset audio to beginning and play
+        audioRef.current.currentTime = 0;
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.log("Could not play sound:", err);
+          });
+        }
+      } else {
+        console.log("Sound notifications disabled, skipping sound playback");
+      }
+    }
+
+    // Update previous state for next comparison (always update, even if no departure)
+    prevRoleAssignmentsRef.current = JSON.parse(JSON.stringify(roleAssignments));
+  }, [roleAssignments, roleAssignmentsSerialized]);
 
   return (
     <div style={{ marginBottom: "1em" }}>
