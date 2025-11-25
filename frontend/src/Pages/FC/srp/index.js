@@ -35,7 +35,7 @@ function TruncatedDescription({ text, maxLength = 50 }) {
   const [showModal, setShowModal] = React.useState(false);
 
   if (!text || text.length <= maxLength) {
-    return <span>{text || "No description"}</span>;
+    return <span style={{ wordBreak: "break-word" }}>{text || "No description"}</span>;
   }
 
   const displayText = text.substring(0, maxLength) + "...";
