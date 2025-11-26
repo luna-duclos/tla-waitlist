@@ -565,6 +565,512 @@ fn get_allowed_hulls_for_role(role: &str) -> Vec<&'static str> {
     }
 }
 
+// Extract href from anchor tag for a character name in the MOTD
+fn extract_anchor_href(motd: &str, character_name: &str) -> Option<String> {
+    let name_lower = character_name.to_lowercase();
+    let motd_lower = motd.to_lowercase();
+    
+    // Find the character name in the MOTD (case-insensitive)
+    if let Some(name_pos) = motd_lower.find(&name_lower) {
+        // Look backwards from the name to find the opening <a> tag
+        let before_name = &motd[..name_pos];
+        if let Some(anchor_start) = before_name.rfind("<a") {
+            let anchor_section = &motd[anchor_start..];
+            // Extract href attribute
+            if let Some(href_start) = anchor_section.find("href=\"") {
+                let href_content_start = anchor_start + href_start + 6; // Skip "href=\""
+                if let Some(href_end) = motd[href_content_start..].find('"') {
+                    return Some(motd[href_content_start..href_content_start + href_end].to_string());
+                }
+            }
+        }
+    }
+    None
+}
+
+// Remove characters not in fleet from all role sections - surgically, preserving HTML structure
+fn remove_characters_not_in_fleet_surgical(
+    motd: &str,
+    fleet_member_names: &HashSet<String>,
+) -> String {
+    let roles = vec!["DDD", "MS", "LR", "MTAC", "PS"];
+    let mut result = motd.to_string();
+    
+    // Process roles in reverse order to avoid position shifts
+    for role in roles.iter().rev() {
+        let role_pattern = format!("{}:", role.to_lowercase());
+        let mut result_lower = result.to_lowercase();
+        
+        // Keep processing until no more characters to remove
+        loop {
+            let mut found_any = false;
+            
+            if let Some(role_pos) = result_lower.find(&role_pattern) {
+                let role_start = role_pos + role_pattern.len();
+                let mut role_end = result.len();
+                
+                // Find where this role section ends
+                for other_role in &roles {
+                    if other_role.to_lowercase() != role.to_lowercase() {
+                        let other_pattern = format!("{}:", other_role.to_lowercase());
+                        if let Some(other_pos) = result_lower[role_start..].find(&other_pattern) {
+                            let actual_pos = role_start + other_pos;
+                            if actual_pos < role_end {
+                                role_end = actual_pos;
+                            }
+                        }
+                    }
+                }
+                
+                // Get all character names in this role section
+                let parsed_names = extract_names_from_anchor_tags_after_role(&result, role, &roles);
+                
+                // For each character not in fleet, surgically remove their anchor tag
+                for name in &parsed_names {
+                    if !fleet_member_names.contains(&name.to_lowercase()) {
+                        let name_lower = name.to_lowercase();
+                        let section_lower = result_lower[role_start..role_end].to_string();
+                        
+                        if let Some(name_pos_in_section) = section_lower.find(&name_lower) {
+                            let name_pos_absolute = role_start + name_pos_in_section;
+                            
+                            // Find the opening <a> tag before the name
+                            let before_name = &result[role_start..name_pos_absolute];
+                            if let Some(anchor_start_rel) = before_name.rfind("<a") {
+                                let anchor_start_absolute = role_start + anchor_start_rel;
+                                
+                                // Find the closing </a> tag after the name
+                                let after_name_start = name_pos_absolute + name.len();
+                                if let Some(anchor_end_rel) = result[after_name_start..role_end].find("</a>") {
+                                    let anchor_end_absolute = after_name_start + anchor_end_rel + 4; // +4 for "</a>"
+                                    
+                                    // Remove the entire anchor tag, preserving everything else
+                                    let mut new_result = String::new();
+                                    new_result.push_str(&result[..anchor_start_absolute]);
+                                    new_result.push_str(&result[anchor_end_absolute..]);
+                                    result = new_result;
+                                    
+                                    // Recalculate lowercase for next iteration
+                                    result_lower = result.to_lowercase();
+                                    found_any = true;
+                                    break; // Break inner loop, will continue outer loop
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if !found_any {
+                break; // No more characters to remove for this role
+            }
+        }
+    }
+    
+    result
+}
+
+// Add or replace a character in a specific role section of the MOTD
+// This function surgically replaces only the character name and ID in the anchor tag
+fn add_character_to_motd_role(
+    original_motd: &str,
+    role: &str,
+    character_name: &str,
+    character_id: i64,
+    character_name_to_id: &HashMap<String, i64>,
+    fleet_member_names: &HashSet<String>,
+) -> String {
+    let roles = vec!["DDD", "MS", "LR", "MTAC", "PS"];
+    let role_pattern = format!("{}:", role.to_lowercase());
+    let motd_lower = original_motd.to_lowercase();
+    let character_name_lower = character_name.to_lowercase();
+    
+    // Find the role section
+    if let Some(role_pos) = motd_lower.find(&role_pattern) {
+        // Find where this role section ends (next role or end of MOTD)
+        let role_start = role_pos + role_pattern.len();
+        let mut role_end = original_motd.len();
+        
+        for other_role in &roles {
+            if other_role.to_lowercase() != role.to_lowercase() {
+                let other_pattern = format!("{}:", other_role.to_lowercase());
+                if let Some(other_pos) = motd_lower[role_start..].find(&other_pattern) {
+                    let actual_pos = role_start + other_pos;
+                    if actual_pos < role_end {
+                        role_end = actual_pos;
+                    }
+                }
+            }
+        }
+        
+        // Extract the role section
+        let role_section = &original_motd[role_start..role_end];
+        let section_lower = role_section.to_lowercase();
+        
+        let has_anchor_tags = role_section.contains("<a");
+        
+        let mut character_found = false;
+        let mut existing_name_in_motd = None;
+        let mut anchor_start = 0;
+        while let Some(anchor_pos) = role_section[anchor_start..].find("<a") {
+            let anchor_abs_pos = role_start + anchor_start + anchor_pos;
+            let anchor_section = &original_motd[anchor_abs_pos..];
+            if let Some(anchor_close) = anchor_section.find('>') {
+                let name_start = anchor_abs_pos + anchor_close + 1;
+                if let Some(name_end) = original_motd[name_start..].find('<') {
+                    let name_in_motd = &original_motd[name_start..name_start + name_end];
+                    if name_in_motd.to_lowercase() == character_name_lower {
+                        character_found = true;
+                        existing_name_in_motd = Some(name_in_motd);
+                        break;
+                    }
+                }
+            }
+            anchor_start += anchor_pos + 2;
+        }
+        
+        if has_anchor_tags && character_found {
+            let name_to_find = existing_name_in_motd.unwrap();
+            if let Some(name_pos_in_section) = section_lower.find(&name_to_find.to_lowercase()) {
+            let name_pos_approx = role_start + name_pos_in_section;
+            let before_name = &original_motd[role_start..name_pos_approx];
+            if let Some(anchor_start_rel) = before_name.rfind("<a") {
+                let anchor_start_absolute = role_start + anchor_start_rel;
+                
+                let anchor_section = &original_motd[anchor_start_absolute..];
+                if let Some(anchor_tag_end) = anchor_section.find('>') {
+                    let anchor_tag_end_absolute = anchor_start_absolute + anchor_tag_end + 1;
+                    let anchor_content = &original_motd[anchor_tag_end_absolute..];
+                    let name_start = if let Some(name_pos_in_anchor) = anchor_content.find(character_name) {
+                        anchor_tag_end_absolute + name_pos_in_anchor
+                    } else {
+                        name_pos_approx
+                    };
+                    let name_end = name_start + character_name.len();
+                    
+                    if let Some(href_start) = anchor_section.find("href=\"") {
+                        let href_content_start = anchor_start_absolute + href_start + 6;
+                        
+                        if let Some(href_end) = original_motd[href_content_start..].find('"') {
+                            let href_end_absolute = href_content_start + href_end;
+                            let href_content = &original_motd[href_content_start..href_end_absolute];
+                            
+                            if let Some(id_start_in_href) = href_content.find("//") {
+                                let id_start_absolute = href_content_start + id_start_in_href + 2;
+                                let id_end_absolute = href_end_absolute;
+                                
+                                let anchor_tag_close = anchor_start_absolute + anchor_section.find('>').unwrap() + 1;
+                                let anchor_content_after_gt = &original_motd[anchor_tag_close..];
+                                let name_start_exact = if let Some(name_pos) = anchor_content_after_gt.find(character_name) {
+                                    anchor_tag_close + name_pos
+                                } else {
+                                    name_start
+                                };
+                                let name_end_exact = name_start_exact + character_name.len();
+                                
+                                let mut result = String::new();
+                                result.push_str(&original_motd[..id_start_absolute]);
+                                result.push_str(&character_id.to_string());
+                                result.push_str(&original_motd[id_end_absolute..anchor_tag_close]);
+                                result.push_str(&original_motd[anchor_tag_close..name_start_exact]);
+                                result.push_str(character_name);
+                                result.push_str(&original_motd[name_end_exact..]);
+                                
+                                return result;
+                            }
+                        }
+                    }
+                }
+            }
+            }
+        }
+        
+        if !has_anchor_tags {
+            let role_content = &original_motd[role_start..role_end];
+            let trimmed_content = role_content.trim();
+            let has_content = !trimmed_content.is_empty();
+            
+            let mut content_start = role_start;
+            for (idx, ch) in role_content.char_indices() {
+                if !ch.is_whitespace() {
+                    content_start = role_start + idx;
+                    break;
+                }
+            }
+            
+            let showinfo_type = "1377";
+            let mut result = String::new();
+            result.push_str(&original_motd[..role_start]);
+            result.push(' ');
+            
+            let href = format!("showinfo:{}//{}", showinfo_type, character_id);
+            result.push_str(&format!("<a href=\"{}\">{}</a>", href, character_name));
+            result.push_str("<br>");
+            result.push_str(&original_motd[role_end..]);
+            
+            return result;
+        }
+        
+        let anchor_count = role_section.matches("<a").count();
+        
+        if anchor_count == 1 {
+            if let Some(anchor_start_rel) = role_section.find("<a") {
+                let anchor_start_absolute = role_start + anchor_start_rel;
+                let anchor_section = &original_motd[anchor_start_absolute..];
+                if let Some(anchor_tag_end) = anchor_section.find('>') {
+                    let anchor_tag_end_absolute = anchor_start_absolute + anchor_tag_end + 1;
+                    if let Some(anchor_close) = anchor_section.find("</a>") {
+                        let anchor_close_absolute = anchor_start_absolute + anchor_close;
+                        
+                        if let Some(href_start) = anchor_section.find("href=\"") {
+                            let href_content_start = anchor_start_absolute + href_start + 6;
+                            if let Some(href_end) = original_motd[href_content_start..].find('"') {
+                                let href_end_absolute = href_content_start + href_end;
+                                let href_content = &original_motd[href_content_start..href_end_absolute];
+                                if let Some(id_start_in_href) = href_content.find("//") {
+                                    let id_start_absolute = href_content_start + id_start_in_href + 2;
+                                    let id_end_absolute = href_end_absolute;
+                                    let name_start = anchor_tag_end_absolute;
+                                    let name_end = anchor_close_absolute;
+                                    
+                                    let mut result = String::new();
+                                    result.push_str(&original_motd[..id_start_absolute]);
+                                    result.push_str(&character_id.to_string());
+                                    result.push_str(&original_motd[id_end_absolute..name_start]);
+                                    result.push_str(character_name);
+                                    result.push_str(&original_motd[name_end..]);
+                                    return result;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Multiple characters - add to the end
+        // Find the last </a> tag in the section
+        if let Some(last_anchor_end) = role_section.rfind("</a>") {
+            let insert_pos = role_start + last_anchor_end + 4;
+            
+            let after_last_anchor = &original_motd[insert_pos..role_end];
+            let delimiter = if after_last_anchor.trim_start().starts_with(',') {
+                ", "
+            } else if after_last_anchor.trim_start().is_empty() || after_last_anchor.trim_start().starts_with('<') {
+                ""
+            } else {
+                ", "
+            };
+            let showinfo_type = if let Some(existing_anchor) = role_section.find("<a") {
+                let anchor_part = &role_section[existing_anchor..];
+                if let Some(href_start) = anchor_part.find("href=\"") {
+                    let href_content = &anchor_part[href_start + 6..];
+                    if let Some(href_end) = href_content.find('"') {
+                        let href = &href_content[..href_end];
+                        if let Some(type_start) = href.find("showinfo:") {
+                            let after_showinfo = &href[type_start + 9..];
+                            if let Some(type_end) = after_showinfo.find("//") {
+                                &after_showinfo[..type_end]
+                            } else {
+                                "1377"
+                            }
+                        } else {
+                            "1377"
+                        }
+                    } else {
+                        "1377"
+                    }
+                } else {
+                    "1377"
+                }
+            } else {
+                "1377"
+            };
+            
+            let mut result = String::new();
+            result.push_str(&original_motd[..insert_pos]);
+            result.push_str(delimiter);
+            let href = format!("showinfo:{}//{}", showinfo_type, character_id);
+            result.push_str(&format!("<a href=\"{}\">{}</a>", href, character_name));
+            result.push_str(&original_motd[insert_pos..]);
+            
+            return result;
+        }
+    }
+    
+    // Role not found, append it at the end
+    let mut result = original_motd.to_string();
+    if !result.trim().is_empty() && !result.trim_end().ends_with('\n') {
+        result.push('\n');
+    }
+    result.push_str(&format!("{}: ", role.to_uppercase()));
+    let href = format!("showinfo:1377//{}", character_id);
+    result.push_str(&format!("<a href=\"{}\">{}</a>", href, character_name));
+    result.push('\n');
+    
+    result
+}
+
+// Reconstruct MOTD by removing characters not in fleet and updating the specific role
+fn reconstruct_motd(
+    original_motd: &str,
+    role_assignments: &HashMap<String, Vec<String>>,
+    character_name_to_id: &HashMap<String, i64>,
+    fleet_member_names: &HashSet<String>,
+    updated_role: Option<&str>,
+    updated_character: Option<&str>,
+) -> String {
+    let roles = vec!["DDD", "MS", "LR", "MTAC", "PS"];
+    let mut result = original_motd.to_string();
+    
+    // If we're updating a specific role, use the surgical approach
+    if let (Some(role), Some(character)) = (updated_role, updated_character) {
+        if let Some(&char_id) = character_name_to_id.get(&character.to_lowercase()) {
+            result = add_character_to_motd_role(
+                &result,
+                role,
+                character,
+                char_id,
+                character_name_to_id,
+                fleet_member_names,
+            );
+        }
+    }
+    
+    // Remove characters not in fleet from all role sections
+    for role in &roles {
+        let role_pattern = format!("{}:", role.to_lowercase());
+        let result_lower = result.to_lowercase();
+        
+        if let Some(role_pos) = result_lower.find(&role_pattern) {
+            let role_start = role_pos + role_pattern.len();
+            let mut role_end = result.len();
+            
+            // Find where this role section ends
+            for other_role in &roles {
+                if other_role.to_lowercase() != role.to_lowercase() {
+                    let other_pattern = format!("{}:", other_role.to_lowercase());
+                    if let Some(other_pos) = result_lower[role_start..].find(&other_pattern) {
+                        let actual_pos = role_start + other_pos;
+                        if actual_pos < role_end {
+                            role_end = actual_pos;
+                        }
+                    }
+                }
+            }
+            
+            let role_section = &result[role_start..role_end];
+            let mut new_section = String::new();
+            let mut in_anchor = false;
+            let mut current_anchor = String::new();
+            let mut current_name = String::new();
+            let mut tag_depth = 0;
+            
+            // Parse through the section and keep only characters in fleet
+            let mut chars = role_section.chars().peekable();
+            while let Some(ch) = chars.next() {
+                if ch == '<' {
+                    let mut is_closing = false;
+                    let mut tag_name = String::new();
+                    
+                    if chars.peek() == Some(&'/') {
+                        is_closing = true;
+                        chars.next();
+                    }
+                    
+                    while let Some(&next_ch) = chars.peek() {
+                        if next_ch == ' ' || next_ch == '>' {
+                            break;
+                        }
+                        if let Some(c) = chars.next() {
+                            tag_name.push(c);
+                        }
+                    }
+                    
+                    while let Some(&next_ch) = chars.peek() {
+                        if next_ch == '>' {
+                            chars.next();
+                            break;
+                        }
+                        chars.next();
+                    }
+                    
+                    let tag_lower = tag_name.to_lowercase();
+                    
+                    if tag_lower == "a" {
+                        if is_closing {
+                            // Closing </a> tag - check if we should keep this character
+                            if !current_name.trim().is_empty() {
+                                if fleet_member_names.contains(&current_name.trim().to_lowercase()) {
+                                    new_section.push_str(&current_anchor);
+                                    new_section.push_str("</a>");
+                                }
+                            }
+                            current_anchor.clear();
+                            current_name.clear();
+                            in_anchor = false;
+                            tag_depth = 0;
+                        } else {
+                            // Opening <a> tag
+                            in_anchor = true;
+                            tag_depth = 1;
+                            current_anchor.push(ch);
+                            current_anchor.push(if is_closing { '/' } else { ' ' });
+                            // Reconstruct the opening tag
+                            let mut tag_rebuild = String::from("<");
+                            if is_closing {
+                                tag_rebuild.push('/');
+                            }
+                            tag_rebuild.push_str(&tag_name);
+                            // Skip to '>'
+                            let mut attr_part = String::new();
+                            while let Some(&next_ch) = chars.peek() {
+                                if next_ch == '>' {
+                                    chars.next();
+                                    attr_part.push(next_ch);
+                                    break;
+                                }
+                                if let Some(c) = chars.next() {
+                                    attr_part.push(c);
+                                }
+                            }
+                            current_anchor = format!("<{}", tag_name);
+                            current_anchor.push_str(&attr_part);
+                        }
+                    } else if in_anchor {
+                        current_anchor.push(ch);
+                        if is_closing {
+                            tag_depth -= 1;
+                        } else {
+                            tag_depth += 1;
+                        }
+                    } else {
+                        new_section.push(ch);
+                    }
+                } else if in_anchor && tag_depth == 1 {
+                    current_name.push(ch);
+                    current_anchor.push(ch);
+                } else {
+                    if in_anchor {
+                        current_anchor.push(ch);
+                    } else {
+                        new_section.push(ch);
+                    }
+                }
+            }
+            
+            // Replace the role section in result
+            let mut new_result = String::new();
+            new_result.push_str(&result[..role_start]);
+            new_result.push_str(&new_section);
+            new_result.push_str(&result[role_end..]);
+            result = new_result;
+        }
+    }
+    
+    result
+}
+
 #[get("/api/fleet/fleetcomp?<character_id>")]
 async fn fleet_composition(
     app: &rocket::State<Application>,
@@ -914,6 +1420,127 @@ async fn close_fleet(
     ))
 }
 
+#[derive(Debug, Deserialize)]
+struct UpdateMotdRequest {
+    character_id: i64,
+    role: String,
+    character_name: String,
+}
+
+#[derive(Debug, Serialize)]
+struct UpdateMotdResponse {
+    success: bool,
+    message: String,
+    is_duplicate: bool,
+    has_incorrect_hull: bool,
+}
+
+#[post("/api/fleet/update-motd", data = "<input>")]
+async fn update_motd(
+    app: &rocket::State<Application>,
+    account: AuthenticatedAccount,
+    input: Json<UpdateMotdRequest>,
+) -> Result<Json<UpdateMotdResponse>, Madness> {
+    account.require_access("fleet-configure")?;
+    authorize_character(app.get_db(), &account, input.character_id, None).await?;
+    
+    let fleet_id = get_current_fleet_id(app, input.character_id).await?;
+    let fleet = match sqlx::query!("SELECT boss_id FROM fleet WHERE id = ?", fleet_id)
+        .fetch_optional(app.get_db())
+        .await?
+    {
+        Some(fleet) => fleet,
+        None => return Err(Madness::NotFound("Fleet not configured")),
+    };
+    
+    // Fetch current MOTD
+    let fleet_info = crate::core::esi::fleet_info::get(&app.esi_client, fleet_id, fleet.boss_id).await?;
+    let current_motd = fleet_info.motd;
+    
+    // Parse current role assignments
+    let mut role_assignments = parse_motd_roles(&current_motd);
+    
+    // Get current fleet members
+    let members = crate::core::esi::fleet_members::get(&app.esi_client, fleet_id, fleet.boss_id).await?;
+    let character_ids: Vec<_> = members.iter().map(|member| member.character_id).collect();
+    let characters = crate::data::character::lookup(app.get_db(), &character_ids).await?;
+    
+    // Create mappings
+    let fleet_member_names: HashSet<String> = characters
+        .values()
+        .map(|char| char.name.to_lowercase())
+        .collect();
+    
+    let mut character_name_to_id: HashMap<String, i64> = HashMap::new();
+    for (char_id, char) in &characters {
+        character_name_to_id.insert(char.name.to_lowercase(), *char_id);
+    }
+    
+    let mut character_to_hull: HashMap<String, String> = HashMap::new();
+    for member in &members {
+        if let Some(character) = characters.get(&member.character_id) {
+            let hull_name = TypeDB::name_of(member.ship_type_id).unwrap();
+            character_to_hull.insert(character.name.to_lowercase(), hull_name.to_lowercase());
+        }
+    }
+    
+    // Check for duplicate
+    let role_upper = input.role.to_uppercase();
+    let character_name_lower = input.character_name.to_lowercase();
+    let is_duplicate = role_assignments
+        .get(&role_upper)
+        .map(|names| names.iter().any(|n| n.to_lowercase() == character_name_lower))
+        .unwrap_or(false);
+    
+    // Check hull
+    let has_incorrect_hull = if let Some(hull_name) = character_to_hull.get(&character_name_lower) {
+        let allowed_hulls: Vec<String> = get_allowed_hulls_for_role(&role_upper)
+            .into_iter()
+            .map(|s| s.to_lowercase())
+            .collect();
+        !allowed_hulls.contains(hull_name)
+    } else {
+        false // Not in fleet, can't check hull
+    };
+    
+    // Add character to role (even if duplicate - frontend will handle confirmation)
+    let role_assignments_entry = role_assignments.entry(role_upper.clone()).or_insert_with(Vec::new);
+    // Always add, even if duplicate (frontend shows confirmation)
+    role_assignments_entry.push(input.character_name.clone());
+    
+    // Filter out characters not in fleet from all roles
+    for names in role_assignments.values_mut() {
+        names.retain(|name| fleet_member_names.contains(&name.to_lowercase()));
+    }
+    
+    // Reconstruct MOTD - add the new character to the role
+    // We only modify the specific character's name and ID, preserving all HTML structure
+    let new_motd = add_character_to_motd_role(
+        &current_motd,
+        &role_upper,
+        &input.character_name,
+        *character_name_to_id.get(&character_name_lower).unwrap_or(&0),
+        &character_name_to_id,
+        &fleet_member_names,
+    );
+    
+    // Remove characters not in fleet - but do it surgically, preserving HTML structure
+    let new_motd = remove_characters_not_in_fleet_surgical(
+        &new_motd,
+        &fleet_member_names,
+    );
+    
+    // Update MOTD via ESI
+    crate::core::esi::fleet_info::update(&app.esi_client, fleet_id, fleet.boss_id, new_motd).await?;
+    
+    Ok(Json(UpdateMotdResponse {
+        success: true,
+        message: "MOTD updated successfully".to_string(),
+        is_duplicate,
+        has_incorrect_hull,
+    }))
+}
+
 pub fn routes() -> Vec<rocket::Route> {
     routes![
         fleet_status,
@@ -922,5 +1549,6 @@ pub fn routes() -> Vec<rocket::Route> {
         fleet_members,
         register_fleet,
         fleet_composition,
+        update_motd,
     ]
 }

@@ -422,6 +422,32 @@ impl ESIRawClient {
 
         Ok(response)
     }
+
+    pub async fn put<E: Serialize + ?Sized>(
+        &self,
+        url: &str,
+        input: &E,
+        access_token: &str,
+    ) -> Result<reqwest::Response, ESIError> {
+        let response = self
+            .http
+            .put(url)
+            .bearer_auth(access_token)
+            .json(input)
+            .send()
+            .await?;
+
+        if let Err(err) = response.error_for_status_ref() {
+            let response_body = response.text().await?;
+            let payload: EsiErrorReason = EsiErrorReason::new(response_body);
+            return Err(ESIError::WithMessage(
+                err.status().unwrap().as_u16(),
+                payload.error,
+            ));
+        };
+
+        Ok(response)
+    }
 }
 
 impl ESIClient {
@@ -736,6 +762,19 @@ impl ESIClient {
         self.raw.post::<E>(&url, input, &access_token).await?;
         Ok(())
     }
+
+    pub async fn put<E: Serialize + ?Sized>(
+        &self,
+        path: &str,
+        input: &E,
+        character_id: i64,
+        scope: ESIScope,
+    ) -> Result<(), ESIError> {
+        let access_token = self.access_token(character_id, scope).await?;
+        let url = format!("https://esi.evetech.net{}", path);
+        self.raw.put::<E>(&url, input, &access_token).await?;
+        Ok(())
+    }
 }
 
 pub mod fleet_members {
@@ -774,12 +813,17 @@ pub mod fleet_info {
     use crate::core::esi::ESIScope;
 
     use super::{ESIClient, ESIError};
-    use serde::Deserialize;
+    use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Deserialize)]
     pub struct ESIFleetInfo {
         pub is_free_move: bool,
         pub is_registered: bool,
+        pub motd: String,
+    }
+
+    #[derive(Debug, Serialize)]
+    pub struct ESIFleetUpdate {
         pub motd: String,
     }
 
@@ -795,6 +839,24 @@ pub mod fleet_info {
                 ESIScope::Fleets_ReadFleet_v1,
             )
             .await?)
+    }
+
+    pub async fn update(
+        client: &ESIClient,
+        fleet_id: i64,
+        boss_id: i64,
+        motd: String,
+    ) -> Result<(), ESIError> {
+        let update = ESIFleetUpdate { motd };
+        client
+            .put(
+                &format!("/v1/fleets/{}", fleet_id),
+                &update,
+                boss_id,
+                ESIScope::Fleets_WriteFleet_v1,
+            )
+            .await?;
+        Ok(())
     }
 }
 
