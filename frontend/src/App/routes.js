@@ -25,9 +25,9 @@ import AnnouncementsPage from "../Pages/FC/Announcements";
 import BadgesPage from "../Pages/FC/Badges";
 import BansPage from "../Pages/FC/Bans";
 import CommandersPage from "../Pages/FC/Commanders";
-import { SRP } from "../Pages/FC/SRP";
-import { SRPSubmit } from "../Pages/FC/SRPSubmit";
-import { SRPReportDetail } from "../Pages/FC/SRPReportDetail";
+import { SRP } from "../Pages/FC/srp";
+import { SRPSubmit } from "../Pages/FC/srp/SRPSubmit";
+import { SRPReportDetail } from "../Pages/FC/srp/SRPReportDetail";
 import { SkillPlans } from "../Pages/Admin/SkillPlans";
 import { DataFiles } from "../Pages/Admin/DataFiles";
 

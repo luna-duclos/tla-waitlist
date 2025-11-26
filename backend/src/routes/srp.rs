@@ -1110,8 +1110,12 @@ async fn update_srp_report(
     .await?;
 
     let report = report.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
-    
-    if report.submitted_by_id != account.id {
+
+    let is_owner = report.submitted_by_id == account.id;
+    let is_admin = account.access.contains("commanders-manage:admin");
+
+    // If not owner, must have override access
+    if !is_owner && !is_admin {
         return Err(Madness::Forbidden("You can only update SRP reports that you submitted".to_string()));
     }
 
@@ -1145,8 +1149,12 @@ async fn get_srp_report_for_edit(
     .await?;
 
     let report_check = report_check.ok_or_else(|| Madness::NotFound("SRP report not found"))?;
-    
-    if report_check.submitted_by_id != account.id {
+
+    let is_owner = report_check.submitted_by_id == account.id;
+    let is_admin = account.access.contains("commanders-manage:admin");
+
+    // If not owner, must have override access
+    if !is_owner && !is_admin {
         return Err(Madness::Forbidden("You can only edit SRP reports that you submitted".to_string()));
     }
 

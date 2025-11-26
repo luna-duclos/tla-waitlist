@@ -1,16 +1,19 @@
 import React from "react";
-import { AuthContext } from "../../contexts";
-import { usePageTitle } from "../../Util/title";
-import { PageTitle } from "../../Components/Page";
-import { Box } from "../../Components/Box";
-import { Button } from "../../Components/Form";
-import { useLocation } from "react-router-dom";
-
+import { AuthContext, ToastContext } from "../../../contexts";
+import { usePageTitle } from "../../../Util/title";
+import { PageTitle } from "../../../Components/Page";
+import { Box } from "../../../Components/Box";
+import { Button, Input, NavButton, Radio, Textarea } from "../../../Components/Form";
+import { useLocation, useHistory } from "react-router-dom";
+import { apiCall } from "../../../api";
+import { addToast } from "../../../Components/Toast";
 
 export function SRPSubmit() {
   const authContext = React.useContext(AuthContext);
   const location = useLocation();
-  
+  const history = useHistory();
+  const toastContext = React.useContext(ToastContext);
+
   const [killmailLink, setKillmailLink] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [lootReturned, setLootReturned] = React.useState(null);
@@ -24,7 +27,7 @@ export function SRPSubmit() {
   // Check if we're in edit mode
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const editId = params.get('edit');
+    const editId = params.get("edit");
     if (editId) {
       setIsEditMode(true);
       setEditKillmailId(editId);
@@ -46,11 +49,11 @@ export function SRPSubmit() {
         }
       } else {
         alert("Error loading report for editing");
-        window.location.href = "/fc/srp";
+        history.push("/fc/srp");
       }
     } catch (error) {
       alert("Error loading report for editing: " + error.message);
-      window.location.href = "/fc/srp";
+      history.push("/fc/srp");
     } finally {
       setLoading(false);
     }
@@ -99,7 +102,7 @@ export function SRPSubmit() {
       return;
     }
 
-    const confirmMessage = isEditMode 
+    const confirmMessage = isEditMode
       ? "Are you sure you want to update this SRP report?"
       : "Are you sure you want to submit this SRP report?";
 
@@ -108,10 +111,8 @@ export function SRPSubmit() {
     }
 
     try {
-      const url = isEditMode 
-        ? `/api/fc/srp/update/${editKillmailId}`
-        : "/api/fc/srp/submit";
-      
+      const url = isEditMode ? `/api/fc/srp/update/${editKillmailId}` : "/api/fc/srp/submit";
+
       const body = isEditMode
         ? JSON.stringify({
             description: description.trim(),
@@ -123,7 +124,7 @@ export function SRPSubmit() {
             loot_returned: lootReturned,
           });
 
-      const response = await fetch(url, {
+      await apiCall(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -131,48 +132,50 @@ export function SRPSubmit() {
         body: body,
       });
 
-      const result = await response.json();
+      const message = isEditMode
+        ? "SRP report updated successfully!"
+        : "SRP report submitted successfully!";
+      addToast(toastContext, {
+        message,
+        variant: "success",
+      });
 
-      if (response.ok && result.success) {
-        const message = isEditMode 
-          ? "SRP report updated successfully!"
-          : "SRP report submitted successfully!";
-        alert(message);
-        window.location.href = "/fc/srp";
-      } else {
-        alert("Error " + (isEditMode ? "updating" : "submitting") + " SRP report: " + (result.message || "Unknown error"));
-      }
+      history.push("/fc/srp");
     } catch (error) {
-      alert("Error " + (isEditMode ? "updating" : "submitting") + " SRP report: " + error.message);
+      alert(
+        "Error " +
+          (isEditMode ? "updating" : "submitting") +
+          " SRP report: " +
+          (error.message || error.toString())
+      );
     }
   };
 
   return (
     <>
       <PageTitle>{isEditMode ? "Update SRP Report" : "Submit SRP Report"}</PageTitle>
-      
+
       <Box>
-        <h3>{isEditMode ? "Update SRP Report" : "Submit New SRP Report"}</h3>
-        <p>{isEditMode ? "Update the details of this SRP report." : "Use this form to submit a Ship Replacement Program (SRP) report for fleet losses."}</p>
-        
+        <p>
+          {isEditMode
+            ? "Update the details of this SRP report."
+            : "Use this form to submit a Ship Replacement Program (SRP) report for fleet losses."}
+        </p>
         {!isEditMode && (
           <div style={{ marginBottom: "1em" }}>
-            <label htmlFor="killmailLink" style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>
+            <label
+              htmlFor="killmailLink"
+              style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}
+            >
               Killmail Link *
             </label>
-            <input
+            <Input
               id="killmailLink"
               type="text"
               value={killmailLink}
               onChange={handleKillmailLinkChange}
               placeholder="https://esi.evetech.net/latest/killmails/..."
-              style={{
-                width: "100%",
-                padding: "0.5em",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                fontSize: "14px"
-              }}
+              style={{ width: "100%" }}
               maxLength={1000}
             />
             <div style={{ fontSize: "12px", color: "#666", marginTop: "0.25em" }}>
@@ -182,23 +185,20 @@ export function SRPSubmit() {
         )}
 
         <div style={{ marginBottom: "1em" }}>
-          <label htmlFor="description" style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}>
+          <label
+            htmlFor="description"
+            style={{ display: "block", marginBottom: "0.5em", fontWeight: "bold" }}
+          >
             Description *
           </label>
-          <textarea
+          <Textarea
             id="description"
             value={description}
             onChange={handleDescriptionChange}
             placeholder="Describe the circumstances of the loss, what happened, anything that can help us get better in the future."
-            style={{
-              width: "100%",
-              minHeight: "120px",
-              padding: "0.5em",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              fontSize: "14px",
-              resize: "vertical"
-            }}
+            style={{ width: "100%" }}
+            // cols="100"
+            rows="5"
             maxLength={1000}
           />
           <div style={{ fontSize: "12px", color: "#666", marginTop: "0.25em" }}>
@@ -212,8 +212,7 @@ export function SRPSubmit() {
           </div>
           <div style={{ display: "flex", gap: "1em" }}>
             <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
-              <input
-                type="radio"
+              <Radio
                 name="lootReturned"
                 value="true"
                 checked={lootReturned === true}
@@ -223,8 +222,7 @@ export function SRPSubmit() {
               <span>Yes</span>
             </label>
             <label style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
-              <input
-                type="radio"
+              <Radio
                 name="lootReturned"
                 value="false"
                 checked={lootReturned === false}
@@ -240,26 +238,17 @@ export function SRPSubmit() {
           <Button
             onClick={handleSubmit}
             disabled={loading}
+            variant="success"
             style={{
-              backgroundColor: "#28a745",
-              borderColor: "#28a745",
-              color: "white",
               cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.6 : 1
+              opacity: loading ? 0.6 : 1,
             }}
           >
-            {loading ? "Loading..." : (isEditMode ? "Update SRP Report" : "Submit SRP Report")}
+            {loading ? "Loading..." : isEditMode ? "Update SRP Report" : "Submit SRP Report"}
           </Button>
-          <Button
-            onClick={() => window.location.href = "/fc/srp"}
-            style={{
-              backgroundColor: "#6c757d",
-              borderColor: "#6c757d",
-              color: "white"
-            }}
-          >
+          <NavButton to="/fc/srp" variant="secondary">
             Cancel
-          </Button>
+          </NavButton>
         </div>
       </Box>
     </>
