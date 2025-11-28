@@ -222,9 +222,50 @@ export function FleetRegister() {
 }
 
 function CategoryMatcher({ categories, wings, onChange, value }) {
+  // First, identify which wing is on-grid (has numbered squads) vs off-grid
+  const wingHasNumberedSquads = (wing) => {
+    return wing.squads.some((squad) => /\d/.test(squad.name));
+  };
+
+  // Sort wings: on-grid first (has numbered squads), then off-grid
+  const sortedWings = [...wings].sort((a, b) => {
+    const aHasNumbers = wingHasNumberedSquads(a);
+    const bHasNumbers = wingHasNumberedSquads(b);
+    
+    if (aHasNumbers && !bHasNumbers) return -1; // on-grid first
+    if (!aHasNumbers && bHasNumbers) return 1;  // off-grid second
+    return 0; // same type, keep original order
+  });
+
   var flatSquads = [];
-  wings.forEach((wing) => {
-    wing.squads.forEach((squad) => {
+  sortedWings.forEach((wing) => {
+    // Within each wing, sort squads: non-numbered first, then numbered
+    const sortedSquads = [...wing.squads].sort((a, b) => {
+      const aHasNumber = /\d/.test(a.name);
+      const bHasNumber = /\d/.test(b.name);
+      
+      // Non-numbered squads come first
+      if (aHasNumber && !bHasNumber) return 1;
+      if (!aHasNumber && bHasNumber) return -1;
+      
+      // If both have numbers, extract and compare numerically
+      if (aHasNumber && bHasNumber) {
+        const aMatch = a.name.match(/\d+/);
+        const bMatch = b.name.match(/\d+/);
+        if (aMatch && bMatch) {
+          const aNum = parseInt(aMatch[0], 10);
+          const bNum = parseInt(bMatch[0], 10);
+          if (aNum !== bNum) {
+            return aNum - bNum;
+          }
+        }
+      }
+      
+      // Within each group, sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
+
+    sortedSquads.forEach((squad) => {
       flatSquads.push({
         name: `${wing.name} - ${squad.name}`,
         id: `${wing.id},${squad.id}`,
