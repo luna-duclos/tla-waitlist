@@ -178,7 +178,7 @@ const CommandersPage = () => {
         )}
       </TableControls>
     );
-  }, [filters, data, refreshData]);
+  }, [filters, data, refreshData, authContext]);
 
   usePageTitle("Commanders");
   return (

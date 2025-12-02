@@ -136,7 +136,7 @@ const BadgeModal = ({ character, isOpen, setOpen, refreshData }) => {
 
   if (badges) {
     var tags = [];
-    badges.map((badge, key) => {
+    badges.forEach((badge, key) => {
       if (badge.default) {
         tags.push(badge.name);
       }

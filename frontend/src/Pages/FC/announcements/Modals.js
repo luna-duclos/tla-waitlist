@@ -42,7 +42,7 @@ const PageFilters = ({ idPrefix = "", selectedFilters, onChange }) => {
     if (selectedFilters !== values) {
       setValues(selectedFilters ?? []);
     }
-  }, []);
+  }, [selectedFilters, values]);
 
   const handleClick = (e) => {
     const chckbox = e.target;
