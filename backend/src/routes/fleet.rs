@@ -605,16 +605,20 @@ fn remove_characters_not_in_fleet_surgical(
         loop {
             let mut found_any = false;
             
-            if let Some(role_pos) = result_lower.find(&role_pattern) {
-                let role_start = role_pos + role_pattern.len();
+            // Use regex to find role pattern with word boundaries to avoid false matches
+            use regex::Regex;
+            let role_regex = Regex::new(&format!(r"(?i)\b{}:\s*", regex::escape(role))).unwrap();
+            
+            if let Some(role_match) = role_regex.find(&result_lower) {
+                let role_start = role_match.end();
                 let mut role_end = result.len();
                 
-                // Find where this role section ends
+                // Find where this role section ends - look for next role pattern with word boundaries
                 for other_role in &roles {
                     if other_role.to_lowercase() != role.to_lowercase() {
-                        let other_pattern = format!("{}:", other_role.to_lowercase());
-                        if let Some(other_pos) = result_lower[role_start..].find(&other_pattern) {
-                            let actual_pos = role_start + other_pos;
+                        let other_pattern_regex = Regex::new(&format!(r"(?i)\b{}:\s*", regex::escape(other_role))).unwrap();
+                        if let Some(other_match) = other_pattern_regex.find(&result_lower[role_start..]) {
+                            let actual_pos = role_start + other_match.start();
                             if actual_pos < role_end {
                                 role_end = actual_pos;
                             }
@@ -627,35 +631,116 @@ fn remove_characters_not_in_fleet_surgical(
                 
                 // For each character not in fleet, surgically remove their anchor tag
                 for name in &parsed_names {
-                    if !fleet_member_names.contains(&name.to_lowercase()) {
-                        let name_lower = name.to_lowercase();
-                        let section_lower = result_lower[role_start..role_end].to_string();
+                    let name_trimmed = name.trim();
+                    let name_lower = name_trimmed.to_lowercase();
+                    
+                    if !fleet_member_names.contains(&name_lower) {
+                        let section = &result[role_start..role_end];
                         
-                        if let Some(name_pos_in_section) = section_lower.find(&name_lower) {
-                            let name_pos_absolute = role_start + name_pos_in_section;
+                        // Find all anchor tags in the section and match by exact name content
+                        // Search only within the role section, not the entire MOTD
+                        let mut anchor_start = 0;
+                        let mut anchor_count = 0;
+                        while let Some(anchor_pos) = section[anchor_start..].find("<a") {
+                            anchor_count += 1;
+                            // anchor_pos is relative to anchor_start in section
+                            // section starts at role_start, so absolute position is:
+                            let anchor_abs_pos = role_start + anchor_start + anchor_pos;
                             
-                            // Find the opening <a> tag before the name
-                            let before_name = &result[role_start..name_pos_absolute];
-                            if let Some(anchor_start_rel) = before_name.rfind("<a") {
-                                let anchor_start_absolute = role_start + anchor_start_rel;
+                            // Make sure we don't go beyond role_end
+                            if anchor_abs_pos >= role_end {
+                                break;
+                            }
+                            
+                            // Limit the search to only within the role section
+                            let anchor_section = &result[anchor_abs_pos..role_end];
+                            
+                            if let Some(anchor_tag_end) = anchor_section.find('>') {
+                                let anchor_tag_end_absolute = anchor_abs_pos + anchor_tag_end + 1;
                                 
-                                // Find the closing </a> tag after the name
-                                let after_name_start = name_pos_absolute + name.len();
-                                if let Some(anchor_end_rel) = result[after_name_start..role_end].find("</a>") {
-                                    let anchor_end_absolute = after_name_start + anchor_end_rel + 4; // +4 for "</a>"
+                                // Find the closing </a> tag - search only within role section
+                                // anchor_tag_end is relative to anchor_section, which starts at anchor_abs_pos
+                                // So we need to search from anchor_tag_end position in anchor_section
+                                let search_start = anchor_tag_end;
+                                if let Some(anchor_close) = anchor_section[search_start..].find("</a>") {
+                                    // anchor_close is relative to search_start, which is relative to anchor_section start (anchor_abs_pos)
+                                    let anchor_close_absolute = anchor_abs_pos + search_start + anchor_close;
                                     
-                                    // Remove the entire anchor tag, preserving everything else
-                                    let mut new_result = String::new();
-                                    new_result.push_str(&result[..anchor_start_absolute]);
-                                    new_result.push_str(&result[anchor_end_absolute..]);
-                                    result = new_result;
+                                    // Make sure the entire anchor tag is within the role section
+                                    // anchor_close_absolute points to the '<' of '</a>', so +4 gives us the position after '</a>'
+                                    let anchor_end_absolute = anchor_close_absolute + 4; // +4 for "</a>"
                                     
-                                    // Recalculate lowercase for next iteration
-                                    result_lower = result.to_lowercase();
-                                    found_any = true;
-                                    break; // Break inner loop, will continue outer loop
+                                    // Verify we're not going beyond the role section
+                                    if anchor_end_absolute > role_end {
+                                        // This anchor extends beyond the role section, skip it
+                                        anchor_start += anchor_pos + 2;
+                                        continue;
+                                    }
+                                    
+                                    if anchor_end_absolute > role_end {
+                                        // This anchor extends beyond the role section, skip it
+                                        anchor_start += anchor_pos + 2;
+                                        continue;
+                                    }
+                                    
+                                    // Extract the name from this anchor tag
+                                    let anchor_content = &result[anchor_tag_end_absolute..anchor_close_absolute];
+                                    
+                                    // Strip HTML tags from the anchor content for comparison
+                                    let mut stripped_name = String::new();
+                                    let mut in_tag = false;
+                                    for ch in anchor_content.chars() {
+                                        if ch == '<' {
+                                            in_tag = true;
+                                        } else if ch == '>' {
+                                            in_tag = false;
+                                        } else if !in_tag {
+                                            stripped_name.push(ch);
+                                        }
+                                    }
+                                    let stripped_name_lower = stripped_name.trim().to_lowercase();
+                                    
+                                    // Match if the stripped name matches (case-insensitive)
+                                    if stripped_name_lower == name_lower {
+                                        // Found the matching anchor tag - remove it
+                                        // anchor_close_absolute points to the '<' of '</a>'
+                                        // So anchor_close_absolute + 4 points to the position AFTER '</a>'
+                                        let anchor_end_absolute = anchor_close_absolute + 4; // +4 for "</a>"
+                                        
+                                        // Make sure we don't go beyond the string length
+                                        let actual_end = anchor_end_absolute.min(result.len());
+                                        let after_anchor = &result[actual_end..];
+                                        
+                                        let mut new_result = String::new();
+                                        new_result.push_str(&result[..anchor_abs_pos]);
+                                        
+                                        // Check what comes after the anchor - preserve delimiters appropriately
+                                        let trimmed_after = after_anchor.trim_start();
+                                        
+                                        // Skip leading comma and/or space after the anchor
+                                        let mut skip = after_anchor.len() - trimmed_after.len();
+                                        if trimmed_after.starts_with(',') {
+                                            skip += 1;
+                                            if trimmed_after.len() > 1 && trimmed_after.chars().nth(1) == Some(' ') {
+                                                skip += 1;
+                                            }
+                                        }
+                                        
+                                        // Use actual_end instead of anchor_end_absolute to avoid going beyond string length
+                                        new_result.push_str(&result[actual_end + skip..]);
+                                        
+                                        result = new_result;
+                                        result_lower = result.to_lowercase();
+                                        found_any = true;
+                                        break; // Break inner loop, will continue outer loop
+                                    }
                                 }
                             }
+                            anchor_start += anchor_pos + 2;
+                        }
+                        
+                        if found_any {
+                            break; // Break out of name loop to restart role processing
                         }
                     }
                 }
@@ -711,6 +796,7 @@ fn add_character_to_motd_role(
         
         let mut character_found = false;
         let mut existing_name_in_motd = None;
+        let mut existing_characters_in_fleet = Vec::new(); // Track characters in fleet in this role
         let mut anchor_start = 0;
         while let Some(anchor_pos) = role_section[anchor_start..].find("<a") {
             let anchor_abs_pos = role_start + anchor_start + anchor_pos;
@@ -719,16 +805,24 @@ fn add_character_to_motd_role(
                 let name_start = anchor_abs_pos + anchor_close + 1;
                 if let Some(name_end) = original_motd[name_start..].find('<') {
                     let name_in_motd = &original_motd[name_start..name_start + name_end];
-                    if name_in_motd.to_lowercase() == character_name_lower {
+                    let name_in_motd_lower = name_in_motd.to_lowercase();
+                    
+                    // Check if this is the character we're adding
+                    if name_in_motd_lower == character_name_lower {
                         character_found = true;
                         existing_name_in_motd = Some(name_in_motd);
-                        break;
+                    }
+                    
+                    // Track if this character is in fleet
+                    if fleet_member_names.contains(&name_in_motd_lower) {
+                        existing_characters_in_fleet.push(anchor_abs_pos);
                     }
                 }
             }
             anchor_start += anchor_pos + 2;
         }
         
+        // If character is already in the role, update them (replace)
         if has_anchor_tags && character_found {
             let name_to_find = existing_name_in_motd.unwrap();
             if let Some(name_pos_in_section) = section_lower.find(&name_to_find.to_lowercase()) {
@@ -785,6 +879,67 @@ fn add_character_to_motd_role(
             }
         }
         
+        // If character is NOT in the role, but there are existing characters in fleet, add after the last one
+        if has_anchor_tags && !character_found && !existing_characters_in_fleet.is_empty() {
+            // Find the last character in fleet (the rightmost one)
+            let last_char_pos = *existing_characters_in_fleet.iter().max().unwrap();
+            
+            // Find the end of that anchor tag
+            let anchor_section = &original_motd[last_char_pos..];
+            if let Some(anchor_close) = anchor_section.find("</a>") {
+                let insert_pos = last_char_pos + anchor_close + 4; // +4 for "</a>"
+                
+                // Check what comes after the last anchor
+                let after_last_anchor = &original_motd[insert_pos..role_end.min(original_motd.len())];
+                let trimmed_after = after_last_anchor.trim_start();
+                
+                // Determine delimiter - use space if there's no comma, otherwise use ", "
+                let delimiter = if trimmed_after.starts_with(',') {
+                    ", "
+                } else if trimmed_after.is_empty() || trimmed_after.starts_with('<') {
+                    " "
+                } else {
+                    " "
+                };
+                
+                // Get showinfo type from existing anchors
+                let showinfo_type = if let Some(existing_anchor) = role_section.find("<a") {
+                    let anchor_part = &role_section[existing_anchor..];
+                    if let Some(href_start) = anchor_part.find("href=\"") {
+                        let href_content = &anchor_part[href_start + 6..];
+                        if let Some(href_end) = href_content.find('"') {
+                            let href = &href_content[..href_end];
+                            if let Some(type_start) = href.find("showinfo:") {
+                                let after_showinfo = &href[type_start + 9..];
+                                if let Some(type_end) = after_showinfo.find("//") {
+                                    &after_showinfo[..type_end]
+                                } else {
+                                    "1377"
+                                }
+                            } else {
+                                "1377"
+                            }
+                        } else {
+                            "1377"
+                        }
+                    } else {
+                        "1377"
+                    }
+                } else {
+                    "1377"
+                };
+                
+                let mut result = String::new();
+                result.push_str(&original_motd[..insert_pos]);
+                result.push_str(delimiter);
+                let href = format!("showinfo:{}//{}", showinfo_type, character_id);
+                result.push_str(&format!("<a href=\"{}\">{}</a>", href, character_name));
+                result.push_str(&original_motd[insert_pos..]);
+                
+                return result;
+            }
+        }
+        
         if !has_anchor_tags {
             let role_content = &original_motd[role_start..role_end];
             let trimmed_content = role_content.trim();
@@ -811,9 +966,10 @@ fn add_character_to_motd_role(
             return result;
         }
         
+        // If there's only one anchor tag and the character is not found, check if that character is in fleet
         let anchor_count = role_section.matches("<a").count();
         
-        if anchor_count == 1 {
+        if anchor_count == 1 && !character_found {
             if let Some(anchor_start_rel) = role_section.find("<a") {
                 let anchor_start_absolute = role_start + anchor_start_rel;
                 let anchor_section = &original_motd[anchor_start_absolute..];
@@ -822,24 +978,79 @@ fn add_character_to_motd_role(
                     if let Some(anchor_close) = anchor_section.find("</a>") {
                         let anchor_close_absolute = anchor_start_absolute + anchor_close;
                         
-                        if let Some(href_start) = anchor_section.find("href=\"") {
-                            let href_content_start = anchor_start_absolute + href_start + 6;
-                            if let Some(href_end) = original_motd[href_content_start..].find('"') {
-                                let href_end_absolute = href_content_start + href_end;
-                                let href_content = &original_motd[href_content_start..href_end_absolute];
-                                if let Some(id_start_in_href) = href_content.find("//") {
-                                    let id_start_absolute = href_content_start + id_start_in_href + 2;
-                                    let id_end_absolute = href_end_absolute;
-                                    let name_start = anchor_tag_end_absolute;
-                                    let name_end = anchor_close_absolute;
-                                    
-                                    let mut result = String::new();
-                                    result.push_str(&original_motd[..id_start_absolute]);
-                                    result.push_str(&character_id.to_string());
-                                    result.push_str(&original_motd[id_end_absolute..name_start]);
-                                    result.push_str(character_name);
-                                    result.push_str(&original_motd[name_end..]);
-                                    return result;
+                        // Extract the existing character's name
+                        let existing_name = &original_motd[anchor_tag_end_absolute..anchor_close_absolute];
+                        // Strip HTML tags from the name
+                        let mut existing_name_clean = String::new();
+                        let mut in_tag = false;
+                        for ch in existing_name.chars() {
+                            if ch == '<' {
+                                in_tag = true;
+                            } else if ch == '>' {
+                                in_tag = false;
+                            } else if !in_tag {
+                                existing_name_clean.push(ch);
+                            }
+                        }
+                        let existing_name_lower = existing_name_clean.trim().to_lowercase();
+                        
+                        // If the existing character is in fleet, add the new character after them
+                        if fleet_member_names.contains(&existing_name_lower) {
+                            let insert_pos = anchor_close_absolute + 4; // +4 for "</a>"
+                            
+                            let delimiter = " ";
+                            
+                            // Get showinfo type from existing anchor
+                            let showinfo_type = if let Some(href_start) = anchor_section.find("href=\"") {
+                                let href_content = &anchor_section[href_start + 6..];
+                                if let Some(href_end) = href_content.find('"') {
+                                    let href = &href_content[..href_end];
+                                    if let Some(type_start) = href.find("showinfo:") {
+                                        let after_showinfo = &href[type_start + 9..];
+                                        if let Some(type_end) = after_showinfo.find("//") {
+                                            &after_showinfo[..type_end]
+                                        } else {
+                                            "1377"
+                                        }
+                                    } else {
+                                        "1377"
+                                    }
+                                } else {
+                                    "1377"
+                                }
+                            } else {
+                                "1377"
+                            };
+                            
+                            let mut result = String::new();
+                            result.push_str(&original_motd[..insert_pos]);
+                            result.push_str(delimiter);
+                            let href = format!("showinfo:{}//{}", showinfo_type, character_id);
+                            result.push_str(&format!("<a href=\"{}\">{}</a>", href, character_name));
+                            result.push_str(&original_motd[insert_pos..]);
+                            
+                            return result;
+                        } else {
+                            // Existing character is not in fleet, replace them
+                            if let Some(href_start) = anchor_section.find("href=\"") {
+                                let href_content_start = anchor_start_absolute + href_start + 6;
+                                if let Some(href_end) = original_motd[href_content_start..].find('"') {
+                                    let href_end_absolute = href_content_start + href_end;
+                                    let href_content = &original_motd[href_content_start..href_end_absolute];
+                                    if let Some(id_start_in_href) = href_content.find("//") {
+                                        let id_start_absolute = href_content_start + id_start_in_href + 2;
+                                        let id_end_absolute = href_end_absolute;
+                                        let name_start = anchor_tag_end_absolute;
+                                        let name_end = anchor_close_absolute;
+                                        
+                                        let mut result = String::new();
+                                        result.push_str(&original_motd[..id_start_absolute]);
+                                        result.push_str(&character_id.to_string());
+                                        result.push_str(&original_motd[id_end_absolute..name_start]);
+                                        result.push_str(character_name);
+                                        result.push_str(&original_motd[name_end..]);
+                                        return result;
+                                    }
                                 }
                             }
                         }

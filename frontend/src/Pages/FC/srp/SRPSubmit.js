@@ -24,18 +24,7 @@ export function SRPSubmit() {
 
   usePageTitle("Submit SRP Report");
 
-  // Check if we're in edit mode
-  React.useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const editId = params.get("edit");
-    if (editId) {
-      setIsEditMode(true);
-      setEditKillmailId(editId);
-      loadReportForEdit(editId);
-    }
-  }, [location.search]);
-
-  const loadReportForEdit = async (killmailId) => {
+  const loadReportForEdit = React.useCallback(async (killmailId) => {
     setLoading(true);
     try {
       const response = await fetch(`/api/fc/srp/report/${killmailId}`);
@@ -57,7 +46,18 @@ export function SRPSubmit() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [history]);
+
+  // Check if we're in edit mode
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const editId = params.get("edit");
+    if (editId) {
+      setIsEditMode(true);
+      setEditKillmailId(editId);
+      loadReportForEdit(editId);
+    }
+  }, [location.search, loadReportForEdit]);
 
   // Check access
   if (!authContext || !authContext.access["fleet-view"]) {

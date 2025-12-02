@@ -22,7 +22,7 @@ export function AuthStart({ fc = false, alt = false, srp_admin = false }) {
           setMessage(error);
         }
       );
-  }, [fc, alt]);
+  }, [fc, alt, srp_admin]);
 
   return <p>{message}</p>;
 }

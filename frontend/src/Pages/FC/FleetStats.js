@@ -56,13 +56,7 @@ function PilotTagsFromId({ characterId }) {
 function RoleContextMenu({ open, setOpen, position, character, onRoleSelect, authContext }) {
   const theme = React.useContext(ThemeContext);
   
-  if (!open) return null;
-
-  const handleRoleClick = (role) => {
-    onRoleSelect(role);
-    setOpen(false);
-  };
-
+  // Hooks must be called unconditionally - move before early return
   const menuRef = React.useRef(null);
   const [adjustedPosition, setAdjustedPosition] = React.useState(position);
 
@@ -110,6 +104,11 @@ function RoleContextMenu({ open, setOpen, position, character, onRoleSelect, aut
     return () => clearTimeout(timeoutId);
   }, [open, position]);
 
+  const handleRoleClick = (role) => {
+    onRoleSelect(role);
+    setOpen(false);
+  };
+
   const hoverBgColor = theme.colors.accent1 || "#f0f0f0";
   const borderColor = theme.colors.accent2 || "#ccc";
   const itemBorderColor = theme.colors.accent2 || "#eee";
@@ -120,6 +119,9 @@ function RoleContextMenu({ open, setOpen, position, character, onRoleSelect, aut
     const shipNameLower = character.ship.name.toLowerCase();
     return allowedHulls.includes(shipNameLower);
   };
+
+  // Early return after all hooks
+  if (!open) return null;
 
   return (
     <div
