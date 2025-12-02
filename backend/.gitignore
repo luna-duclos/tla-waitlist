@@ -4,3 +4,7 @@
 /archive-backend.tar
 /config.toml
 /.env
+/data/*.yaml
+/data/*.dat
+/data/*.backup.*
+/data/*.tmp
