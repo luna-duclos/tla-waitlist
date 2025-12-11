@@ -4,7 +4,7 @@ import { CharacterName } from "../../Components/EntityLinks";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
-import Table from "../../Components/DataTable";
+import Table, { SortDate } from "../../Components/DataTable";
 import { apiCall, useApi } from "../../api";
 import { formatDatetime } from "../../Util/time";
 import BadgeIcon from "../../Components/Badge";
@@ -193,6 +193,8 @@ const BadgesPage = () => {
     },
     {
       name: "Granted At",
+      sortable: true,
+      sortFunction: (a, b) => SortDate(a.granted_at * 1000, b.granted_at * 1000),
       hide: "sm",
       grow: 2,
       selector: (row) => formatDatetime(new Date(row.granted_at * 1000)),

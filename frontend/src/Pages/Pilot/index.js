@@ -141,6 +141,9 @@ function PilotDisplay({ authContext }) {
 
       {authContext.account_id !== characterId && (
         <InputGroup style={{ marginBottom: "20px" }}>
+          <NavButton to={`/skills?character_id=${characterId}`}>
+            View Skills
+          </NavButton>
           {authContext.access["notes-add"] && (
             <NavButton to={`/fc/notes/add?character_id=${characterId}`}>Write note</NavButton>
           )}

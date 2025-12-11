@@ -4,8 +4,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import { PageTitle, Content } from "../../Components/Page";
 import { useApi } from "../../api";
 import { usePageTitle } from "../../Util/title";
-// import { Button, Buttons } from "../../Components/Form";
-// import { NavLink } from "react-router-dom";
+import { NavButton } from "../../Components/Form";
 
 import { SkillDisplay } from "../../Components/SkillDisplay";
 
@@ -45,7 +44,14 @@ function SkillsAuth({ authContext }) {
   usePageTitle(`${ship} Skills`);
   return (
     <>
-      <PageTitle>{basicInfo ? `Skills for ${basicInfo.name}` : "Skills"}</PageTitle>
+      <div style={{ display: "flex", alignItems: "center", gap: "1em", marginBottom: "0.5em" }}>
+        <PageTitle style={{ marginBottom: 0 }}>{basicInfo ? `Skills for ${basicInfo.name}` : "Skills"}</PageTitle>
+        {authContext.account_id !== characterId && (
+          <NavButton to={`/pilot?character_id=${characterId}`}>
+            View Pilot
+          </NavButton>
+        )}
+      </div>
       {/* <Buttons style={{ marginBottom: "1em" }}>
         <NavLink
           exact
