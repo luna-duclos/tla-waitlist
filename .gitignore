@@ -1,0 +1,11 @@
+# Local Python / tooling (do not commit)
+.venv/
+
+# Large local Pyfa checkout / env
+/pyfa/
+
+# macOS
+.DS_Store
+
+# Local secrets (fit-calculator API key, etc.)
+fit-calculator/.secret

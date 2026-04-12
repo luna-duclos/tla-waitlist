@@ -134,6 +134,16 @@ function StatusWithReason({ status, reason }) {
   );
 }
 
+/** ESI URLs: .../killmails/<id>/<hash> with or without a trailing slash. */
+function extractKillmailHashFromEsiUrl(killmailUrl) {
+  if (!killmailUrl || typeof killmailUrl !== "string") return "";
+  const parts = killmailUrl.split("/");
+  const kmIdx = parts.findIndex((p) => p === "killmails");
+  if (kmIdx === -1 || kmIdx + 2 >= parts.length) return "";
+  const raw = parts[kmIdx + 2];
+  return raw.split("?")[0].split("#")[0];
+}
+
 export function SRP() {
   const authContext = React.useContext(AuthContext);
   const location = useLocation();
@@ -557,11 +567,13 @@ export function SRP() {
                         const victimName = report.victim_character_name || "Unknown";
                         const shipType = report.victim_ship_type || "Unknown";
                         const killmailId = report.killmail_id;
-                        // Extract hash from URL - it's the second-to-last part (before the trailing slash)
-                        const urlParts = report.killmail_link
-                          .split("/")
-                          .filter((part) => part.length > 0);
-                        const hash = urlParts[urlParts.length - 2] || urlParts[urlParts.length - 1];
+                        const hash = extractKillmailHashFromEsiUrl(report.killmail_link);
+                        if (!hash) {
+                          alert(
+                            "Could not read the killmail hash from the stored link. Use an ESI URL like https://esi.evetech.net/.../killmails/<id>/<hash>"
+                          );
+                          return;
+                        }
                         const formattedText = `<url=killReport:${killmailId}:${hash}>Kill: ${victimName}'s ${shipType}</url>`;
                         navigator.clipboard.writeText(formattedText).then(() => {
                           // Show notification

@@ -873,17 +873,22 @@ fn join_scopes(input: &BTreeSet<String>) -> String {
 }
 
 pub fn extract_killmail_id_and_hash(killmail_url: &str) -> Result<(i64, String), ESIError> {
-    // Parse URL like: https://esi.evetech.net/latest/killmails/128982873/d138ee545ca1058190cf15233190f326c3aeda0d/
+    // Parse URL like: https://esi.evetech.net/latest/killmails/128982873/<hash>/
+    // Works with or without a trailing slash (split omits the empty segment when absent).
     let parts: Vec<&str> = killmail_url.split('/').collect();
-    
-    if parts.len() < 7 {
+    let km_idx = parts
+        .iter()
+        .position(|&p| p == "killmails")
+        .ok_or_else(|| ESIError::WithMessage(400, "Invalid killmail URL format".to_string()))?;
+    if km_idx + 2 >= parts.len() {
         return Err(ESIError::WithMessage(400, "Invalid killmail URL format".to_string()));
     }
-    
-    let killmail_id = parts[parts.len() - 3].parse::<i64>()
+    let killmail_id = parts[km_idx + 1]
+        .parse::<i64>()
         .map_err(|_| ESIError::WithMessage(400, "Invalid killmail ID".to_string()))?;
-    
-    let hash = parts[parts.len() - 2].to_string();
-    
+    let hash = parts[km_idx + 2].to_string();
+    if hash.is_empty() {
+        return Err(ESIError::WithMessage(400, "Invalid killmail URL format".to_string()));
+    }
     Ok((killmail_id, hash))
 }
