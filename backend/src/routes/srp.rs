@@ -564,7 +564,18 @@ async fn get_fc_srp_reports(
 ) -> Result<Json<SRPReportsResponse>, Madness> {
     account.require_access("fleet-view")?;
 
-    let reports = srp::get_all_srp_reports(app).await?;
+    let mut reports = srp::get_all_srp_reports(app).await?;
+    let config = srp::get_srp_config(app).await?;
+    let show_killmail_links = config
+        .get("show_fc_killmail_links")
+        .map(|value| value == "true" || value == "1")
+        .unwrap_or(false);
+
+    if !show_killmail_links {
+        for report in &mut reports {
+            report.killmail_link.clear();
+        }
+    }
 
     Ok(Json(SRPReportsResponse { reports }))
 }
@@ -1224,6 +1235,6 @@ pub fn routes() -> Vec<rocket::Route> {
         submit_srp_report,
         update_srp_report,
         get_srp_report_for_edit,
-        get_pilot_srp_reports
+        // get_pilot_srp_reports
     ]
 }

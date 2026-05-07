@@ -1,10 +1,10 @@
 import React from "react";
-import { useApi } from "../../../api";
+import { apiCall, useApi } from "../../../api";
 import { AuthContext } from "../../../contexts";
 import { usePageTitle } from "../../../Util/title";
 import { PageTitle } from "../../../Components/Page";
 import { Box } from "../../../Components/Box";
-import { Button, NavButton } from "../../../Components/Form";
+import { Button, InputGroup, NavButton } from "../../../Components/Form";
 import { Table, TableHead, TableBody, Row, Cell, CellHead } from "../../../Components/Table";
 import { formatNumber } from "../../../Util/number";
 import { formatDatetime } from "../../../Util/time";
@@ -148,8 +148,10 @@ export function SRP() {
   const authContext = React.useContext(AuthContext);
   const location = useLocation();
   const isAdminPage = location.pathname === "/srp-admin";
+  const [showKillmailLinks, setShowKillmailLinks] = React.useState(false);
 
   const [setupData] = useApi(isAdminPage ? "/api/admin/srp/setup" : null);
+  const [srpConfig, refreshSrpConfig] = useApi(isAdminPage ? "/api/admin/srp/config" : null);
   const [serviceAccount] = useApi(isAdminPage ? "/api/admin/srp/service-account" : null);
   const [allStatuses] = useApi(isAdminPage ? "/api/admin/srp/all-statuses" : null);
   const [srpReports] = useApi(isAdminPage ? "/api/admin/srp/reports" : "/api/fc/srp/reports");
@@ -158,6 +160,16 @@ export function SRP() {
   const [focusEndResult, setFocusEndResult] = React.useState(null);
   const [testWindowResult, setTestWindowResult] = React.useState(null);
   const [isExpanded, setIsExpanded] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isAdminPage) return;
+    const setting = srpConfig?.config?.show_fc_killmail_links;
+    if (setting === undefined) {
+      setShowKillmailLinks(false);
+      return;
+    }
+    setShowKillmailLinks(setting === "true" || setting === "1");
+  }, [isAdminPage, srpConfig]);
 
   // Helper function to parse SRP paid JSON and get boolean status
   const getSrpPaidStatus = (srpPaidData) => {
@@ -262,6 +274,23 @@ export function SRP() {
     }
   };
 
+  const handleToggleKillmailLinksSetting = async (enabled) => {
+    const previousValue = showKillmailLinks;
+    setShowKillmailLinks(enabled);
+    try {
+      await apiCall("/api/admin/srp/config", {
+        json: {
+          key: "show_fc_killmail_links",
+          value: enabled ? "true" : "false",
+        },
+      });
+      refreshSrpConfig();
+    } catch (error) {
+      setShowKillmailLinks(previousValue);
+      alert("Failed to update SRP killmail link visibility setting.");
+    }
+  };
+
   // Check permissions based on route
   if (isAdminPage && !authContext.access["waitlist-manage"]) {
     return <div>Access denied. You need waitlist-manage permissions.</div>;
@@ -270,6 +299,9 @@ export function SRP() {
   if (!isAdminPage && !authContext.access["fleet-view"]) {
     return <div>Access denied. You need fleet-view permissions.</div>;
   }
+
+  const shouldShowKillmailLinks =
+    isAdminPage || srpReports?.reports?.some((report) => !!report.killmail_link);
 
   return (
     <>
@@ -339,6 +371,31 @@ export function SRP() {
               <Button onClick={handleTestCharacterWindow} variant="success">
                 Test Character Window
               </Button>
+            </div>
+            <div style={{ marginBottom: "1em" }}>
+              <h4>SRP Page Display Settings</h4>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75em", flexWrap: "wrap" }}>
+                <span>Show killmail links on `/fc/srp`:</span>
+                <InputGroup fixed>
+                  <Button
+                    onClick={() => handleToggleKillmailLinksSetting(true)}
+                    active={showKillmailLinks}
+                    variant={showKillmailLinks ? "success" : undefined}
+                  >
+                    Enabled
+                  </Button>
+                  <Button
+                    onClick={() => handleToggleKillmailLinksSetting(false)}
+                    active={!showKillmailLinks}
+                    variant={!showKillmailLinks ? "danger" : undefined}
+                  >
+                    Disabled
+                  </Button>
+                </InputGroup>
+              </div>
+              <div style={{ fontSize: "0.875em", marginTop: "0.5em" }}>
+                Disabled by default. This only affects the non-admin SRP page.
+              </div>
             </div>
 
             {journalResult && (
@@ -533,7 +590,7 @@ export function SRP() {
                 <CellHead>Ship Type</CellHead>
                 <CellHead>Submitted By</CellHead>
                 <CellHead>Submitted At</CellHead>
-                <CellHead>Killmail Link</CellHead>
+                {shouldShowKillmailLinks && <CellHead>Killmail Link</CellHead>}
                 <CellHead>Loot Returned</CellHead>
                 <CellHead>Payout Date</CellHead>
                 <CellHead>SRP Paid</CellHead>
@@ -556,43 +613,45 @@ export function SRP() {
                   <Cell>{report.victim_ship_type || "Unknown"}</Cell>
                   <Cell>{report.submitted_by_name}</Cell>
                   <Cell>{formatDatetime(new Date(report.submitted_at * 1000))}</Cell>
-                  <Cell>
-                    <span
-                      style={{
-                        cursor: "pointer",
-                        color: "#007bff",
-                        textDecoration: "underline",
-                      }}
-                      onClick={() => {
-                        const victimName = report.victim_character_name || "Unknown";
-                        const shipType = report.victim_ship_type || "Unknown";
-                        const killmailId = report.killmail_id;
-                        const hash = extractKillmailHashFromEsiUrl(report.killmail_link);
-                        if (!hash) {
-                          alert(
-                            "Could not read the killmail hash from the stored link. Use an ESI URL like https://esi.evetech.net/.../killmails/<id>/<hash>"
-                          );
-                          return;
-                        }
-                        const formattedText = `<url=killReport:${killmailId}:${hash}>Kill: ${victimName}'s ${shipType}</url>`;
-                        navigator.clipboard.writeText(formattedText).then(() => {
-                          // Show notification
-                          if (window.showNotification) {
-                            window.showNotification(
-                              "Killmail link copied to clipboard!",
-                              "success"
+                  {shouldShowKillmailLinks && (
+                    <Cell>
+                      <span
+                        style={{
+                          cursor: "pointer",
+                          color: "#007bff",
+                          textDecoration: "underline",
+                        }}
+                        onClick={() => {
+                          const victimName = report.victim_character_name || "Unknown";
+                          const shipType = report.victim_ship_type || "Unknown";
+                          const killmailId = report.killmail_id;
+                          const hash = extractKillmailHashFromEsiUrl(report.killmail_link);
+                          if (!hash) {
+                            alert(
+                              "Could not read the killmail hash from the stored link. Use an ESI URL like https://esi.evetech.net/.../killmails/<id>/<hash>"
                             );
-                          } else {
-                            // Fallback to standard notification
-                            alert("Killmail link copied to clipboard!");
+                            return;
                           }
-                        });
-                      }}
-                      title="Click to copy killmail link to clipboard"
-                    >
-                      Copy Killmail Link
-                    </span>
-                  </Cell>
+                          const formattedText = `<url=killReport:${killmailId}:${hash}>Kill: ${victimName}'s ${shipType}</url>`;
+                          navigator.clipboard.writeText(formattedText).then(() => {
+                            // Show notification
+                            if (window.showNotification) {
+                              window.showNotification(
+                                "Killmail link copied to clipboard!",
+                                "success"
+                              );
+                            } else {
+                              // Fallback to standard notification
+                              alert("Killmail link copied to clipboard!");
+                            }
+                          });
+                        }}
+                        title="Click to copy killmail link to clipboard"
+                      >
+                        Copy Killmail Link
+                      </span>
+                    </Cell>
+                  )}
                   <Cell>
                     <Badge variant={getSrpPaidStatus(report.srp_paid) ? "success" : "danger"}>
                       {report.loot_returned ? "Yes" : "No"}
