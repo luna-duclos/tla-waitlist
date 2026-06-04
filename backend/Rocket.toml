@@ -6,3 +6,4 @@ address = "0.0.0.0"
 
 [global.limits]
 string = "10 MiB"
+bytes = "10 MiB"

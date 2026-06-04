@@ -6,9 +6,12 @@ import styled from "styled-components";
 import { InputGroupAlt, SelectAlt, NavButton, AButtonAlt, NavButtonAlt } from "../Components/Form";
 import { EventNotifier } from "../Components/Event";
 import { ThemeSelect } from "../Components/ThemeSelect";
+import { LanguageSelect } from "../Components/LanguageSelect";
+import { useAppLocaleOverrides } from "../i18n/loadLocaleOverrides";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord, faTeamspeak } from "@fortawesome/free-brands-svg-icons";
 import { NavLinks, MobileNavButton, MobileNav } from "./Navigation";
+import { useTranslation } from "react-i18next";
 
 const Tlaimage = styled.div`
   background-image: url(${banner});
@@ -123,8 +126,10 @@ const Teamspeak = () => {
 };
 
 export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }) {
+  const { t } = useTranslation("nav");
   const [isOpenMobileView, setOpenMobileView] = React.useState(false);
   const [width, setWidth] = useState(window.innerWidth);
+  useAppLocaleOverrides();
   useEffect(() => {
     const handleResize = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -182,6 +187,7 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                   <AButtonAlt title="Discord" href="https://discord.gg/MR3nA9BD9K">
                     <FontAwesomeIcon icon={faDiscord} />
                   </AButtonAlt>
+                  <LanguageSelect />
                   <EventNotifier />
                   <ThemeSelect
                     theme={theme}
@@ -191,11 +197,11 @@ export function Menu({ onChangeCharacter, theme, setTheme, sticker, setSticker }
                   />
                   {whoami ? (
                     <NavButtonAlt exact to="/auth/logout">
-                      Log out
+                      {t("logOut")}
                     </NavButtonAlt>
                   ) : (
                     <NavButton exact to="/auth/start" variant="primary">
-                      Log in
+                      {t("logIn")}
                     </NavButton>
                   )}
                 </InputGroupAlt>

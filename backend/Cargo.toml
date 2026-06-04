@@ -31,6 +31,7 @@ hex = "0.4"
 regex = "*"
 rand = "*"
 thiserror = "*"
+image = { version = "0.25", default-features = false, features = ["jpeg", "png", "webp", "gif"] }
 
 [features]
 mysql = ["sqlx/mysql"]

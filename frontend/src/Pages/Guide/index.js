@@ -1,24 +1,12 @@
-import React from "react";
 import { NavLink, useParams } from "react-router-dom";
-import { Content, PageTitle } from "../../Components/Page";
+import { PageTitle } from "../../Components/Page";
 import styled from "styled-components";
-import { ToastContext } from "../../contexts";
-import { BadgeData } from "./Badges";
-import { errorToaster } from "../../api";
-import { Markdown } from "../../Components/Markdown";
 import { CardMargin } from "../../Components/Card";
-import { replaceTitle, parseMarkdownTitle, usePageTitle } from "../../Util/title";
+import { usePageTitle } from "../../Util/title";
 import BadgeIcon from "../../Components/Badge";
-
-const guideData = {};
-function importAll(r) {
-  r.keys().forEach((key) => (guideData[key] = r(key)));
-}
-importAll(require.context("./guides", true, /\.(md|jpg|png)$/));
-
-const GuideContent = styled(Content)`
-  max-width: 800px;
-`;
+import { BadgeData } from "./Badges";
+import { GuideViewer } from "./GuideViewer";
+import { guidePath, useGuides } from "./useGuides";
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -60,119 +48,51 @@ const GuideArray = styled.div`
   padding-top: 5em;
   border-color: ${(props) => props.theme.colors.accent2};
 `;
-const DivButton = ({ imageSrc, slug, title, subtitle, children }) => (
+
+const DivButton = ({ imageSrc, to, title, subtitle, children }) => (
   <CardMargin>
-    <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to={`${slug}`}>
+    <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to={to}>
       <ButtonContainer>
         <div style={{ display: "flex", height: "40px" }}>
           {children}
-          {imageSrc && <Image src={imageSrc} />}
+          {imageSrc && <Image src={imageSrc} alt="" />}
         </div>
         <Text>{title}</Text>
-        <Subtitle>{subtitle}</Subtitle>
+        {subtitle && <Subtitle>{subtitle}</Subtitle>}
       </ButtonContainer>
     </NavLink>
   </CardMargin>
 );
 
 export function Guide() {
-  const toastContext = React.useContext(ToastContext);
   const { guideName } = useParams();
-  const [loadedData, setLoadedData] = React.useState(null);
-  const guidePath = `./${guideName}`;
-  const filename = `${guidePath}/guide.md`;
-
-  React.useEffect(() => {
-    setLoadedData(null);
-    if (!(filename in guideData)) return;
-    let title = document.title;
-
-    errorToaster(
-      toastContext,
-      fetch(guideData[filename])
-        .then((response) => response.text())
-        .then((data) => {
-          setLoadedData(data);
-          replaceTitle(parseMarkdownTitle(data));
-        })
-    );
-    return () => (document.title = title);
-  }, [toastContext, filename]);
-
-  const resolveImage = (name) => {
-    const originalName = `${guidePath}/${name}`;
-    if (originalName in guideData) {
-      return guideData[originalName];
-    }
-    return name;
-  };
-
-  if (!guideData[filename]) {
-    return (
-      <>
-        <strong>Not found!</strong> The guide could not be loaded.
-      </>
-    );
-  }
-
-  if (!loadedData) {
-    return (
-      <>
-        <em>Loading...</em>
-      </>
-    );
-  }
-
-  return (
-    <GuideContent style={{ maxWidth: "800px" }}>
-      <Markdown transformImageUri={resolveImage} transformLinkUri={null}>
-        {loadedData}
-      </Markdown>
-    </GuideContent>
-  );
+  return <GuideViewer slug={guideName} />;
 }
-/*
-function GuideCard({ icon, slug, name, children }) {
-  return (
-    <CardMargin>
-      <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to={`${slug}`}>
-        <Card
-          title={
-            <>
-              <FontAwesomeIcon fixedWidth icon={icon} /> {name}
-            </>
-          }
-        >
-          <p>{children}</p>
-        </Card>
-      </NavLink>
-    </CardMargin>
-  );
-}*/
 
 export function GuideIndex() {
+  const { publicGuides, loading } = useGuides();
   usePageTitle("Guides");
+
   return (
     <>
       <PageTitle style={{ marginLeft: "40%", marginBottom: "1em" }}>Guides</PageTitle>
       <GuideArray style={{ justifyContent: "space-around" }}>
-        <DivButton
-          imageSrc="https://images.evetech.net/types/14268/icon"
-          title="DDD Guide"
-          subtitle="get GUD & Read"
-          slug="guide/ddd"
-        />
-        <DivButton title="Badges" subtitle="Showing off u GUD" slug="badges">
+        {loading && <em>Loading guides…</em>}
+        {!loading &&
+          publicGuides.map((guide) => (
+            <DivButton
+              key={guide.slug}
+              imageSrc={guide.icon}
+              title={guide.title}
+              subtitle={guide.subtitle}
+              to={guidePath(guide)}
+            />
+          ))}
+        <DivButton title="Badges" subtitle="Showing off u GUD" to="/badges">
           <BadgeIcon type={"DPS"} height={"30px"} />
           <BadgeIcon type={"LOGI"} height={"30px"} />
           <BadgeIcon type={"ALT"} height={"30px"} />
         </DivButton>
-        <DivButton
-          imageSrc="https://images.evetech.net/types/33400/icon"
-          title="Marauder Guide"
-          subtitle="Count to 2 and you gucci"
-          slug="guide/marauder"
-        />
       </GuideArray>
     </>
   );

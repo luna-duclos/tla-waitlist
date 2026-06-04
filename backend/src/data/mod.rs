@@ -1,4 +1,7 @@
 pub mod categories;
+pub mod guide_assets;
+pub mod guides;
+pub mod locales;
 pub mod character;
 pub mod fitdiffer;
 pub mod fits;

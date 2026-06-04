@@ -1,34 +1,11 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { MobileButton } from "../Components/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
-
-const Links = styled(NavLink).attrs((props) => ({
-  activeClassName: "active",
-}))`
-  padding: 0 1em;
-  color: #bbb;
-  text-decoration: none;
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-  &:hover {
-    color: #cccccc;
-    border-radius: 2px;
-  }
-  &.active {
-    color: #eeeeee;
-    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.5);
-  }
-  @media (max-width: 480px) {
-    padding: 1em;
-    &.active {
-      background-color: #454545;
-      border-radius: 4px;
-    }
-  }
-`;
+import { NavBarLink } from "./Navigation.styles";
 
 const MobileButtonDOM = styled.div`
   * {
@@ -82,47 +59,46 @@ export function MobileNavButton({ isOpen, setIsOpen }) {
 }
 
 export function NavLinks({ whoami }) {
+  const { t } = useTranslation("nav");
+
   return (
     <>
-      <Links exact to="/">
-        Home
-      </Links>
+      <NavBarLink exact to="/">
+        {t("home")}
+      </NavBarLink>
       {whoami && (
-        <>
-          <Links exact to="/waitlist">
-            Waitlist
-          </Links>
-        </>
+        <NavBarLink exact to="/waitlist">
+          {t("waitlist")}
+        </NavBarLink>
       )}
-      <Links exact to="/guide">
-        Guides
-      </Links>
-      <Links exact to="/fits">
-        Fits
-      </Links>
+      <NavBarLink exact to="/guide">
+        {t("guides")}
+      </NavBarLink>
+      <NavBarLink exact to="/fits">
+        {t("fits")}
+      </NavBarLink>
       {whoami && (
-        <Links exact to="/skills">
-          Skills
-        </Links>
+        <NavBarLink exact to="/skills">
+          {t("skills")}
+        </NavBarLink>
       )}
-
-      <Links exact to="/isk-h/calc">
-        ISK/h
-      </Links>
+      <NavBarLink exact to="/isk-h/calc">
+        {t("iskPerHour")}
+      </NavBarLink>
       {whoami && whoami.access["fleet-view"] && (
-        <Links exact to="/fc/fleet">
-          Fleet
-        </Links>
+        <NavBarLink exact to="/fc/fleet">
+          {t("fleet")}
+        </NavBarLink>
       )}
       {whoami && whoami.access["fleet-view"] && (
-        <Links exact to="/fc">
-          FC
-        </Links>
+        <NavBarLink exact to="/fc">
+          {t("fc")}
+        </NavBarLink>
       )}
       {whoami && whoami.access["search"] && (
-        <Links exact to="/fc/search">
-          Search
-        </Links>
+        <NavBarLink exact to="/fc/search">
+          {t("search")}
+        </NavBarLink>
       )}
     </>
   );
