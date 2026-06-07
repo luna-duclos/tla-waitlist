@@ -8,6 +8,7 @@ pub struct Application {
     pub ban_service: crate::core::ban::BanService,
     pub esi_client: crate::core::esi::ESIClient,
     pub sse_client: crate::core::sse::SSEClient,
+    pub discord_client: crate::core::discord::DiscordWebhookClient,
     pub token_secret: Vec<u8>,
 }
 
@@ -31,6 +32,7 @@ pub fn new(db: Arc<crate::DB>, config: Config) -> Application {
             config.sse.url.clone(),
             &hex::decode(&config.sse.secret).unwrap(),
         ),
+        discord_client: crate::core::discord::DiscordWebhookClient::new(),
         token_secret: hex::decode(&config.app.token_secret).unwrap(),
         db,
         config,

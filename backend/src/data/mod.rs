@@ -7,6 +7,7 @@ pub mod implants;
 pub mod skillplans;
 pub mod skills;
 pub mod srp;
+pub mod srp_notify;
 pub mod tags;
 pub mod variations;
 pub mod yamlhelper;

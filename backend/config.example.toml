@@ -36,4 +36,12 @@ interval_seconds = 3600
 [janice]
 api_key = "YOUR_JANICE_API_KEY"
 
+[discord]
+enabled = false
+srp_webhook_url = ""
+site_url = ""
+# Optional. Base URL for SRP report links in Discord embeds. If empty, derived from esi.url.
+# Use a full URL with scheme, e.g. http://localhost:3000 or https://waitlist.example.com
+srp_ping_role_id = ""
+
 #FOR SRP TIERS, YOU NEED TO CHANGE IT MANUALLY IN srp.rs and srpCharacterCount.js

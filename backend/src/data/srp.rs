@@ -263,7 +263,7 @@ async fn process_srp_payout(
     app: &crate::app::Application,
     entry: &WalletJournalEntry,
     tx: &mut sqlx::Transaction<'_, sqlx::MySql>,
-) -> Result<(), Madness> {
+) -> Result<Option<i64>, Madness> {
     // Parse the entry date
     let entry_date: chrono::DateTime<chrono::Utc> = chrono::DateTime::parse_from_rfc3339(&entry.date)
         .map_err(|_| Madness::BadRequest("Invalid date format".to_string()))?
@@ -318,7 +318,7 @@ async fn process_srp_payout(
 
     // Only process if we got a valid character name
     if character_name == "Unknown" {
-        return Ok(());
+        return Ok(None);
     }
 
     // Convert negative amount to positive for matching
@@ -340,9 +340,10 @@ async fn process_srp_payout(
 
         println!("Updated SRP report {} to paid status for {} (amount: {})", 
                  report_id, character_name, payout_amount);
+        return Ok(Some(report_id));
     }
 
-    Ok(())
+    Ok(None)
 }
 
 pub async fn process_srp_payments(app: &crate::app::Application) -> Result<(), Madness> {
@@ -394,6 +395,7 @@ pub async fn process_srp_payments(app: &crate::app::Application) -> Result<(), M
     // Process entries for SRP payments
     let mut tx = app.get_db().begin().await?;
     let now_timestamp = now.timestamp();
+    let mut paid_report_ids: Vec<i64> = Vec::new();
 
     for entry in entries {
         // Parse the entry date
@@ -483,7 +485,9 @@ pub async fn process_srp_payments(app: &crate::app::Application) -> Result<(), M
             }
         } else if entry.amount < 0.0 {
             // Process outgoing SRP payouts (negative amounts)
-            process_srp_payout(app, &entry, &mut tx).await?;
+            if let Some(report_id) = process_srp_payout(app, &entry, &mut tx).await? {
+                paid_report_ids.push(report_id);
+            }
         }
     }
 
@@ -497,6 +501,11 @@ pub async fn process_srp_payments(app: &crate::app::Application) -> Result<(), M
     .await?;
 
     tx.commit().await?;
+
+    for report_id in paid_report_ids {
+        crate::data::srp_notify::spawn_notify_srp_report(app, report_id);
+    }
+
     Ok(())
 }
 
@@ -1115,6 +1124,8 @@ pub async fn approve_srp_report(
         return Err(Madness::NotFound("SRP report not found"));
     }
 
+    crate::data::srp_notify::spawn_notify_srp_report(app, killmail_id);
+
     Ok(())
 }
 
@@ -1140,6 +1151,8 @@ pub async fn deny_srp_report(
     if result.rows_affected() == 0 {
         return Err(Madness::NotFound("SRP report not found"));
     }
+
+    crate::data::srp_notify::spawn_notify_srp_report(app, killmail_id);
 
     Ok(())
 }
@@ -1450,6 +1463,8 @@ pub async fn submit_srp_report(
     )
     .execute(app.get_db())
     .await?;
+
+    crate::data::srp_notify::spawn_notify_srp_report(app, killmail_id);
 
     Ok(())
 }

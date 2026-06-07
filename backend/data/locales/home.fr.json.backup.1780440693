@@ -1,0 +1,19 @@
+{
+  "language": "Language",
+  "legal": "Legal",
+  "welcomeTitle": "Welcome to TLA",
+  "intro": "Please have a read of the <guideLink>GUIDES</guideLink>, join the <discordLink>DISCORD</discordLink> & in game channel TLA Incursions to ask any questions that aren't answered here, we're more than happy to help. Look at our <fitsLink>FITS</fitsLink> and make sure your fit matches ours. The associated DPS number is expected after roughly 2 weeks of flying with us, DPS requirements must be met <bold>WITHOUT DRUGS & DRONES, GUN DAMAGE ONLY</bold>.",
+  "whatIsTlaTitle": "What Is TLA?",
+  "whatIsTlaBody": "We are an HQ Incursion Community that specializes in multi-boxing Marauders (Suggested fits can be found in the fits section of the waitlist). Marauder pilots are guaranteed an additional paid spot in fleet for an alt once both T and A badge requirements are met.",
+  "armorShieldTitle": "Why are there both Armor and Shield Fits?",
+  "armorShieldBody": "We accommodate both tank types to allow anyone to fly their marauder with us and fly mixed logi to complement this.",
+  "faqTitle": "FAQ'S",
+  "faqFitQuestion": "My fit is different to the one on the website. Can I bring it?",
+  "faqFitAnswer": "Amulet Implant sets with the appropriate rigs are accepted (You <must>MUST</must> use T2 Hyperspatial rig in replacement of the trimark rig). Fits differing from the ones listed on the website may be welcomed in fleet, however it is always upto active FC discretion.",
+  "faqDpsQuestion": "What is the DPS requirement?",
+  "faqDpsAnswer": "The DPS requirement is the amount of DPS each pilot is expected to reach in their respective hulls (guns only, no heat, no drugs, no drones) after 24 in fleet hours. A combination of Skills, Abyssals, and Implants are needed to achieve these numbers.",
+  "faqLogiQuestion": "I dont have the L badge, can I still fly logi?",
+  "faqLogiAnswer": "Yes, you can fly any ship at any point, our logi fits require you to be 8 rep stable on loki and 5 rep + MWD stable on Nestor.",
+  "faqVindiQuestion": "Can I bring my Vindicator?",
+  "faqVindiAnswer": "Yes! Our Vindicator spots are limited. You will be expected to DDD so please read the <dddLink>DDD GUIDE</dddLink>."
+}
