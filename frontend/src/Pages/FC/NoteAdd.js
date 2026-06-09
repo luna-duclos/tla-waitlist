@@ -48,7 +48,7 @@ export function NoteAdd() {
       <InputGroup>
         <Button
           variant="success"
-          disabled={note.length < 20 || note.length > 5000 || isSubmitting}
+          disabled={note.length < 10 || note.length > 5000 || isSubmitting}
           onClick={(evt) => {
             setIsSubmitting(true);
             errorToaster(

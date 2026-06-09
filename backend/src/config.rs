@@ -57,6 +57,14 @@ pub struct JaniceConfig {
 }
 
 #[derive(Deserialize, Clone)]
+pub struct DiscordConfig {
+    pub enabled: bool,
+    pub srp_webhook_url: String,
+    pub site_url: String,
+    pub srp_ping_role_id: String,
+}
+
+#[derive(Deserialize, Clone)]
 pub struct Config {
     pub database: DatabaseConfig,
     pub app: AppConfig,
@@ -67,4 +75,5 @@ pub struct Config {
     pub srp_updater: SRPUpdaterConfig,
     pub incursion_updater: IncursionUpdaterConfig,
     pub janice: JaniceConfig,
+    pub discord: DiscordConfig,
 }

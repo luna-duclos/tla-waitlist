@@ -438,6 +438,13 @@ export function XCard({ entry, fit, onAction }) {
           ))}
         </div>
       </XCardDOM.Content>
+      {authContext.access["waitlist-view"] && entry.waitlist_note ? (
+        <XCardDOM.Content>
+          <XCardDOM.ReviewComment>
+            {<MessageStyle from={"Note"} message={entry.waitlist_note} />}
+          </XCardDOM.ReviewComment>
+        </XCardDOM.Content>
+      ) : null}
       {fit.review_comment ? (
         <XCardDOM.Content>
           <XCardDOM.ReviewComment>

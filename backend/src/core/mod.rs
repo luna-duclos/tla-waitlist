@@ -1,6 +1,7 @@
 pub mod affiliation;
 pub mod auth;
 pub mod ban;
+pub mod discord;
 pub mod esi;
 pub mod fleet_updater;
 pub mod incursion_updater;

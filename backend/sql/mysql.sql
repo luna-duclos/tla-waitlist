@@ -186,6 +186,7 @@ CREATE TABLE `character_note` (
   `author_id` bigint NOT NULL,
   `note` text NOT NULL,
   `logged_at` bigint NOT NULL,
+  `show_on_waitlist` tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   CONSTRAINT `character_note_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
   CONSTRAINT `character_note_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `character` (`id`)
@@ -321,6 +322,7 @@ CREATE TABLE `srp_reports` (
   `victim_character_name` varchar(255) DEFAULT NULL,
   `victim_ship_type` varchar(255) DEFAULT NULL,
   `fleet_comp` json DEFAULT NULL,
+  `discord_message_id` bigint DEFAULT NULL,
   PRIMARY KEY (`killmail_id`),
   UNIQUE KEY `killmail_link` (`killmail_link`),
   KEY `submitted_by_id` (`submitted_by_id`),
