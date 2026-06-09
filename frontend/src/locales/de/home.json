@@ -1,0 +1,19 @@
+{
+  "language": "Sprache",
+  "legal": "Rechtliches",
+  "welcomeTitle": "Willkommen bei TLA",
+  "intro": "Bitte lies die <guideLink>GUIDES</guideLink>, tritt dem <discordLink>DISCORD</discordLink> bei und nutze den Ingame-Kanal TLA Incursions, wenn du Fragen hast, die hier nicht beantwortet werden — wir helfen gern. Sieh dir unsere <fitsLink>FITS</fitsLink> an und stelle sicher, dass dein Fit zu unseren passt. Die angegebene DPS-Zahl wird nach etwa 2 Wochen Flugzeit mit uns erwartet. DPS-Anforderungen müssen <bold>OHNE DROGEN & DROHNEN, NUR WAFFENSCHADEN</bold> erfüllt werden.",
+  "whatIsTlaTitle": "Was ist TLA?",
+  "whatIsTlaBody": "Wir sind eine HQ-Incursion-Community, die sich auf Multi-Boxing mit Maraudern spezialisiert hat (empfohlene Fits findest du im Fits-Bereich der Waitlist). Marauder-Piloten erhalten einen zusätzlichen bezahlten Alt-Platz in der Flotte, sobald die T- und A-Badge-Anforderungen erfüllt sind.",
+  "armorShieldTitle": "Warum gibt es Armor- und Shield-Fits?",
+  "armorShieldBody": "Wir unterstützen beide Tank-Typen, damit jeder seinen Marauder mit uns fliegen kann, und setzen gemischte Logi ein, um das zu ergänzen.",
+  "faqTitle": "FAQ",
+  "faqFitQuestion": "Mein Fit weicht vom Fit auf der Website ab. Darf ich ihn mitbringen?",
+  "faqFitAnswer": "Amulet-Implant-Sets mit passenden Rigs sind erlaubt (du <must>MUSST</must> ein T2-Hyperspatial-Rig anstelle des Trimark-Rigs verwenden). Fits, die von den auf der Website gelisteten abweichen, können in der Flotte willkommen sein — liegt aber immer im Ermessen des aktiven FC.",
+  "faqDpsQuestion": "Was ist die DPS-Anforderung?",
+  "faqDpsAnswer": "Die DPS-Anforderung ist der DPS, den jeder Pilot in seinem jeweiligen Schiff (nur Waffen, kein Overheat, keine Drogen, keine Drohnen) nach 24 Flottenstunden erreichen soll. Dafür brauchst du eine Kombination aus Skills, Abyssals und Implants.",
+  "faqLogiQuestion": "Ich habe kein L-Badge — darf ich trotzdem Logi fliegen?",
+  "faqLogiAnswer": "Ja, du kannst jederzeit jedes Schiff fliegen. Unsere Logi-Fits verlangen 8 Rep stabil auf dem Loki und 5 Rep + MWD stabil auf dem Nestor.",
+  "faqVindiQuestion": "Darf ich meinen Vindicator mitbringen?",
+  "faqVindiAnswer": "Ja! Unsere Vindicator-Plätze sind begrenzt. Du wirst DDD fliegen müssen — bitte lies den <dddLink>DDD GUIDE</dddLink>."
+}

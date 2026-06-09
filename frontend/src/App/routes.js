@@ -6,7 +6,8 @@ import { AuthContext } from "../contexts";
 import { AuthStart, AuthCallback, AuthLogout } from "../Pages/Auth";
 import { BadgeIndex, Guide, GuideIndex } from "../Pages/Guide";
 import { Fits } from "../Pages/Fits";
-import { FCMenu, GuideFC } from "../Pages/FC/Index";
+import { FCMenu } from "../Pages/FC/Index";
+import { GuideFCRoute } from "../Pages/Guide/GuideFCRoute";
 import { Fleet, FleetRegister } from "../Pages/FC/Fleet";
 import { FleetCompHistory } from "../Pages/FC/FleetCompHistory";
 import { ISKh, ISKhCalc } from "../Pages/ISKh";
@@ -30,6 +31,8 @@ import { SRPSubmit } from "../Pages/FC/srp/SRPSubmit";
 import { SRPReportDetail } from "../Pages/FC/srp/SRPReportDetail";
 import { SkillPlans } from "../Pages/Admin/SkillPlans";
 import { DataFiles } from "../Pages/Admin/DataFiles";
+import { HomeLocalePreviewPage } from "../Pages/Admin/HomeLocalePreviewPage";
+import { GuideLocalePreviewPage } from "../Pages/Admin/GuideLocalePreviewPage";
 
 import { E401, E403, E404 } from "../Pages/Errors";
 
@@ -123,6 +126,12 @@ export function Routes() {
       <Route exact path="/admin/data-files">
         <AuthenticatedRoute component={<DataFiles />} access="commanders-manage:admin" />
       </Route>
+      <Route exact path="/admin/preview/home/:locale">
+        <AuthenticatedRoute component={<HomeLocalePreviewPage />} access="commanders-manage:admin" />
+      </Route>
+      <Route exact path="/admin/preview/guide/:slug/:locale">
+        <AuthenticatedRoute component={<GuideLocalePreviewPage />} access="commanders-manage:admin" />
+      </Route>
       <Route exact path="/fc/srp">
         <AuthenticatedRoute component={<SRP />} access="fleet-view" />
       </Route>
@@ -131,9 +140,6 @@ export function Routes() {
       </Route>
       <Route exact path="/srp-report-detail">
         <AuthenticatedRoute component={<SRPReportDetail />} access="commanders-manage:admin" />
-      </Route>
-      <Route exact path="/fc/documentation">
-        <AuthenticatedRoute component={<GuideFC />} access="waitlist-tag:HQ-FC" />
       </Route>
       <Route exact path="/fc/fleet">
         <AuthenticatedRoute component={<Fleet />} access="fleet-view" />
@@ -153,8 +159,8 @@ export function Routes() {
       <Route exact path="/fc/stats">
         <AuthenticatedRoute component={<Statistics />} access="stats-view" />
       </Route>
-      <Route exact path="/fc/trainee">
-        <AuthenticatedRoute component={<GuideFC />} access="waitlist-tag:TRAINEE" />
+      <Route exact path="/fc/:guideName">
+        <GuideFCRoute />
       </Route>
       {/* Auth Routes: Login, Callback, Logout */}
       <Route exact path="/auth/start">

@@ -1,15 +1,10 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { Content, PageTitle } from "../../Components/Page";
-import { AuthContext, ToastContext } from "../../contexts";
+import { NavLink } from "react-router-dom";
+import { PageTitle } from "../../Components/Page";
+import { AuthContext } from "../../contexts";
 import { Card, CardArray, CardMargin } from "../../Components/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { errorToaster } from "../../api";
-import { Markdown } from "../../Components/Markdown";
-import styled from "styled-components";
 import {
-  //faGraduationCap,
-  //faBiohazard,
   faChartLine,
   faShieldAlt,
   faUserShield,
@@ -17,81 +12,25 @@ import {
   faBan,
   faCreditCard,
   faDatabase,
+  faBiohazard,
+  faGraduationCap,
 } from "@fortawesome/free-solid-svg-icons";
-import { replaceTitle, parseMarkdownTitle, usePageTitle } from "../../Util/title";
+import { usePageTitle } from "../../Util/title";
+import { guidePath, useGuides } from "../Guide/useGuides";
 
-const guideData = {};
-function importAll(r) {
-  r.keys().forEach((key) => (guideData[key] = r(key)));
-}
-importAll(require.context("./guides", true, /\.(md|jpg|png)$/));
-
-const GuideContent = styled(Content)`
-  max-width: 800px;
-`;
-
-function getSecondPart(str) {
-  return str.split("/").pop();
-}
-
-export function GuideFC() {
-  const toastContext = React.useContext(ToastContext);
-  const guideName = useLocation();
-  const loc = getSecondPart(guideName.pathname);
-  const [loadedData, setLoadedData] = React.useState(null);
-  const guidePath = `./${loc}`;
-  const filename = `${guidePath}/guide.md`;
-
-  React.useEffect(() => {
-    setLoadedData(null);
-    if (!(filename in guideData)) return;
-    const title = document.title;
-
-    errorToaster(
-      toastContext,
-      fetch(guideData[filename])
-        .then((response) => response.text())
-        .then((data) => {
-          setLoadedData(data);
-          replaceTitle(parseMarkdownTitle(data));
-        })
-    );
-    return () => (document.title = title);
-  }, [toastContext, filename]);
-
-  const resolveImage = (name) => {
-    const originalName = `${guidePath}/${name}`;
-    if (originalName in guideData) {
-      return guideData[originalName].default;
-    }
-    return name;
-  };
-
-  if (!guideData[filename]) {
-    return <div>client : a{loc}a</div>;
-  }
-
-  if (!loadedData) {
-    return (
-      <>
-        <em>Loading...</em>
-      </>
-    );
-  }
-
-  return (
-    <GuideContent style={{ maxWidth: "800px" }}>
-      <Markdown transformImageUri={resolveImage} transformLinkUri={null}>
-        {loadedData}
-      </Markdown>
-    </GuideContent>
-  );
-}
+const FC_GUIDE_ICONS = {
+  documentation: faBiohazard,
+  trainee: faGraduationCap,
+};
 
 function GuideCard({ icon, slug, name, children }) {
   return (
     <CardMargin>
-      <NavLink style={{ textDecoration: "inherit", color: "inherit" }} exact to={`/fc/${slug}`}>
+      <NavLink
+        style={{ textDecoration: "inherit", color: "inherit" }}
+        exact
+        to={guidePath({ slug, section: "fc" })}
+      >
         <Card
           title={
             <>
@@ -108,6 +47,7 @@ function GuideCard({ icon, slug, name, children }) {
 
 export function FCMenu() {
   const authContext = React.useContext(AuthContext);
+  const { fcGuides } = useGuides();
   usePageTitle("FC Menu");
   return (
     <>
@@ -156,14 +96,21 @@ export function FCMenu() {
             </CardMargin>
           </>
         )}
-        {/*{authContext &&
-          authContext.access["fleet-view"] && ( //fleet view should be any fc
-            <GuideCard slug="trainee" name="FC Training" icon={faGraduationCap} />
-          )}
-        {authContext &&
-          authContext.access["search"] && ( //any full FC
-            <GuideCard slug="documentation" name="FC Documentation" icon={faBiohazard} />
-		)}*/}
+        {fcGuides.map((guide) => {
+          if (guide.access && !authContext?.access[guide.access]) {
+            return null;
+          }
+          return (
+            <GuideCard
+              key={guide.slug}
+              slug={guide.slug}
+              name={guide.title}
+              icon={FC_GUIDE_ICONS[guide.slug] ?? faBiohazard}
+            >
+              {guide.subtitle}
+            </GuideCard>
+          );
+        })}
         {authContext && authContext.access["stats-view"] && (
           <GuideCard slug="stats" name="Statistics" icon={faChartLine} />
         )}

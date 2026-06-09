@@ -8,6 +8,7 @@ import { Routes } from "./routes";
 import { Container } from "react-awesome-styled-grid";
 
 import { Menu } from "./Menu";
+import { AvailableLanguagesProvider } from "../i18n/useAvailableLanguages";
 import "./reset.css";
 import theme from "./theme.js";
 import AnnouncementBanner from "../Components/AnnouncementBanner";
@@ -115,8 +116,9 @@ export default class App extends React.Component {
             <EventContext.Provider value={this.state.events}>
               <AuthContext.Provider value={this.state.auth}>
                 <Router>
-                  <Container>
-                    <Menu
+                  <AvailableLanguagesProvider>
+                    <Container>
+                      <Menu
                       onChangeCharacter={(char) => this.changeCharacter(char)}
                       theme={this.state.theme}
                       setTheme={(newTheme) => {
@@ -141,7 +143,8 @@ export default class App extends React.Component {
                       toasts={this.state.toasts}
                       setToasts={(toasts) => this.setState({ toasts })}
                     />
-                  </Container>
+                    </Container>
+                  </AvailableLanguagesProvider>
                 </Router>
               </AuthContext.Provider>
             </EventContext.Provider>

@@ -8,6 +8,8 @@ mod commanders;
 mod fittings;
 mod fleet;
 mod healthcheck;
+mod guides;
+mod locales;
 mod history;
 mod implants;
 mod modules;
@@ -42,6 +44,8 @@ pub fn routes() -> Vec<rocket::Route> {
         waitlist::routes(),
         statistics::routes(),
         healthcheck::routes(),
+        locales::routes(),
+        guides::routes(),
         implants::routes(),
         notes::routes(),
         skillplans::routes(),
