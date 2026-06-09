@@ -7,7 +7,16 @@ const Group = styled.div`
   margin-bottom: 2em;
 `;
 
-function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHistory, notes }) {
+function CombinedDisplay({
+  filter,
+  banHistory,
+  fleetHistory,
+  skillHistory,
+  xupHistory,
+  notes,
+  canToggleNotes,
+  onToggleNote,
+}) {
   var everything = [];
 
   // Add ban history
@@ -101,7 +110,14 @@ function CombinedDisplay({ filter, banHistory, fleetHistory, skillHistory, xupHi
     } else if (type === "skill") {
       thisGroup.push(<SkillEntry key={key} {...entry} />);
     } else if (type === "note") {
-      thisGroup.push(<NoteEntry key={key} {...entry} />);
+      thisGroup.push(
+        <NoteEntry
+          key={key}
+          {...entry}
+          canToggle={canToggleNotes}
+          onToggle={onToggleNote}
+        />
+      );
     }
   }
 
@@ -133,6 +149,8 @@ export function PilotHistory({
   skillHistory,
   xupHistory,
   notes,
+  canToggleNotes,
+  onToggleNote,
 }) {
   return (
     <CombinedDisplay
@@ -142,6 +160,8 @@ export function PilotHistory({
       skillHistory={skillHistory}
       xupHistory={xupHistory}
       notes={notes}
+      canToggleNotes={canToggleNotes}
+      onToggleNote={onToggleNote}
     />
   );
 }

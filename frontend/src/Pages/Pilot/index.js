@@ -106,6 +106,7 @@ const PageMast = styled.div`
 `;
 
 function PilotDisplay({ authContext }) {
+  const toastContext = React.useContext(ToastContext);
   const queryParams = new URLSearchParams(useLocation().search);
 
   var characterId = queryParams.get("character_id") || authContext.current.id;
@@ -117,8 +118,20 @@ function PilotDisplay({ authContext }) {
   );
   const [xupHistory] = useApi(`/api/history/xup?character_id=${characterId}`);
   const [skillHistory] = useApi(`/api/history/skills?character_id=${characterId}`);
-  const [notes] = useApi(
+  const [notes, refreshNotes] = useApi(
     authContext.access["notes-view"] ? `/api/notes?character_id=${characterId}` : null
+  );
+
+  const toggleWaitlistNote = React.useCallback(
+    (noteId, showOnWaitlist) => {
+      errorToaster(
+        toastContext,
+        apiCall("/api/notes/toggle_waitlist", {
+          json: { note_id: noteId, show_on_waitlist: showOnWaitlist },
+        }).then(refreshNotes)
+      );
+    },
+    [refreshNotes, toastContext]
   );
 
   usePageTitle("Pilot");
@@ -213,6 +226,8 @@ function PilotDisplay({ authContext }) {
             skillHistory={skillHistory && skillHistory.history}
             xupHistory={xupHistory && xupHistory.xups}
             notes={notes && notes.notes}
+            canToggleNotes={authContext.access["notes-add"]}
+            onToggleNote={toggleWaitlistNote}
           />
         </Col>
         <Col xs={4} md={2}>

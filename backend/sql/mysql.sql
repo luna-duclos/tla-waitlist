@@ -186,6 +186,7 @@ CREATE TABLE `character_note` (
   `author_id` bigint NOT NULL,
   `note` text NOT NULL,
   `logged_at` bigint NOT NULL,
+  `show_on_waitlist` tinyint NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   CONSTRAINT `character_note_ibfk_1` FOREIGN KEY (`character_id`) REFERENCES `character` (`id`),
   CONSTRAINT `character_note_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `character` (`id`)

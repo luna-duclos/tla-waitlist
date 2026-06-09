@@ -2,7 +2,7 @@ mod approve;
 mod empty;
 mod invite;
 mod list;
-mod notify;
+pub mod notify;
 mod open;
 mod remove;
 mod xup;

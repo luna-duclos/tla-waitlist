@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use rocket::serde::json::{Json, Value};
 use serde::Serialize;
@@ -28,6 +28,7 @@ struct WaitlistEntry {
     character: Option<Character>,
     joined_at: i64,
     can_remove: bool,
+    waitlist_note: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -118,6 +119,19 @@ async fn list(
         .collect();
     let hull_names = TypeDB::names_of(&hulls)?;
 
+    let pinned_notes: HashMap<i64, String> = if account.access.contains("waitlist-view") {
+        sqlx::query!(
+            "SELECT character_id, note FROM character_note WHERE show_on_waitlist = 1"
+        )
+        .fetch_all(app.get_db())
+        .await?
+        .into_iter()
+        .map(|record| (record.character_id, record.note))
+        .collect()
+    } else {
+        HashMap::new()
+    };
+
     let mut entries = BTreeMap::new();
     for record in records {
         let x_is_ours = record.we_account_id == account.id;
@@ -138,6 +152,7 @@ async fn list(
                 },
                 joined_at: record.we_joined_at,
                 can_remove: x_is_ours || account.access.contains("waitlist-manage"),
+                waitlist_note: pinned_notes.get(&record.we_account_id).cloned(),
             });
 
         let tags = vec![];

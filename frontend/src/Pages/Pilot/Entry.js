@@ -134,7 +134,24 @@ export function SkillEntry({ logged_at, name, old_level, new_level }) {
   );
 }
 
-export function NoteEntry({ logged_at, author, note }) {
+const WaitlistToggleLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  margin-top: 0.75em;
+  cursor: pointer;
+  user-select: none;
+`;
+
+export function NoteEntry({
+  id,
+  logged_at,
+  author,
+  note,
+  show_on_waitlist,
+  canToggle,
+  onToggle,
+}) {
   return (
     <Entry time={logged_at} icon={faClipboard}>
       <Content>
@@ -142,6 +159,16 @@ export function NoteEntry({ logged_at, author, note }) {
           Note written by <strong>{author.name}</strong>
         </p>
         <ReactMarkdown>{note}</ReactMarkdown>
+        {canToggle ? (
+          <WaitlistToggleLabel title="Only one note per character can be shown on the waitlist at a time">
+            <input
+              type="checkbox"
+              checked={show_on_waitlist}
+              onChange={(evt) => onToggle(id, evt.target.checked)}
+            />
+            Show on waitlist
+          </WaitlistToggleLabel>
+        ) : null}
       </Content>
     </Entry>
   );
