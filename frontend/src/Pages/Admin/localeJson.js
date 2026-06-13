@@ -3,7 +3,10 @@
  * Backend expects a JSON object whose values are strings.
  */
 
-export function parseLocaleJson(content, { requiredKeys = [] } = {}) {
+/** Stable default — do not use inline `{}` (new reference every render). */
+export const EMPTY_PARSE_OPTIONS = Object.freeze({ requiredKeys: [] });
+
+export function parseLocaleJson(content, { requiredKeys = [] } = EMPTY_PARSE_OPTIONS) {
   const parsed = typeof content === "string" ? JSON.parse(content) : content;
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
     throw new Error("File must be a JSON object.");
