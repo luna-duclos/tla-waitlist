@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Box } from "../../Components/Box";
 import { Button, Buttons, Input, SelectAlt, Textarea } from "../../Components/Form";
-import { fieldsToJson, parseLocaleJson } from "./localeJson";
+import { EMPTY_PARSE_OPTIONS, fieldsToJson, parseLocaleJson } from "./localeJson";
 import { saveLocaleDraft } from "./localePreviewStorage";
 
 const FieldBlock = styled.div`
@@ -40,7 +40,7 @@ export function LocaleFileEditor({
   onSave,
   onClose,
   fieldDefinitions,
-  parseOptions = {},
+  parseOptions = EMPTY_PARSE_OPTIONS,
   preview,
   draftNotice,
   toolbarExtra,
@@ -59,16 +59,17 @@ export function LocaleFileEditor({
 
   React.useEffect(() => {
     try {
-      const parsed = parseDraft(initialContent);
+      const parsed = parseLocaleJson(initialContent, parseOptions);
       setFields(parsed);
       setRawContent(fieldsToJson(parsed, fieldDefinitions));
       setParseError(null);
+      setRawMode(false);
     } catch (e) {
       setParseError(e.message);
       setRawContent(initialContent);
       setRawMode(true);
     }
-  }, [initialContent, parseDraft, fieldDefinitions]);
+  }, [initialContent, filename, fieldDefinitions, parseOptions]);
 
   const draftFields = React.useMemo(() => {
     if (rawMode) {
