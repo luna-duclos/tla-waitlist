@@ -173,15 +173,16 @@ impl AffiliationService {
             let names = self.esi_client.get_bulk_names(chunk).await.unwrap_or_default();
 
             for aff in affiliations {
-                let name = names
-                    .get(&aff.character_id)
-                    .cloned()
-                    .unwrap_or_else(|| format!("Character {}", aff.character_id));
+                let resolved_name = names.get(&aff.character_id).cloned();
 
                 if let None = sqlx::query!("SELECT id FROM `character` WHERE id=?", aff.character_id)
                     .fetch_optional(self.db.as_ref())
                     .await?
                 {
+                    // Only invent a placeholder when inserting a brand-new row with no ESI name.
+                    let name = resolved_name.unwrap_or_else(|| {
+                        format!("Character {}", aff.character_id)
+                    });
                     sqlx::query!(
                         "INSERT INTO `character` (id, name, corporation_id) VALUES (?, ?, ?)",
                         aff.character_id,
@@ -190,10 +191,19 @@ impl AffiliationService {
                     )
                     .execute(self.db.as_ref())
                     .await?;
-                } else {
+                } else if let Some(name) = resolved_name {
                     sqlx::query!(
                         "UPDATE `character` SET name=?, corporation_id=? WHERE id=?",
                         name,
+                        aff.corporation_id,
+                        aff.character_id
+                    )
+                    .execute(self.db.as_ref())
+                    .await?;
+                } else {
+                    // Keep existing name if bulk /universe/names/ omitted this id.
+                    sqlx::query!(
+                        "UPDATE `character` SET corporation_id=? WHERE id=?",
                         aff.corporation_id,
                         aff.character_id
                     )
